@@ -1,0 +1,3183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampQuest — Find the Perfect Camp</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest:#1a3a2a; --moss:#2d5a3d; --sage:#7aa67f; --sun:#f5c842;
+  --sky:#e8f4f0; --cream:#faf7f0; --coral:#e8604a; --white:#fff;
+  --text:#1a2e1e; --muted:#6b7c70; --border:#dde8df;
+  --blue:#1a4a7a; --purple:#7a4a8a; --amber:#c47a1a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+
+nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:200;}
+.logo{font-family:'Playfair Display',serif;color:var(--sun);font-size:1.5rem;font-weight:900;cursor:pointer;}
+.logo span{color:#fff;}
+.nav-links{display:flex;gap:1.5rem;align-items:center;}
+.nav-links a{color:rgba(255,255,255,.7);text-decoration:none;font-size:.9rem;font-weight:500;cursor:pointer;transition:color .2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--sun);}
+.nav-btn{background:var(--sun);color:var(--forest);border:none;padding:.5rem 1.2rem;border-radius:20px;font-weight:600;font-size:.85rem;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:.5rem;}
+.hamburger span{width:22px;height:2px;background:#fff;border-radius:2px;}
+.mobile-menu{display:none;position:fixed;top:64px;left:0;right:0;background:var(--forest);z-index:190;flex-direction:column;padding:1rem 2rem 2rem;}
+.mobile-menu.open{display:flex;}
+.mobile-menu a{color:rgba(255,255,255,.8);text-decoration:none;font-size:1rem;font-weight:500;cursor:pointer;padding:.8rem 0;border-bottom:1px solid rgba(255,255,255,.1);}
+
+.page{display:none;animation:fadeIn .25s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.btn-primary{background:var(--forest);color:#fff;border:none;padding:.8rem 1.8rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.95rem;cursor:pointer;transition:all .2s;}
+.btn-primary:hover{background:var(--moss);transform:translateY(-1px);}
+.btn-coral{background:var(--coral);color:#fff;border:none;padding:.8rem 1.8rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.95rem;cursor:pointer;transition:all .2s;}
+.btn-coral:hover{background:#c94d39;}
+.btn-outline{background:transparent;color:var(--forest);border:2px solid var(--border);padding:.75rem 1.5rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;transition:all .15s;}
+.btn-outline:hover{border-color:var(--forest);}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(160deg,var(--forest) 0%,var(--moss) 60%,#4a8a5a 100%);padding:5rem 2rem 4rem;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;pointer-events:none;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,5vw,4.2rem);color:#fff;font-weight:900;line-height:1.1;margin-bottom:1rem;position:relative;}
+.hero h1 em{color:var(--sun);font-style:normal;}
+.hero p{color:rgba(255,255,255,.75);font-size:1.05rem;margin-bottom:2.5rem;max-width:480px;margin-left:auto;margin-right:auto;}
+.search-bar{display:flex;flex-direction:column;background:#fff;border-radius:20px;max-width:780px;margin:0 auto;padding:1.1rem 1.2rem .9rem;gap:0;box-shadow:0 8px 40px rgba(0,0,0,.25);position:relative;z-index:1;}
+.search-row-1{display:flex;flex-direction:column;padding-bottom:.85rem;border-bottom:1.5px solid var(--border);}
+.search-row-2{display:flex;align-items:stretch;gap:0;padding:.85rem 0 .9rem;}
+.search-field-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.25rem;padding-left:.2rem;}
+.search-input{flex:1;min-width:0;border:none;outline:none;padding:.15rem .2rem;font-family:'DM Sans',sans-serif;font-size:1rem;background:transparent;color:var(--text);}
+.search-input::placeholder{color:#b0bcb5;}
+.search-divider{width:1.5px;background:var(--border);flex-shrink:0;margin:0 .2rem;}
+.search-field{display:flex;flex-direction:column;flex:1;min-width:0;padding:0 1rem;overflow:hidden;}
+.search-field:first-child{padding-left:.2rem;}
+.search-select,.search-date{width:100%;border:none;outline:none;padding:.15rem 0;font-family:'DM Sans',sans-serif;font-size:.85rem;background:transparent;color:var(--text);cursor:pointer;appearance:auto;}
+.search-date{color:var(--text);font-size:.82rem;overflow:hidden;min-width:0;}
+.search-date::-webkit-calendar-picker-indicator{opacity:.5;cursor:pointer;flex-shrink:0;}
+.search-btn{width:100%;background:var(--coral);color:#fff;border:none;padding:.85rem;border-radius:12px;font-weight:700;font-size:.95rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s;}
+.search-btn:hover{background:#c94d39;}
+.stats{background:var(--sun);display:flex;justify-content:center;gap:3rem;padding:1.2rem 2rem;flex-wrap:wrap;}
+.stat-num{font-family:'Playfair Display',serif;font-weight:900;font-size:1.5rem;color:var(--forest);}
+.stat-label{font-size:.78rem;color:var(--moss);font-weight:500;}
+
+/* ── WISHLIST CALENDAR ── */
+.wishlist-card{background:#fff;border-radius:16px;padding:1.4rem;box-shadow:0 2px 16px rgba(0,0,0,.07);margin-bottom:1rem;display:flex;gap:1rem;align-items:flex-start;border-left:4px solid var(--border);transition:border-color .2s;}
+.wishlist-card.status-interested{border-left-color:var(--border);}
+.wishlist-card.status-pending{border-left-color:var(--amber);}
+.wishlist-card.status-registered{border-left-color:var(--moss);}
+.wishlist-card-icon{font-size:2rem;flex-shrink:0;width:48px;height:48px;background:var(--sky);border-radius:12px;display:flex;align-items:center;justify-content:center;}
+.wishlist-card-body{flex:1;min-width:0;}
+.wishlist-card-name{font-weight:700;color:var(--forest);font-size:.95rem;margin-bottom:.15rem;}
+.wishlist-card-meta{font-size:.78rem;color:var(--muted);margin-bottom:.6rem;}
+.wishlist-status-row{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;}
+.status-btn{border:1.5px solid var(--border);background:#fff;border-radius:20px;padding:.3rem .75rem;font-size:.72rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--muted);transition:all .15s;white-space:nowrap;}
+.status-btn.active-interested{background:var(--sky);border-color:var(--sage);color:var(--forest);}
+.status-btn.active-pending{background:#fff8e8;border-color:var(--amber);color:var(--amber);}
+.status-btn.active-registered{background:#e8f4e8;border-color:var(--moss);color:var(--moss);}
+.wishlist-action-btn{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:.78rem;padding:.2rem .4rem;border-radius:6px;font-family:'DM Sans',sans-serif;}
+.wishlist-action-btn:hover{color:var(--coral);}
+.schedule-summary{background:var(--sky);border-radius:14px;padding:1.1rem 1.3rem;margin-bottom:1.5rem;display:flex;gap:2rem;flex-wrap:wrap;}
+.summary-stat{text-align:center;}
+.summary-stat-num{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;color:var(--forest);}
+.summary-stat-label{font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+.sched-empty-state{text-align:center;padding:3rem 1rem;color:var(--muted);}
+.sched-empty-state .empty-icon{font-size:3rem;margin-bottom:.8rem;}
+
+/* ── REGISTRATION TYPE BADGES ── */
+.reg-type-badge{display:inline-flex;align-items:center;gap:.35rem;font-size:.7rem;font-weight:700;padding:.22rem .6rem;border-radius:8px;text-transform:uppercase;letter-spacing:.06em;}
+.reg-type-badge.native{background:#d4ead8;color:var(--moss);}
+.reg-type-badge.external{background:#dde8f4;color:var(--blue);}
+.reg-type-badge.contact{background:#f4e8d4;color:var(--amber);}
+.reg-type-badge.phone{background:#f0e0f0;color:var(--purple);}
+
+/* ── MAIN LAYOUT ── */
+.main-layout{display:grid;grid-template-columns:270px 1fr;gap:2rem;max-width:1300px;margin:0 auto;padding:2rem;}
+.filters-panel{background:#fff;border-radius:16px;padding:1.5rem;height:fit-content;position:sticky;top:80px;box-shadow:0 2px 16px rgba(0,0,0,.06);}
+.filters-panel h3{font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:1.2rem;color:var(--forest);}
+.filter-group{margin-bottom:1.2rem;}
+.filter-group label{display:block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.5rem;}
+.filter-chips{display:flex;flex-wrap:wrap;gap:.35rem;}
+.chip{padding:.3rem .75rem;border-radius:20px;border:1.5px solid var(--border);background:transparent;font-size:.78rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s;color:var(--text);}
+.chip:hover,.chip.selected{background:var(--forest);border-color:var(--forest);color:#fff;}
+.range-slider{width:100%;accent-color:var(--moss);margin-top:.4rem;}
+.range-labels{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-top:.2rem;}
+.filter-divider{height:1px;background:#eef2ef;margin:1rem 0;}
+.filter-count{background:var(--coral);color:#fff;font-size:.7rem;font-weight:700;padding:.1rem .4rem;border-radius:8px;margin-left:.4rem;}
+.clear-filters{background:none;border:none;color:var(--muted);font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:underline;padding:0;}
+
+/* Registration type filter */
+.reg-filter-chips .chip.native.selected{background:var(--moss);border-color:var(--moss);}
+.reg-filter-chips .chip.external.selected{background:var(--blue);border-color:var(--blue);}
+.reg-filter-chips .chip.contact.selected{background:var(--amber);border-color:var(--amber);}
+
+/* ── RESULTS ── */
+.results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;gap:1rem;flex-wrap:wrap;}
+.results-header h2{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--forest);}
+.results-controls{display:flex;gap:.6rem;align-items:center;}
+.sort-select{border:1.5px solid var(--border);border-radius:8px;padding:.4rem .8rem;font-family:'DM Sans',sans-serif;font-size:.82rem;outline:none;color:var(--text);cursor:pointer;}
+.view-toggle{display:flex;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;}
+.view-btn{padding:.4rem .8rem;border:none;background:#fff;cursor:pointer;font-size:.85rem;color:var(--muted);transition:all .15s;}
+.view-btn.active{background:var(--forest);color:#fff;}
+
+/* ── CAMP CARDS ── */
+.camps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.2rem;}
+.camp-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:transform .2s,box-shadow .2s;cursor:pointer;}
+.camp-card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,0,0,.12);}
+.camp-img{height:155px;position:relative;overflow:hidden;}
+.camp-type-badge{position:absolute;top:.8rem;left:.8rem;background:var(--sun);color:var(--forest);font-size:.7rem;font-weight:700;padding:.2rem .55rem;border-radius:10px;text-transform:uppercase;letter-spacing:.06em;}
+.camp-reg-badge{position:absolute;top:.8rem;right:.8rem;}
+.save-btn{position:absolute;bottom:.8rem;right:.8rem;background:#fff;border:none;width:30px;height:30px;border-radius:50%;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.15);transition:transform .15s;}
+.save-btn:hover{transform:scale(1.15);}
+.save-btn.saved{background:var(--coral);color:#fff;}
+.camp-body{padding:1rem;}
+.camp-name{font-family:'Playfair Display',serif;font-weight:700;font-size:.95rem;margin-bottom:.25rem;color:var(--forest);}
+.camp-location{font-size:.78rem;color:var(--muted);margin-bottom:.5rem;}
+.camp-tags{display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:.7rem;}
+.tag{background:var(--sky);color:var(--moss);font-size:.7rem;font-weight:500;padding:.18rem .45rem;border-radius:6px;}
+.camp-footer{display:flex;align-items:center;justify-content:space-between;padding-top:.7rem;border-top:1px solid #f0f4f1;}
+.camp-price{font-weight:700;font-size:.95rem;color:var(--forest);}
+.camp-price span{font-size:.72rem;font-weight:400;color:var(--muted);}
+.camp-rating{font-size:.78rem;color:var(--muted);}
+.card-reg-btn{border:none;padding:.35rem .8rem;border-radius:20px;font-size:.72rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.card-reg-btn.native{background:var(--moss);color:#fff;}
+.card-reg-btn.native:hover{background:var(--forest);}
+.card-reg-btn.external{background:var(--blue);color:#fff;}
+.card-reg-btn.external:hover{background:#0f3460;}
+.card-reg-btn.contact{background:var(--amber);color:#fff;}
+.card-reg-btn.contact:hover{background:#a06010;}
+.card-reg-btn.phone{background:var(--purple);color:#fff;}
+.card-reg-btn.phone:hover{background:#5a2a6a;}
+.camp-icon{font-size:2.8rem;position:absolute;bottom:1rem;left:1rem;opacity:.4;}
+.img-sports{background:linear-gradient(135deg,#2d5a3d,#4a8a5a);}
+.img-arts{background:linear-gradient(135deg,#7a4a8a,#b07ac0);}
+.img-stem{background:linear-gradient(135deg,#1a4a7a,#3a7ab0);}
+.img-outdoor{background:linear-gradient(135deg,#6a4a1a,#aa7a3a);}
+.img-water{background:linear-gradient(135deg,#1a6a7a,#3aaab0);}
+.img-music{background:linear-gradient(135deg,#7a1a2a,#c04a5a);}
+.img-dance{background:linear-gradient(135deg,#c04a8a,#e07ab0);}
+.img-cooking{background:linear-gradient(135deg,#7a5a1a,#c09a4a);}
+.img-chess{background:linear-gradient(135deg,#3a3a5a,#6a6a9a);}
+
+/* ══════════════════════════════════════
+   SMART REGISTRATION ROUTER PAGE
+══════════════════════════════════════ */
+.reg-router-page{max-width:680px;margin:0 auto;padding:2rem;}
+.back-btn{display:inline-flex;align-items:center;gap:.5rem;color:var(--muted);font-size:.88rem;font-weight:500;cursor:pointer;margin-bottom:1.5rem;transition:color .15s;border:none;background:none;font-family:'DM Sans',sans-serif;padding:0;}
+.back-btn:hover{color:var(--forest);}
+
+/* Camp summary header in router */
+.router-camp-header{background:var(--forest);border-radius:16px;padding:1.5rem;color:#fff;display:flex;align-items:center;gap:1.2rem;margin-bottom:1.5rem;}
+.router-camp-icon{font-size:2.5rem;flex-shrink:0;}
+.router-camp-name{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;}
+.router-camp-meta{font-size:.82rem;color:rgba(255,255,255,.7);margin-top:.2rem;}
+.router-camp-price{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--sun);font-weight:900;margin-left:auto;flex-shrink:0;}
+
+/* The route type explainer card */
+.route-type-card{border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;border:2px solid;}
+.route-type-card.native{background:#f0f8f2;border-color:#b8ddc0;}
+.route-type-card.external{background:#f0f4f8;border-color:#b8c8dc;}
+.route-type-card.contact{background:#fdf6ee;border-color:#ddc8a0;}
+.route-type-card.phone{background:#f8f0f8;border-color:#dcc0dc;}
+.route-type-header{display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem;}
+.route-type-icon-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.route-type-icon-circle.native{background:#b8ddc0;}
+.route-type-icon-circle.external{background:#b8c8dc;}
+.route-type-icon-circle.contact{background:#ddc8a0;}
+.route-type-icon-circle.phone{background:#dcc0dc;}
+.route-type-title{font-weight:700;font-size:1rem;color:var(--forest);}
+.route-type-subtitle{font-size:.8rem;color:var(--muted);margin-top:.1rem;}
+.route-type-desc{font-size:.88rem;color:var(--muted);line-height:1.6;margin-bottom:1.2rem;}
+.route-type-steps{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.2rem;}
+.route-step{display:flex;align-items:center;gap:.7rem;font-size:.84rem;color:var(--text);}
+.route-step-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;}
+.route-step-num.native{background:var(--moss);color:#fff;}
+.route-step-num.external{background:var(--blue);color:#fff;}
+.route-step-num.contact{background:var(--amber);color:#fff;}
+.route-step-num.phone{background:var(--purple);color:#fff;}
+
+/* Session picker inside router */
+.session-picker{background:#fff;border-radius:14px;padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 2px 10px rgba(0,0,0,.06);}
+.session-picker h4{font-weight:700;font-size:.9rem;color:var(--forest);margin-bottom:.9rem;}
+.session-options{display:flex;flex-direction:column;gap:.6rem;}
+.session-option{border:2px solid var(--border);border-radius:10px;padding:.8rem 1rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:space-between;}
+.session-option:hover{border-color:var(--moss);}
+.session-option.selected{border-color:var(--moss);background:var(--sky);}
+.session-option.full{opacity:.5;cursor:default;}
+.session-date{font-weight:600;color:var(--forest);font-size:.88rem;}
+.session-info{font-size:.75rem;color:var(--muted);}
+
+.session-radio{width:18px;height:18px;border:2px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.session-radio.selected{border-color:var(--moss);}
+.session-radio.selected::after{content:'';width:8px;height:8px;border-radius:50%;background:var(--moss);display:block;}
+
+/* ── NATIVE REGISTRATION FLOW ── */
+.native-reg-form{background:#fff;border-radius:14px;padding:1.5rem;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:1.2rem;}
+.native-reg-form h4{font-weight:700;font-size:.9rem;color:var(--forest);margin-bottom:1rem;padding-bottom:.7rem;border-bottom:1px solid #f0f4f1;}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+.form-full{grid-column:1/-1;}
+.form-field{display:flex;flex-direction:column;gap:.3rem;}
+.form-field label{font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;}
+.form-field input,.form-field select,.form-field textarea{padding:.7rem .9rem;border:2px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;color:var(--text);background:#fff;transition:border-color .2s;}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--moss);}
+.order-summary-mini{background:var(--sky);border-radius:10px;padding:1rem;margin-bottom:1rem;}
+.order-row{display:flex;justify-content:space-between;font-size:.85rem;padding:.3rem 0;color:var(--text);}
+.order-row.total{border-top:1.5px solid var(--border);margin-top:.4rem;padding-top:.7rem;font-weight:700;color:var(--forest);}
+.fee-note{font-size:.75rem;color:var(--muted);margin-top:.3rem;}
+.payment-row{display:flex;gap:.5rem;margin-bottom:1rem;}
+.pay-opt{flex:1;padding:.65rem;border:2px solid var(--border);border-radius:9px;text-align:center;cursor:pointer;font-size:.8rem;font-weight:600;font-family:'DM Sans',sans-serif;color:var(--muted);transition:all .15s;background:#fff;}
+.pay-opt.active{border-color:var(--moss);color:var(--moss);background:var(--sky);}
+.card-fields{display:grid;grid-template-columns:1fr 100px 80px;gap:.7rem;}
+.guarantee-strip{background:#f0f8f2;border:1.5px solid #b8ddc0;border-radius:10px;padding:.9rem;font-size:.8rem;color:var(--moss);display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;}
+
+/* ── EXTERNAL REDIRECT FLOW ── */
+.external-preview{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:1.2rem;}
+.external-preview-bar{background:#f5f5f5;padding:.6rem 1rem;display:flex;align-items:center;gap:.5rem;border-bottom:1px solid #e0e0e0;}
+.browser-dots{display:flex;gap:.3rem;}
+.browser-dot{width:10px;height:10px;border-radius:50%;}
+.browser-url{flex:1;background:#fff;border:1px solid #e0e0e0;border-radius:20px;padding:.3rem .9rem;font-size:.75rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.external-preview-content{padding:1.5rem;text-align:center;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;}
+.external-camp-icon-big{font-size:3rem;}
+.external-preview-content h4{font-weight:700;color:var(--forest);}
+.external-preview-content p{font-size:.82rem;color:var(--muted);}
+.prefill-info{background:var(--sky);border-radius:10px;padding:1rem;margin-bottom:1.2rem;}
+.prefill-info h4{font-weight:700;font-size:.85rem;color:var(--forest);margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem;}
+.prefill-row{display:flex;justify-content:space-between;font-size:.82rem;padding:.3rem 0;color:var(--text);border-bottom:1px solid rgba(0,0,0,.05);}
+.prefill-row:last-child{border-bottom:none;}
+.prefill-label{color:var(--muted);}
+.prefill-val{font-weight:600;color:var(--forest);}
+.track-note{background:#fff3cd;border:1.5px solid var(--sun);border-radius:10px;padding:.9rem;font-size:.8rem;color:#7a5a00;margin-bottom:1rem;display:flex;align-items:flex-start;gap:.6rem;line-height:1.5;}
+
+/* ── CONTACT REQUEST FLOW ── */
+.contact-form-card{background:#fff;border-radius:14px;padding:1.5rem;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:1.2rem;}
+.contact-form-card h4{font-weight:700;font-size:.9rem;color:var(--forest);margin-bottom:1rem;padding-bottom:.7rem;border-bottom:1px solid #f0f4f1;}
+.interest-selector{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1rem;}
+.interest-option{border:2px solid var(--border);border-radius:9px;padding:.7rem 1rem;cursor:pointer;font-size:.85rem;transition:all .15s;display:flex;align-items:center;gap:.7rem;}
+.interest-option:hover,.interest-option.sel{border-color:var(--amber);background:#fdf6ee;}
+.interest-option-radio{width:16px;height:16px;border:2px solid var(--border);border-radius:50%;flex-shrink:0;transition:all .15s;}
+.interest-option.sel .interest-option-radio{border-color:var(--amber);background:var(--amber);}
+.what-happens-next{background:#fdf6ee;border:1.5px solid #ddc8a0;border-radius:10px;padding:1rem;margin-bottom:1rem;}
+.what-happens-next h5{font-weight:700;font-size:.82rem;color:var(--amber);margin-bottom:.7rem;text-transform:uppercase;letter-spacing:.06em;}
+.whpn-step{display:flex;align-items:flex-start;gap:.7rem;font-size:.82rem;color:var(--text);margin-bottom:.5rem;line-height:1.5;}
+.whpn-step:last-child{margin-bottom:0;}
+.whpn-icon{flex-shrink:0;margin-top:.1rem;}
+
+/* ── PHONE REGISTRATION FLOW ── */
+.phone-card{background:#fff;border-radius:14px;padding:1.5rem;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:1.2rem;}
+.phone-card h4{font-weight:700;font-size:.9rem;color:var(--forest);margin-bottom:1rem;padding-bottom:.7rem;border-bottom:1px solid #f0f4f1;}
+.phone-number-display{text-align:center;padding:1.5rem;background:var(--sky);border-radius:12px;margin-bottom:1rem;}
+.phone-num{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--forest);letter-spacing:.05em;}
+.phone-hours{font-size:.82rem;color:var(--muted);margin-top:.3rem;}
+.call-script{background:#f8f0f8;border:1.5px solid #dcc0dc;border-radius:10px;padding:1rem;margin-bottom:1rem;}
+.call-script h5{font-weight:700;font-size:.82rem;color:var(--purple);margin-bottom:.7rem;text-transform:uppercase;letter-spacing:.06em;}
+.script-line{font-size:.83rem;color:var(--text);line-height:1.6;padding:.3rem 0;border-bottom:1px solid rgba(0,0,0,.05);}
+.script-line:last-child{border-bottom:none;}
+.script-label{font-weight:600;color:var(--purple);}
+.sms-option{border:2px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:center;gap:1rem;cursor:pointer;transition:all .15s;margin-bottom:1rem;}
+.sms-option:hover{border-color:var(--purple);}
+.sms-icon{font-size:1.5rem;}
+.sms-text{flex:1;}
+.sms-text strong{display:block;font-size:.88rem;color:var(--forest);}
+.sms-text span{font-size:.78rem;color:var(--muted);}
+.save-to-schedule-opt{background:#fff;border:2px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:1rem;}
+
+/* ── CONFIRMATION SCREENS ── */
+.confirmation-screen{text-align:center;padding:2.5rem 1.5rem;}
+.conf-icon{font-size:4rem;display:block;margin-bottom:1rem;animation:pop .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.conf-title{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--forest);margin-bottom:.5rem;}
+.conf-subtitle{color:var(--muted);font-size:.9rem;line-height:1.6;margin-bottom:1.5rem;}
+.conf-details{background:var(--sky);border-radius:12px;padding:1.1rem;text-align:left;margin-bottom:1.5rem;}
+.conf-row{display:flex;justify-content:space-between;font-size:.85rem;padding:.3rem 0;border-bottom:1px solid rgba(0,0,0,.05);}
+.conf-row:last-child{border-bottom:none;}
+.conf-row strong{color:var(--forest);}
+.conf-actions{display:flex;flex-direction:column;gap:.7rem;}
+
+/* ── DETAIL PAGE ── */
+.detail-page{max-width:1100px;margin:0 auto;padding:2rem;}
+.detail-hero{border-radius:20px;overflow:hidden;margin-bottom:2rem;display:grid;grid-template-columns:1fr 360px;min-height:300px;}
+.detail-hero-img{position:relative;padding:2.5rem;display:flex;flex-direction:column;justify-content:flex-end;}
+.detail-big-icon{font-size:4.5rem;margin-bottom:.8rem;}
+.detail-type-badge{display:inline-block;background:var(--sun);color:var(--forest);font-size:.75rem;font-weight:700;padding:.25rem .7rem;border-radius:10px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.7rem;}
+.detail-hero h1{font-family:'Playfair Display',serif;font-size:2rem;color:#fff;font-weight:900;line-height:1.15;margin-bottom:.4rem;}
+.detail-hero-loc{color:rgba(255,255,255,.75);font-size:.9rem;}
+.detail-sidebar{background:var(--forest);padding:2rem;display:flex;flex-direction:column;justify-content:space-between;}
+.detail-price-big{font-family:'Playfair Display',serif;font-size:2.2rem;color:var(--sun);font-weight:900;}
+.detail-price-sub{color:rgba(255,255,255,.6);font-size:.82rem;margin-bottom:1.2rem;}
+.quick-fact{display:flex;align-items:center;gap:.7rem;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.85);font-size:.85rem;}
+.quick-fact:last-child{border-bottom:none;margin-bottom:1rem;}
+.quick-fact-label{color:rgba(255,255,255,.5);font-size:.72rem;display:block;}
+.reg-route-pill{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:20px;font-size:.8rem;font-weight:700;margin-bottom:1rem;}
+.reg-route-pill.native{background:rgba(122,166,127,.3);color:#a0dca8;}
+.reg-route-pill.external{background:rgba(58,122,176,.3);color:#90c0e8;}
+.reg-route-pill.contact{background:rgba(196,122,26,.3);color:#e8a860;}
+.reg-route-pill.phone{background:rgba(122,74,138,.3);color:#d0a0e0;}
+.detail-body{display:grid;grid-template-columns:1fr 320px;gap:2rem;align-items:start;}
+.detail-section{background:#fff;border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.detail-section h3{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--forest);margin-bottom:.9rem;padding-bottom:.6rem;border-bottom:1px solid #f0f4f1;}
+.detail-section p{color:var(--muted);line-height:1.7;font-size:.9rem;}
+.cta-card{background:#fff;border-radius:16px;padding:1.5rem;box-shadow:0 2px 16px rgba(0,0,0,.06);margin-bottom:1rem;position:sticky;top:80px;}
+.cta-card h4{font-family:'Playfair Display',serif;font-size:1rem;color:var(--forest);margin-bottom:.9rem;}
+.cta-reg-explainer{border-radius:10px;padding:.9rem;margin-bottom:1rem;font-size:.82rem;line-height:1.5;}
+.cta-reg-explainer.native{background:#f0f8f2;border:1.5px solid #b8ddc0;color:var(--moss);}
+.cta-reg-explainer.external{background:#f0f4f8;border:1.5px solid #b8c8dc;color:var(--blue);}
+.cta-reg-explainer.contact{background:#fdf6ee;border:1.5px solid #ddc8a0;color:var(--amber);}
+.cta-reg-explainer.phone{background:#f8f0f8;border:1.5px solid #dcc0dc;color:var(--purple);}
+.cta-reg-explainer strong{display:block;margin-bottom:.3rem;}
+.cta-btn-native{background:var(--moss);color:#fff;border:none;width:100%;padding:.9rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;margin-bottom:.6rem;transition:background .2s;}
+.cta-btn-native:hover{background:var(--forest);}
+.cta-btn-external{background:var(--blue);color:#fff;border:none;width:100%;padding:.9rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;margin-bottom:.6rem;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+.cta-btn-external:hover{background:#0f3460;}
+.cta-btn-contact{background:var(--amber);color:#fff;border:none;width:100%;padding:.9rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;margin-bottom:.6rem;transition:background .2s;}
+.cta-btn-contact:hover{background:#a06010;}
+.cta-btn-phone{background:var(--purple);color:#fff;border:none;width:100%;padding:.9rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;margin-bottom:.6rem;transition:background .2s;}
+.cta-btn-phone:hover{background:#5a2a6a;}
+
+/* ── SCHEDULE ── */
+.schedule-page{padding:2rem;max-width:1100px;margin:0 auto;}
+.schedule-page h1{font-family:'Playfair Display',serif;font-size:2rem;color:var(--forest);margin-bottom:.5rem;}
+.children-tabs{display:flex;gap:.5rem;margin-bottom:2rem;flex-wrap:wrap;}
+.child-tab{padding:.55rem 1.2rem;border-radius:30px;border:2px solid var(--border);background:#fff;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;font-size:.88rem;transition:all .15s;color:var(--text);}
+.child-tab.active{background:var(--forest);border-color:var(--forest);color:#fff;}
+.add-child-tab{padding:.55rem 1.1rem;border-radius:30px;border:2px dashed var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:.88rem;cursor:pointer;color:var(--muted);transition:all .15s;}
+.add-child-tab:hover{border-color:var(--moss);color:var(--moss);}
+.schedule-layout{display:grid;grid-template-columns:1fr 280px;gap:2rem;align-items:start;}
+.schedule-grid{background:#fff;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,.06);overflow:hidden;}
+.week-header{display:grid;grid-template-columns:72px repeat(5,1fr);background:var(--forest);color:#fff;}
+.week-header div{padding:.9rem;text-align:center;font-size:.8rem;font-weight:600;}
+.week-row{display:grid;grid-template-columns:72px repeat(5,1fr);border-bottom:1px solid #f0f4f1;}
+.week-row:last-child{border-bottom:none;}
+.week-label{padding:.9rem;font-size:.75rem;font-weight:600;color:var(--muted);display:flex;align-items:center;justify-content:center;background:var(--sky);border-right:1px solid var(--border);}
+.week-cell{padding:.5rem;min-height:85px;border-right:1px solid #f5f8f5;}
+.sched-event{border-radius:7px;padding:.45rem .55rem;font-size:.74rem;font-weight:500;cursor:pointer;transition:opacity .15s;line-height:1.3;color:#fff;position:relative;}
+.sched-event:hover{opacity:.85;}
+.sched-event-name{font-weight:700;margin-bottom:.15rem;}
+.sched-event-time{opacity:.8;font-size:.68rem;}
+.sched-event-regtype{font-size:.62rem;opacity:.8;margin-top:.15rem;}
+.empty-cell{display:flex;align-items:center;justify-content:center;color:#cdd8cf;font-size:1.2rem;cursor:pointer;transition:color .15s;height:100%;min-height:75px;}
+.empty-cell:hover{color:var(--sage);}
+.saved-camps-panel{background:#fff;border-radius:16px;padding:1.5rem;box-shadow:0 2px 16px rgba(0,0,0,.06);position:sticky;top:80px;}
+.saved-camps-panel h3{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--forest);margin-bottom:.9rem;}
+.saved-item{display:flex;align-items:center;gap:.7rem;padding:.6rem 0;border-bottom:1px solid #f0f4f1;}
+.saved-item:last-child{border-bottom:none;}
+.saved-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.saved-name{font-weight:600;font-size:.82rem;color:var(--forest);}
+.saved-dates{font-size:.72rem;color:var(--muted);}
+.saved-reg-type{font-size:.66rem;font-weight:700;padding:.1rem .35rem;border-radius:5px;margin-top:.15rem;display:inline-block;}
+.progress-bar{background:#eef2ef;border-radius:20px;height:7px;overflow:hidden;margin-top:.4rem;}
+.progress-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--moss),var(--sage));}
+
+.panel-reg-btn{flex:1;padding:.35rem .55rem;border-radius:20px;font-size:.72rem;font-weight:700;cursor:pointer;border:none;}
+.panel-reg-on{background:#d4ead8;color:#2d5a3d;}
+.panel-reg-off{border:1.5px solid #ddd !important;background:#fff;color:#8a9a8a;}
+.panel-remove-btn{padding:.35rem .5rem;border:none;background:none;color:#b0b8b0;cursor:pointer;font-size:.75rem;border-radius:6px;}
+.panel-remove-btn:hover{color:var(--coral);}
+.sched-panel-title{font-size:.95rem;color:var(--forest);margin-bottom:.3rem;}
+.sched-panel-sub{font-size:.75rem;color:var(--muted);margin-bottom:.9rem;}
+.sched-panel-footer{margin-top:1.2rem;padding-top:1rem;border-top:1px solid #f0f4f1;}
+.sched-panel-prog-row{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-bottom:.3rem;}
+.find-more-btn{width:100%;margin-top:1rem;padding:.65rem;background:var(--moss);color:#fff;border:none;border-radius:8px;font-weight:600;font-size:.82rem;cursor:pointer;}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--forest);color:#fff;padding:.85rem 1.4rem;border-radius:12px;font-weight:500;font-size:.88rem;box-shadow:0 8px 30px rgba(0,0,0,.2);transform:translateY(100px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:400;max-width:320px;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+@media(max-width:900px){
+  .main-layout{grid-template-columns:1fr;}
+  .filters-panel{position:static;}
+  .detail-hero,.detail-body,.schedule-layout{grid-template-columns:1fr;}
+  nav .nav-links{display:none;}
+  .hamburger{display:flex;}
+  .form-grid-2,.card-fields{grid-template-columns:1fr;}
+}
+/* ── UMBRELLA CAMP CARD ── */
+.camp-card.umbrella-card{border:2px solid transparent;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,var(--sun) 0%,#e8a020 100%) border-box;}
+.umbrella-img-area{height:155px;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--forest) 0%,#3a7a50 100%);}
+.umbrella-pill{display:inline-flex;align-items:center;gap:.25rem;background:rgba(245,200,66,.2);color:var(--sun);font-size:.65rem;font-weight:700;padding:.18rem .52rem;border-radius:8px;border:1px solid rgba(245,200,66,.35);position:absolute;top:.7rem;left:.75rem;}
+.umbrella-prog-count{position:absolute;top:.7rem;right:.75rem;background:rgba(0,0,0,.25);color:#fff;font-size:.68rem;font-weight:700;padding:.18rem .52rem;border-radius:8px;}
+.umbrella-body{padding:.85rem 1rem .7rem;}
+.umbrella-summary{font-size:.72rem;color:var(--muted);line-height:1.4;margin:.25rem 0 .5rem;}
+.browse-programs-btn{width:100%;border:none;padding:.38rem .8rem;border-radius:20px;font-size:.72rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s;background:var(--forest);color:#fff;white-space:nowrap;}
+.browse-programs-btn:hover{background:var(--moss);}
+/* ── PROGRAM BROWSER ── */
+.program-browser{background:#fff;border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.pb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid #f0f4f1;}
+.pb-header h3{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--forest);margin:0;}
+.pb-count-badge{background:var(--sky);color:var(--moss);font-size:.75rem;font-weight:700;padding:.25rem .65rem;border-radius:20px;}
+.pb-filters{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem;}
+.pb-filter{border:1.5px solid var(--border);border-radius:20px;padding:.28rem .7rem;font-size:.72rem;font-weight:600;cursor:pointer;background:#fff;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .15s;}
+.pb-filter:hover{border-color:var(--sage);color:var(--moss);}
+.pb-filter.active{background:var(--forest);border-color:var(--forest);color:#fff;}
+.pb-search-row{display:flex;align-items:center;gap:.5rem;background:var(--sky);border-radius:10px;padding:.45rem .8rem;margin-bottom:.9rem;}
+.pb-search-row input{border:none;background:transparent;outline:none;font-family:'DM Sans',sans-serif;font-size:.85rem;color:var(--text);width:100%;}
+.pb-search-row input::placeholder{color:var(--muted);}
+.program-list{display:flex;flex-direction:column;gap:.55rem;max-height:560px;overflow-y:auto;padding-right:.25rem;}
+.program-list::-webkit-scrollbar{width:4px;}
+.program-list::-webkit-scrollbar-track{background:#f0f4f1;border-radius:4px;}
+.program-list::-webkit-scrollbar-thumb{background:var(--sage);border-radius:4px;}
+.program-item{border:1.5px solid var(--border);border-radius:12px;padding:.85rem 1rem;transition:border-color .15s;display:grid;grid-template-columns:1fr auto;gap:.5rem;align-items:start;}
+.program-item:hover{border-color:var(--sage);}
+.program-item.saved{border-color:var(--moss);background:#f8fdf9;}
+.pi-subject-tag{display:inline-flex;align-items:center;gap:.3rem;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:.14rem .48rem;border-radius:6px;margin-bottom:.3rem;}
+.pi-subject-tag.stem{background:#dde8f4;color:var(--blue);}
+.pi-subject-tag.arts{background:#f0ddf4;color:#7a2d7a;}
+.pi-subject-tag.outdoor{background:#d4ead8;color:var(--moss);}
+.pi-subject-tag.writing{background:#f4ead4;color:#7a5010;}
+.pi-subject-tag.science{background:#d4eaf4;color:#1a5a7a;}
+.pi-subject-tag.media{background:#f4d4d4;color:#7a1a1a;}
+.pi-subject-tag.health{background:#d4f4e4;color:#1a6a3a;}
+.pi-name{font-weight:700;color:var(--forest);font-size:.88rem;line-height:1.3;margin-bottom:.2rem;}
+.pi-meta{font-size:.72rem;color:var(--muted);display:flex;gap:.55rem;flex-wrap:wrap;}
+.pi-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:.3rem;}
+.pi-price{font-weight:700;color:var(--forest);font-size:.88rem;}
+.pi-avail{font-size:.65rem;font-weight:600;padding:.14rem .42rem;border-radius:6px;}
+.pi-avail.open{background:#d4ead8;color:var(--moss);}
+.pi-avail.limited{background:#fff0d4;color:#8a6010;}
+.pi-avail.full{background:#fde8e8;color:#9a2a2a;}
+.pi-save-btn{background:#fff;border:1.5px solid var(--border);width:30px;height:30px;border-radius:50%;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.1);transition:transform .15s,background .15s;}
+.pi-save-btn:hover{transform:scale(1.15);}
+.pi-save-btn.saved{background:var(--coral);border-color:var(--coral);color:#fff;}
+.pi-save-btn:disabled{opacity:.4;cursor:default;}
+.pb-show-more{width:100%;border:1.5px dashed var(--border);background:none;border-radius:10px;padding:.6rem;font-family:'DM Sans',sans-serif;font-size:.8rem;color:var(--muted);cursor:pointer;margin-top:.5rem;transition:all .15s;}
+.pb-show-more:hover{border-color:var(--sage);color:var(--moss);}
+/* ── SHORTLIST SIDEBAR ── */
+.shortlist-card{background:#fff;border-radius:16px;padding:1.3rem;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:1rem;}
+.shortlist-card h4{font-weight:700;color:var(--forest);font-size:.9rem;margin-bottom:.8rem;}
+.shortlist-items{display:flex;flex-direction:column;gap:.45rem;margin-bottom:.8rem;}
+.sl-item{background:var(--sky);border-radius:8px;padding:.55rem .75rem;display:flex;align-items:flex-start;gap:.45rem;}
+.sl-item-name{font-size:.75rem;font-weight:600;color:var(--forest);line-height:1.3;}
+.sl-item-meta{font-size:.67rem;color:var(--muted);}
+.sl-empty{text-align:center;padding:.8rem;color:var(--muted);font-size:.78rem;font-style:italic;}
+.sl-reg-btn{width:100%;background:var(--blue);color:#fff;border:none;padding:.75rem;border-radius:10px;font-weight:700;font-size:.82rem;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.detail-umbrella-label{display:inline-flex;align-items:center;gap:.4rem;background:var(--sun);color:var(--forest);font-size:.72rem;font-weight:800;padding:.28rem .75rem;border-radius:10px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.65rem;}
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="showPage('search')">Camp<span>Quest</span><span style="font-size:.55rem;background:var(--sun);color:var(--forest);border-radius:6px;padding:.1rem .4rem;margin-left:.5rem;font-family:'DM Sans',sans-serif;font-weight:700;vertical-align:middle">PHASE 1</span></div>
+  <div class="nav-links">
+    <a onclick="showPage('search')" id="nav-search" class="active">Find Camps</a>
+    <a onclick="showPage('schedule')" id="nav-schedule">My Schedule</a>
+    <a onclick="showPage('profile')" id="nav-profile">Profile</a>
+    <a onclick="showPage('portal')" id="nav-portal">List Your Camp</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:.6rem;">
+    <button class="nav-btn" id="nav-signup-btn" onclick="goToSignUp()" style="background:#fff;color:var(--forest);font-size:.8rem;padding:.4rem .9rem;">Sign Up</button>
+    <div class="hamburger" onclick="document.getElementById('mob-menu').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+<div class="mobile-menu" id="mob-menu">
+  <a onclick="showPage('search');document.getElementById('mob-menu').classList.remove('open')">🔍 Find Camps</a>
+  <a onclick="showPage('schedule');document.getElementById('mob-menu').classList.remove('open')">📅 My Schedule</a>
+  <a onclick="showPage('profile');document.getElementById('mob-menu').classList.remove('open')">👤 Profile</a>
+  <a onclick="showPage('portal');document.getElementById('mob-menu').classList.remove('open')">🏕️ List Your Camp</a>
+</div>
+
+<!-- ═══════════════════════════════
+     SEARCH PAGE
+═══════════════════════════════ -->
+<div id="page-search" class="page active">
+  <div class="hero">
+    <h1>Find the <em>Perfect</em> Camp</h1>
+    <p>Browse camps. Find the perfect fit and connect directly with camp staff.</p>
+    <div class="search-bar">
+      <div class="search-row-1">
+        <div class="search-field-label">📍 Location</div>
+        <input class="search-input" type="text" placeholder="City, state, or zip code..." id="location-input" onkeydown="if(event.key==='Enter')showResults()" oninput="if(document.getElementById('results-section').style.display==='block')applyFilters()"/>
+      </div>
+      <div class="search-row-2">
+        <div class="search-field">
+          <div class="search-field-label">🎂 Child's Age</div>
+          <select class="search-select" id="age-filter" onchange="if(document.getElementById('results-section').style.display==='block')applyFilters()"><option selected>Any</option><option>4–6 yrs</option><option>7–9 yrs</option><option>10–12 yrs</option><option>13–17 yrs</option></select>
+        </div>
+        <div class="search-divider"></div>
+        <div class="search-field">
+          <div class="search-field-label">📅 Start Date</div>
+          <input class="search-date" type="date" id="date-start" onchange="if(document.getElementById('results-section').style.display==='block')applyFilters()"/>
+        </div>
+        <div class="search-divider"></div>
+        <div class="search-field">
+          <div class="search-field-label">📅 End Date</div>
+          <input class="search-date" type="date" id="date-end" onchange="if(document.getElementById('results-section').style.display==='block')applyFilters()"/>
+        </div>
+      </div>
+      <button class="search-btn" onclick="showResults()">Search Camps →</button>
+    </div>
+  </div>
+
+
+  <div id="results-section" style="display:block;">
+    <div class="main-layout">
+      <aside class="filters-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;">
+          <h3 style="margin:0;">🎯 Filters <span class="filter-count" id="filter-count" style="display:none">0</span></h3>
+          <button class="clear-filters" id="clear-btn" style="display:none" onclick="clearFilters()">Clear all</button>
+        </div>
+
+        <div class="filter-group"><label>Camp Type</label>
+          <div class="filter-chips">
+            <button class="chip" data-filter="type" data-val="Sports" onclick="toggleChip(this)">Sports</button>
+            <button class="chip" data-filter="type" data-val="Arts" onclick="toggleChip(this)">Arts</button>
+            <button class="chip" data-filter="type" data-val="STEM" onclick="toggleChip(this)">STEM</button>
+            <button class="chip" data-filter="type" data-val="Outdoor" onclick="toggleChip(this)">Outdoor</button>
+            <button class="chip" data-filter="type" data-val="Music" onclick="toggleChip(this)">Music</button>
+            <button class="chip" data-filter="type" data-val="Dance" onclick="toggleChip(this)">Dance</button>
+            <button class="chip" data-filter="type" data-val="Cooking" onclick="toggleChip(this)">Cooking</button>
+            <button class="chip" data-filter="type" data-val="Neurodiversity" onclick="toggleChip(this)">Neurodiversity</button>
+          </div>
+        </div>
+        <div class="filter-divider"></div>
+
+        <!-- REG TYPE FILTER — the new key feature -->
+        <div class="filter-group"><label>Registration Method</label>
+          <div class="filter-chips reg-filter-chips">
+            <button class="chip native" data-filter="regType" data-val="native" onclick="toggleChip(this)" title="Register & pay entirely on CampQuest">🟢 Book on CampQuest</button>
+            <button class="chip external" data-filter="regType" data-val="external" onclick="toggleChip(this)" title="We link you to the camp's website">🔵 Camp Website</button>
+            <button class="chip contact" data-filter="regType" data-val="contact" onclick="toggleChip(this)" title="Send inquiry, camp responds">🟡 Request Info</button>
+            <button class="chip phone" data-filter="regType" data-val="phone" onclick="toggleChip(this)" title="Call or email the camp directly">🟣 Call / Email</button>
+          </div>
+        </div>
+        <div class="filter-divider"></div>
+
+        <div class="filter-group">
+          <label>Max Price / Week: $<span id="price-val">800</span></label>
+          <input type="range" class="range-slider" min="0" max="5000" value="5000" step="250" id="price-slider"
+            oninput="document.getElementById('price-val').textContent=this.value;applyFilters()">
+          <div class="range-labels"><span>$0</span><span>$5,000</span></div>
+        </div>
+        <div class="filter-divider"></div>
+
+        <!-- AMENITIES FILTERS -->
+        <div class="filter-group">
+          <label>Amenities</label>
+          <div style="display:flex;flex-direction:column;gap:.6rem;margin-top:.3rem;">
+            <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;font-size:.88rem;font-weight:500;color:var(--text);">
+              <input type="checkbox" id="filter-before-after-care" onchange="applyFilters()" style="width:16px;height:16px;accent-color:var(--moss);cursor:pointer;">
+              Before &amp; After Care Available
+            </label>
+            <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;font-size:.88rem;font-weight:500;color:var(--text);">
+              <input type="checkbox" id="filter-meals" onchange="applyFilters()" style="width:16px;height:16px;accent-color:var(--moss);cursor:pointer;">
+              Meals Available
+            </label>
+            <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;font-size:.88rem;font-weight:500;color:var(--text);">
+              <input type="checkbox" id="filter-overnight" onchange="applyFilters()" style="width:16px;height:16px;accent-color:var(--moss);cursor:pointer;">
+              Overnight Camp
+            </label>
+          </div>
+        </div>
+
+
+      </aside>
+
+      <div>
+        <div class="results-header">
+          <h2 id="results-count">Showing all camps</h2>
+          <div class="results-controls">
+            <select class="sort-select" id="sort-select" onchange="applyFilters()">
+              <option value="match">Best Match</option>
+              <option value="price-asc">Price: Low → High</option>
+            </select>
+          </div>
+        </div>
+        <div id="camps-grid" class="camps-grid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     CAMP DETAIL PAGE
+═══════════════════════════════ -->
+<div id="page-detail" class="page">
+<div class="detail-page">
+  <button class="back-btn" id="detail-back-btn" onclick="detailGoBack()">← Back to results</button>
+  <div class="detail-hero">
+    <div class="detail-hero-img img-sports" id="detail-hero-img">
+      <div class="detail-big-icon" id="detail-icon">⚽</div>
+      <div class="detail-type-badge" id="detail-type">Sports</div>
+      <button id="detail-save-btn" onclick="toggleSaveFromDetail()" style="position:absolute;top:.9rem;right:.9rem;background:#fff;border:none;width:36px;height:36px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.25);transition:transform .15s;">♡</button>
+      <h1 id="detail-name">Camp Name</h1>
+      <div class="detail-hero-loc" id="detail-loc">📍 Location</div>
+      <div style="margin-top:.6rem;">
+        <button onclick="claimFromDetail()" style="background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);color:#fff;padding:.35rem .85rem;border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Is this your camp? Claim this listing</button>
+      </div>
+    </div>
+    <div class="detail-sidebar">
+      <div>
+        <div style="color:rgba(255,255,255,.5);font-size:.75rem;margin-bottom:.3rem;">STARTING FROM</div>
+        <div class="detail-price-big" id="detail-price">$275</div>
+        <div class="detail-price-sub">per week · multiple sessions</div>
+        <div class="reg-route-pill external" id="detail-reg-pill">🔵 Visit Camp Website</div>
+      </div>
+      <div>
+        <div class="quick-fact"><span>🎂</span><div><span class="quick-fact-label">Ages</span><span id="detail-ages">6–14</span></div></div>
+        <div class="quick-fact"><span>☀️</span><div><span class="quick-fact-label">Session</span><span>Day Camp · 8am–3pm</span></div></div>
+        <div class="quick-fact"><span>📅</span><div><span class="quick-fact-label">Dates</span><span id="detail-dates">Jun 9–13</span></div></div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-body">
+    <div>
+      <div class="cta-card" id="detail-cta-card">
+        <!-- Injected dynamically based on reg type -->
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════
+     SMART REGISTRATION ROUTER
+═══════════════════════════════ -->
+
+<!-- ── UMBRELLA DETAIL PAGE ── -->
+<div id="page-umbrella" class="page">
+  <div style="max-width:1100px;margin:0 auto;padding:2rem 1.5rem;">
+    <button class="back-btn" onclick="showPage('search')" style="margin-bottom:1.5rem;">← Back to results</button>
+
+    <!-- Hero banner -->
+    <div style="background:linear-gradient(160deg,var(--forest) 0%,var(--moss) 100%);border-radius:20px;padding:2.5rem;margin-bottom:1.5rem;display:flex;align-items:flex-start;gap:1.5rem;flex-wrap:wrap;">
+      <div style="font-size:4rem;">🎓</div>
+      <div style="flex:1;min-width:220px;">
+        <div class="detail-umbrella-label">⭐ Umbrella Program</div>
+        <h1 id="umb-name" style="font-family:'Playfair Display',serif;color:#fff;font-size:1.8rem;line-height:1.2;margin-bottom:.4rem;">UW Youth & Teen Programs</h1>
+        <div style="color:rgba(255,255,255,.75);font-size:.9rem;margin-bottom:.7rem;">📍 <span id="umb-loc"></span></div>
+        <div id="umb-summary" style="color:rgba(255,255,255,.8);font-size:.88rem;line-height:1.6;max-width:520px;"></div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="color:rgba(255,255,255,.6);font-size:.72rem;margin-bottom:.2rem;">Starting from</div>
+        <div style="color:var(--sun);font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;" id="umb-price"></div>
+        <div style="color:rgba(255,255,255,.6);font-size:.72rem;margin-top:.2rem;" id="umb-ages"></div>
+        <a id="umb-website-btn" href="#" target="_blank" rel="noopener"
+           style="display:inline-block;margin-top:.8rem;background:var(--sun);color:var(--forest);font-weight:700;font-size:.8rem;padding:.45rem 1rem;border-radius:8px;text-decoration:none;">
+          Visit Official Site ↗
+        </a>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr;gap:1.5rem;align-items:start;">
+      <!-- Program browser -->
+      <div class="program-browser">
+        <div class="pb-header">
+          <h3>Browse Programs</h3>
+          <span class="pb-count-badge" id="pb-count">60 programs</span>
+        </div>
+
+        <!-- Subject filters -->
+        <div class="pb-filters" id="pb-filters">
+          <button class="pb-filter active" data-subj="all" onclick="pbFilterClick(this)">All</button>
+          <button class="pb-filter" data-subj="STEM" onclick="pbFilterClick(this)">💻 STEM</button>
+          <button class="pb-filter" data-subj="Science" onclick="pbFilterClick(this)">🔬 Science</button>
+          <button class="pb-filter" data-subj="Arts" onclick="pbFilterClick(this)">🎨 Arts</button>
+          <button class="pb-filter" data-subj="Writing" onclick="pbFilterClick(this)">✍️ Writing</button>
+          <button class="pb-filter" data-subj="Media" onclick="pbFilterClick(this)">🎬 Media</button>
+          <button class="pb-filter" data-subj="Outdoor" onclick="pbFilterClick(this)">🌲 Outdoor</button>
+          <button class="pb-filter" data-subj="Health" onclick="pbFilterClick(this)">🏃 Health</button>
+        </div>
+
+        <!-- Search within -->
+        <div class="pb-search-row">
+          <span style="font-size:.85rem;">🔍</span>
+          <input type="text" id="pb-search" placeholder="Search by name, topic, or grade…" oninput="pbSearchInput(this.value)">
+        </div>
+
+        <!-- Program list -->
+        <div class="program-list" id="pb-list"></div>
+        <button class="pb-show-more" id="pb-show-more" onclick="pbShowMore()" style="display:none;">Show more programs ↓</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="page-register" class="page">
+<div class="reg-router-page">
+  <button class="back-btn" onclick="showPage('detail')">← Back to camp</button>
+
+  <!-- Camp summary -->
+  <div class="router-camp-header" id="router-camp-header">
+    <div class="router-camp-icon" id="router-icon">⚽</div>
+    <div>
+      <div class="router-camp-name" id="router-name">Camp Name</div>
+      <div class="router-camp-meta" id="router-meta">📍 Location · Session dates</div>
+    </div>
+    <div class="router-camp-price" id="router-price">$275</div>
+  </div>
+
+  <!-- All 4 flows injected here -->
+  <div id="reg-flow-container"></div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════
+     PROFILE
+═══════════════════════════════ -->
+<div id="page-profile" class="page">
+  <div style="max-width:800px;margin:0 auto;padding:2rem">
+    <h1 style="font-family:'Playfair Display',serif;font-size:2rem;color:var(--forest);margin-bottom:2rem">My Family</h1>
+    <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 2px 16px rgba(0,0,0,.06);margin-bottom:1.5rem">
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--forest);margin-bottom:1rem;padding-bottom:.7rem;border-bottom:1px solid #f0f4f1">Children</h3>
+      <div id="profile-children-list"></div>
+      <div style="margin-top:1rem"><button style="background:var(--moss);color:#fff;border:none;padding:.4rem .9rem;border-radius:20px;font-size:.78rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer" onclick="requireAccount(showAddChildModal)">+ Add Child</button></div>
+    </div>
+    <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 2px 16px rgba(0,0,0,.06)">
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--forest);margin-bottom:1rem;padding-bottom:.7rem;border-bottom:1px solid #f0f4f1">Account</h3>
+      <div id="profile-account-box">
+        <div style="text-align:center;padding:1rem 0;">
+          <p style="color:var(--muted);font-size:.88rem;margin-bottom:1rem;">Sign up to save your profile and manage your family's camps.</p>
+          <button onclick="goToSignUp()" style="background:var(--moss);color:#fff;border:none;padding:.75rem 1.8rem;border-radius:10px;font-weight:700;font-size:.92rem;cursor:pointer;font-family:'DM Sans',sans-serif;">Sign Up Free</button>
+          <div style="margin-top:.8rem;font-size:.8rem;color:var(--muted);">Already have an account? <span onclick="showLoginModal()" style="color:var(--moss);font-weight:600;cursor:pointer;">Log in</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     PORTAL
+═══════════════════════════════ -->
+<div id="page-portal" class="page">
+  <div style="max-width:900px;margin:0 auto;padding:2rem">
+    <h1 style="font-family:'Playfair Display',serif;font-size:2rem;color:var(--forest);margin-bottom:.4rem">List Your Camp</h1>
+    <p style="color:var(--muted);font-size:.95rem;margin-bottom:2rem">Join 12,400+ camps on CampQuest. Reach thousands of parents actively searching.</p>
+    <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 2px 16px rgba(0,0,0,.06)">
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--forest);margin-bottom:1.2rem">Basic Information</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+        <div><div style="font-size:.72rem;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;letter-spacing:.07em">Camp Name</div><input type="text" placeholder="Wildwood Sports Camp" style="width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none"/></div>
+        <div><div style="font-size:.72rem;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;letter-spacing:.07em">Camp Type</div><select style="width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;background:#fff"><option>Sports</option><option>Arts & Crafts</option><option>STEM</option><option>Outdoor</option><option>Music</option><option>Academic</option></select></div>
+        <div><div style="font-size:.72rem;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;letter-spacing:.07em">Contact Email</div><input type="email" placeholder="director@yourcamp.com" style="width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none"/></div>
+        <div><div style="font-size:.72rem;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;letter-spacing:.07em">Location</div><input type="text" placeholder="Austin, TX" style="width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none"/></div>
+        <div style="grid-column:1/-1"><div style="font-size:.72rem;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;letter-spacing:.07em">Description</div><textarea placeholder="Describe your camp's philosophy and activities..." style="width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;min-height:90px;resize:vertical"></textarea></div>
+
+        <!-- Cover Image -->
+        <div style="grid-column:1/-1">
+          <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;letter-spacing:.07em">Cover Image</div>
+          <label id="cover-upload-label" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;border:2px dashed var(--border);border-radius:12px;padding:2rem;cursor:pointer;background:#fafcfa;transition:all .2s;min-height:140px;" onmouseover="this.style.borderColor='var(--moss)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div id="cover-preview" style="display:none;width:100%;"></div>
+            <div id="cover-placeholder">
+              <div style="font-size:2rem;margin-bottom:.3rem;">🖼️</div>
+              <div style="font-weight:600;color:var(--forest);font-size:.9rem;">Click to upload cover image</div>
+              <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem;">Recommended: 1200×600px · JPG, PNG, WEBP · Max 5MB</div>
+            </div>
+            <input type="file" accept="image/*" style="display:none;" onchange="handleCoverUpload(this)">
+          </label>
+        </div>
+
+        <!-- Additional Photos -->
+        <div style="grid-column:1/-1">
+          <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;letter-spacing:.07em">Additional Photos <span style="font-weight:400;text-transform:none;font-size:.72rem;">(up to 8)</span></div>
+          <div id="gallery-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;">
+            <!-- Add photo tile -->
+            <label id="gallery-add-tile" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;border:2px dashed var(--border);border-radius:10px;cursor:pointer;background:#fafcfa;transition:all .2s;" onmouseover="this.style.borderColor='var(--moss)'" onmouseout="this.style.borderColor='var(--border)'">
+              <span style="font-size:1.5rem;">+</span>
+              <span style="font-size:.72rem;color:var(--muted);font-weight:600;">Add Photo</span>
+              <input type="file" accept="image/*" multiple style="display:none;" onchange="handleGalleryUpload(this)">
+            </label>
+          </div>
+        </div>
+      </div>
+      <button class="btn-primary" style="padding:1rem 2rem" onclick="showToast('✅ Camp listing submitted for review! You\'ll hear from us within 24 hours.')">Submit Listing →</button>
+    </div>
+  </div>
+
+  <!-- CLAIM YOUR LISTING SECTION -->
+  <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 2px 16px rgba(0,0,0,.06);margin-top:2rem;">
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:.5rem;">
+      <div style="font-size:1.8rem;">🏷️</div>
+      <div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--forest);margin-bottom:.2rem;">Already listed? Claim your camp</h2>
+        <p style="color:var(--muted);font-size:.85rem;">We may have created a listing for your camp from public information. Claim it to take control — update photos, prices, dates, and respond to families directly.</p>
+      </div>
+    </div>
+
+    <div style="background:var(--sky);border-radius:12px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.85rem;color:var(--forest);line-height:1.6;">
+      <strong>What claiming does:</strong> Gives you full edit access to your listing, lets you upload your own photos, respond to parent inquiries, and mark your registration as open or closed.
+    </div>
+
+    <div id="claim-search-section">
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;letter-spacing:.07em;">Search for your camp</div>
+      <div style="display:flex;gap:.7rem;margin-bottom:1rem;">
+        <input id="claim-search-input" type="text" placeholder="e.g. Wildwood Sports Camp" style="flex:1;padding:.75rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;" onfocus="this.style.borderColor='var(--moss)'" onblur="this.style.borderColor='var(--border)'" oninput="claimSearch(this.value)">
+        <button onclick="claimSearch(document.getElementById('claim-search-input').value)" style="padding:.75rem 1.2rem;background:var(--forest);color:#fff;border:none;border-radius:10px;font-weight:600;font-size:.88rem;cursor:pointer;font-family:'DM Sans',sans-serif;">Search</button>
+      </div>
+      <div id="claim-results"></div>
+    </div>
+
+    <div id="claim-form-section" style="display:none;">
+      <div id="claim-selected-camp" style="background:var(--sky);border-radius:12px;padding:1rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:.9rem;">
+      </div>
+      <h3 style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--forest);margin-bottom:1rem;">Your details</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+        <div>
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;letter-spacing:.07em;">Your Name</div>
+          <input id="claim-name" type="text" placeholder="Jane Smith" style="width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='var(--moss)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <div>
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;letter-spacing:.07em;">Your Role</div>
+          <select id="claim-role" style="width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;background:#fff;">
+            <option>Camp Director</option>
+            <option>Owner</option>
+            <option>Marketing / Admin</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div>
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;letter-spacing:.07em;">Work Email</div>
+          <input id="claim-email" type="email" placeholder="director@yourcamp.com" style="width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='var(--moss)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <div>
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;letter-spacing:.07em;">Phone</div>
+          <input id="claim-phone" type="tel" placeholder="(512) 555-0100" style="width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='var(--moss)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <div style="grid-column:1/-1;">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;letter-spacing:.07em;">How can we verify you work at this camp? <span style="color:var(--muted);font-weight:400;text-transform:none;">(optional but speeds things up)</span></div>
+          <input id="claim-verify" type="text" placeholder="e.g. Our website lists me as director, or I can forward a staff email" style="width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='var(--moss)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+      </div>
+      <div style="display:flex;gap:.7rem;">
+        <button onclick="document.getElementById('claim-form-section').style.display='none';document.getElementById('claim-search-section').style.display='block';" style="padding:.75rem 1.2rem;border:2px solid var(--border);border-radius:10px;background:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;cursor:pointer;">← Back</button>
+        <button onclick="submitClaim()" style="flex:1;padding:.9rem;background:var(--moss);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:.92rem;cursor:pointer;font-family:'DM Sans',sans-serif;">Submit Claim Request →</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════════════════════
+     SCHEDULE — PHASE 1
+═══════════════════════════════ -->
+<div id="page-schedule" class="page">
+  <div class="schedule-page">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;">
+      <h1 style="margin:0;">My Schedule</h1>
+      <button class="child-tab" id="saved-tab" onclick="switchToSaved(this)" style="font-size:.78rem;padding:.35rem .85rem;">♥ Saved Camps</button>
+    </div>
+    <p style="color:var(--muted);margin-bottom:1.5rem;">Camps you add appear here. Click any camp block to update its registration status.</p>
+
+    <div class="children-tabs">
+      <button class="add-child-tab" onclick="requireAccount(showAddChildModal)">+ Add Child</button>
+      <button class="child-tab" id="saved-tab" onclick="switchToSaved(this)" style="font-size:.78rem;padding:.35rem .85rem;">♥ Saved Camps</button>
+    </div>
+
+    <!-- Empty state -->
+    <div id="sched-empty" style="text-align:center;padding:4rem 2rem;color:var(--muted);">
+      <div style="font-size:3.5rem;margin-bottom:1rem;">📅</div>
+      <h3 style="font-family:'Playfair Display',serif;color:var(--forest);margin-bottom:.5rem;">No camps added yet</h3>
+      <p style="font-size:.9rem;margin-bottom:1.5rem;">Browse camps and click <strong>Add to My Schedule</strong> on any camp page.</p>
+      <button class="btn-primary" onclick="showPage('search')">Browse Camps →</button>
+    </div>
+
+    <!-- Calendar + panel — shared across all children -->
+    <div class="schedule-layout" id="sched-layout" style="display:none;">
+      <div>
+        <div class="schedule-grid" id="sched-calendar"></div>
+        <div style="background:#fff;border-radius:12px;padding:1rem;margin-top:1rem;box-shadow:0 2px 10px rgba(0,0,0,.05);display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.06em;">Status</div>
+          <div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;"><span style="width:14px;height:14px;border-radius:4px;background:var(--moss);display:inline-block;flex-shrink:0;"></span>✅ Registered</div>
+          <div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;"><span style="width:14px;height:14px;border-radius:4px;background:#8fa89a;display:inline-block;flex-shrink:0;"></span>Not yet registered</div>
+          <div style="font-size:.76rem;color:var(--muted);margin-left:auto;font-style:italic;">Click any block to update</div>
+        </div>
+      </div>
+      <div class="saved-camps-panel" id="sched-panel"></div>
+    </div>
+
+    <!-- Favorites section -->
+    <div id="sched-favorites" style="display:none;"></div>
+
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ─── CAMP DATA with regType ─── */
+const camps = [
+  {id:0,name:"Wildwood Sports Camp",type:"Sports",regType:"external",location:"Zilker Park, Austin",ages:"6–14",ageMin:6,ageMax:14,priceNum:275,price:"$275",ratingNum:4.9,rating:"⭐ 4.9",tags:["Soccer","Basketball","Swimming"],beforeAfterCare:true,mealsAvailable:true,imgClass:"img-sports",icon:"⚽",week:"Jun 9",dates:["Jun 9–13","Jun 23–27","Jul 14–18"],time:"8am–3pm",desc:"Austin's top multi-sport camp. Kids rotate through soccer, basketball, and swimming with certified coaches in a safe, inclusive environment. All skill levels welcome.",website:null,phone:null},
+  {id:1,name:"Art Explorers Camp",type:"Arts",regType:"external",location:"Austin Arts Center",ages:"5–12",ageMin:5,ageMax:12,priceNum:320,price:"$320",ratingNum:4.7,rating:"⭐ 4.7",tags:["Painting","Sculpture","Mixed Media"],beforeAfterCare:false,mealsAvailable:true,imgClass:"img-arts",icon:"🎨",week:"Jun 16",dates:"Jun 16–20",time:"9am–3pm",desc:"A week-long immersive arts program where kids explore painting, clay sculpture, and digital art with professional Austin artists as mentors.",website:null,phone:null},
+  {id:2,name:"Code Galaxy",type:"STEM",regType:"external",location:"UT Austin Campus",ages:"8–15",ageMin:8,ageMax:15,priceNum:495,price:"$495",ratingNum:4.8,rating:"⭐ 4.8",tags:["Python","Robotics","Game Design"],beforeAfterCare:true,mealsAvailable:false,imgClass:"img-stem",icon:"💻",week:"Jun 23",dates:"Jun 23–27",time:"9am–4pm",desc:"Hands-on coding camp where kids build games, learn Python, and assemble robots. Hosted at UT Austin. Register directly on their university portal.",website:"codegalaxy.utexas.edu/summer-registration",phone:null},
+  {id:3,name:"Trail Blazers Outdoor",type:"Outdoor",regType:"contact",location:"Barton Creek Greenbelt",ages:"9–16",ageMin:9,ageMax:16,priceNum:380,price:"$380",ratingNum:4.6,rating:"⭐ 4.6",tags:["Hiking","Kayaking","Survival"],overnight:true,beforeAfterCare:true,mealsAvailable:true,imgClass:"img-outdoor",icon:"🏕️",week:"Jun 30",dates:"Jun 30–Jul 4",time:"All Day",desc:"Adventure-packed outdoor camp in Austin's Greenbelt. Small family-run operation — they prefer to speak with parents before enrolling kids to ensure a great fit.",website:null,phone:null},
+  {id:4,name:"Aqua Stars Swim Camp",type:"Sports",regType:"external",location:"Deep Eddy Pool",ages:"4–12",ageMin:4,ageMax:12,priceNum:240,price:"$240",ratingNum:4.9,rating:"⭐ 4.9",tags:["Swimming","Diving","Water Safety"],beforeAfterCare:false,mealsAvailable:false,imgClass:"img-water",icon:"🏊",week:"Jul 7",dates:["Jul 7–11","Jul 21–25"],time:"8am–12pm",desc:"Learn-to-swim and competitive training at Austin's historic Deep Eddy Pool. All skill levels, certified USA Swimming coaches.",website:null,phone:null},
+  {id:5,name:"Rockstar Music Camp",type:"Music",regType:"phone",location:"South Congress, Austin",ages:"7–17",ageMin:7,ageMax:17,priceNum:440,price:"$440",ratingNum:4.7,rating:"⭐ 4.7",tags:["Guitar","Drums","Songwriting"],overnight:true,beforeAfterCare:true,mealsAvailable:true,imgClass:"img-music",icon:"🎸",week:"Jul 14",dates:"Jul 14–18",time:"9am–12pm",desc:"Aspiring rock stars learn their instrument and perform a live showcase on Friday. This family-run studio prefers phone registration to discuss instrument level and preferences.",website:null,phone:"(512) 867-5309"},
+  {id:6,name:"Sunshine Dance Academy",type:"Dance",regType:"external",location:"Mueller, Austin",ages:"5–14",ageMin:5,ageMax:14,priceNum:360,price:"$360",ratingNum:4.8,rating:"⭐ 4.8",tags:["Ballet","Hip-Hop","Contemporary"],beforeAfterCare:false,mealsAvailable:true,imgClass:"img-dance",icon:"💃",week:"Jul 21",dates:"Jul 21–25",time:"9am–3pm",desc:"Professional dance instruction covering ballet, hip-hop, and contemporary. Culminates in a Friday performance. Registration through their studio portal.",website:"sunshinedance.com/enroll",phone:null},
+  {id:7,name:"MasterChef Junior Camp",type:"Cooking",regType:"contact",location:"North Austin",ages:"7–14",ageMin:7,ageMax:14,priceNum:420,price:"$420",ratingNum:4.5,rating:"⭐ 4.5",tags:["Cooking","Baking","Nutrition"],beforeAfterCare:true,mealsAvailable:false,imgClass:"img-cooking",icon:"🍳",week:"Jul 28",dates:"Jul 28–Aug 1",time:"9am–3pm",desc:"Young chefs learn knife skills, international cuisines, and baking fundamentals. Limited to 8 kids per session — send an inquiry to check availability.",website:null,phone:null},
+  {id:8,name:"Chess Masters Camp",type:"Academic",regType:"phone",location:"Westlake, Austin",ages:"6–17",ageMin:6,ageMax:17,priceNum:290,price:"$290",ratingNum:4.6,rating:"⭐ 4.6",tags:["Chess","Strategy","Critical Thinking"],beforeAfterCare:true,mealsAvailable:true,imgClass:"img-chess",icon:"♟️",week:"Aug 4",dates:"Aug 4–8",time:"9am–1pm",desc:"From first moves to advanced strategy, certified instructors guide every level. This established program uses phone registration to place kids at the right skill tier.",website:null,phone:"(512) 555-0192"},
+  {id:9,name:"UW Youth & Teen Programs",type:"STEM",regType:"external",location:"University of Washington, Seattle",ages:"9–18",ageMin:9,ageMax:18,priceNum:385,price:"$385",ratingNum:4.8,rating:"⭐ 4.8",tags:["STEM","Arts","Writing","Science","+8 more"],beforeAfterCare:false,mealsAvailable:false,imgClass:"img-stem",icon:"🎓",week:"Jun 15",dates:["Jun 15–19","Jun 22–26","Jun 29–Jul 3","Jul 6–10","Jul 13–17","Jul 20–24","Jul 27–31","Aug 3–7","Aug 10–14","Aug 17–21"],time:"9am–3pm",desc:"60+ courses for grades 4–12 on the UW Seattle campus. Marine biology, game design, creative writing, film, debate and much more. Registration opened Jan 27, 2026.",website:"uwpce.uw.edu/youth",phone:null,umbrella:true,programCount:60,umbrellaSummary:"In-person & online programs across 12+ subject areas for grades 4–12"},
+];
+
+const regTypeConfig = {
+  native:   {label:"Book on CampQuest", short:"CQ",   color:var_moss,   bg:"#d4ead8", btnClass:"native",   icon:"✅", pillClass:"native"},
+  external: {label:"Visit Camp Website", short:"EXT",  color:var_blue,   bg:"#dde8f4", btnClass:"external", icon:"🔵", pillClass:"external"},
+  contact:  {label:"Send Inquiry",       short:"REQ",  color:var_amber,  bg:"#f4e8d4", btnClass:"contact",  icon:"🟡", pillClass:"contact"},
+  phone:    {label:"Call to Register",   short:"TEL",  color:var_purple, bg:"#f0e0f0", btnClass:"phone",    icon:"🟣", pillClass:"phone"},
+};
+function var_moss(){return getComputedStyle(document.documentElement).getPropertyValue('--moss');}
+function var_blue(){return '#1a4a7a';}
+function var_amber(){return '#c47a1a';}
+function var_purple(){return '#7a4a8a';}
+
+/* ─── FILTER STATE ─── */
+let activeFilters = {type:[],regType:[]};
+let maxPrice = 5000;
+let savedCamps = new Set();
+let currentCamp = null;
+let currentFilteredData = null;
+
+/* ─── RENDER ─── */
+function renderCamps(data) {
+  const grid = document.getElementById('camps-grid');
+  if (!data.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:4rem 2rem;color:var(--muted)"><div style="font-size:3rem;margin-bottom:1rem">🔍</div><h3>No camps match your filters</h3><p>Try <button onclick="clearFilters()" style="background:none;border:none;color:var(--moss);cursor:pointer;font-weight:600;text-decoration:underline">clearing filters</button></p></div>';
+    return;
+  }
+  grid.innerHTML = data.map(function(c) {
+    var rt = c.regType;
+    var labels = {native:'✅ Book here',external:'🔵 Camp site',contact:'🟡 Request info',phone:'🟣 Call to book'};
+
+    // UMBRELLA CARD
+    if (c.umbrella) {
+      return '<div class="camp-card umbrella-card" onclick="openUmbrellaDetail(' + c.id + ')">' +
+        '<div class="umbrella-img-area">' +
+          '<div class="camp-icon" style="font-size:2.8rem;position:absolute;bottom:1rem;left:1rem;opacity:.4;">' + c.icon + '</div>' +
+          '<div style="position:absolute;top:.7rem;left:.75rem;display:flex;flex-direction:column;gap:1.1rem;align-items:flex-start;">' +
+            '<div class="camp-type-badge" style="position:static;">' + c.type + '</div>' +
+            '<div class="umbrella-pill">⭐ Umbrella</div>' +
+          '</div>' +
+          '<div class="umbrella-prog-count">' + c.programCount + '+ programs</div>' +
+          '<button class="save-btn ' + (savedCamps.has(c.id)?'saved':'') + '" onclick="event.stopPropagation();toggleSave(' + c.id + ',this)">' + (savedCamps.has(c.id)?'♥':'♡') + '</button>' +
+        '</div>' +
+        '<div class="umbrella-body">' +
+          '<div class="camp-name">' + c.name + '</div>' +
+          '<div class="camp-location">📍 ' + c.location + '</div>' +
+          '<div class="umbrella-summary">' + c.umbrellaSummary + '</div>' +
+          '<div class="camp-tags">' + c.tags.map(function(t){ return '<span class="tag">' + t + '</span>'; }).join('') + '</div>' +
+          '<div class="camp-footer">' +
+            '<div><div class="camp-price">' + c.price + ' <span>/ program</span></div><div class="camp-rating">Ages ' + c.ages + '</div></div>' +
+          '</div>' +
+          '<div style="margin-top:.6rem;">' +
+            '<button class="browse-programs-btn">Browse Programs →</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    // REGULAR CARD
+    return '<div class="camp-card" onclick="openDetail(' + c.id + ')">' +
+      '<div class="camp-img ' + c.imgClass + '">' +
+        '<div class="camp-icon">' + c.icon + '</div>' +
+        '<div class="camp-type-badge">' + c.type + '</div>' +
+        '<button class="save-btn ' + (savedCamps.has(c.id)?'saved':'') + '" onclick="event.stopPropagation();toggleSave(' + c.id + ',this)">' + (savedCamps.has(c.id)?'♥':'♡') + '</button>' +
+      '</div>' +
+      '<div class="camp-body">' +
+        '<div class="camp-name">' + c.name + '</div>' +
+        '<div class="camp-location">📍 ' + c.location + '</div>' +
+        '<div class="camp-tags">' + c.tags.map(function(t){ return '<span class="tag">' + t + '</span>'; }).join('') + '</div>' +
+        '<div class="camp-footer">' +
+          '<div><div class="camp-price">' + c.price + ' <span>/ week</span></div><div class="camp-rating">Ages ' + c.ages + '</div></div>' +
+          '<button class="card-reg-btn ' + rt + '" onclick="event.stopPropagation();openDetail(' + c.id + ')">' + labels[rt] + '</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function applyFilters() {
+  let data = [...camps];
+
+  // Text search
+  const locEl = document.getElementById('location-input');
+  const query = locEl ? locEl.value.trim().toLowerCase() : '';
+  if (query && query.length > 1) {
+    data = data.filter(c =>
+      c.name.toLowerCase().includes(query) ||
+      c.location.toLowerCase().includes(query) ||
+      c.type.toLowerCase().includes(query) ||
+      c.tags.some(t => t.toLowerCase().includes(query))
+    );
+  }
+
+  // Age filter
+  const ageEl = document.getElementById('age-filter');
+  const ageVal = ageEl ? ageEl.value : '';
+  if (ageVal && ageVal !== 'Any Age' && ageVal !== 'Any') {
+    const [minA, maxA] = ageVal.replace(' yrs','').split('–').map(Number);
+    data = data.filter(c => c.ageMin <= maxA && c.ageMax >= minA);
+  }
+
+  // Price
+  const sliderEl = document.getElementById('price-slider');
+  maxPrice = sliderEl ? parseInt(sliderEl.value) : 1500;
+  data = data.filter(c => c.priceNum <= maxPrice);
+
+  // Chip filters
+  if (activeFilters.type.length) data = data.filter(c => activeFilters.type.includes(c.type));
+  if (activeFilters.regType.length) data = data.filter(c => activeFilters.regType.includes(c.regType));
+
+  // Amenity checkboxes
+  const beforeAfterEl = document.getElementById('filter-before-after-care');
+  if (beforeAfterEl && beforeAfterEl.checked) data = data.filter(c => c.beforeAfterCare);
+  const mealsEl = document.getElementById('filter-meals');
+  if (mealsEl && mealsEl.checked) data = data.filter(c => c.mealsAvailable);
+  const overnightEl = document.getElementById('filter-overnight');
+  if (overnightEl && overnightEl.checked) data = data.filter(c => c.overnight);
+  // Sort
+  const sortEl = document.getElementById('sort-select');
+  const sort = sortEl ? sortEl.value : 'match';
+  if (sort === 'price-asc') data.sort((a,b) => a.priceNum - b.priceNum);
+  else if (sort === 'rating') data.sort((a,b) => b.ratingNum - a.ratingNum);
+
+  // Update count label
+  const countEl = document.getElementById('results-count');
+  if (countEl) {
+    const loc = (locEl && locEl.value.trim()) ? locEl.value.trim() : 'Austin, TX';
+    countEl.innerHTML = `<em>${data.length}</em> camp${data.length!==1?'s':''} near <em>${loc}</em>`;
+  }
+
+  currentFilteredData = data;
+  renderCamps(data);
+  updateFilterCount();
+}
+
+function toggleChip(btn) {
+  btn.classList.toggle('selected');
+  const f=btn.dataset.filter, v=btn.dataset.val;
+  if (!f) return;
+  if (!activeFilters[f]) activeFilters[f]=[];
+  if (btn.classList.contains('selected')) { if(!activeFilters[f].includes(v)) activeFilters[f].push(v); }
+  else activeFilters[f]=activeFilters[f].filter(x=>x!==v);
+  applyFilters();
+}
+
+function updateFilterCount() {
+  const n=activeFilters.type.length+activeFilters.regType.length+(maxPrice<1500?1:0);
+  const fc=document.getElementById('filter-count');
+  const cb=document.getElementById('clear-btn');
+  if(fc){fc.textContent=n;fc.style.display=n?'':'none';}
+  if(cb){cb.style.display=n?'':'none';}
+}
+
+function clearFilters() {
+  activeFilters={type:[],regType:[]};
+  document.querySelectorAll('.chip.selected').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('price-slider').value=5000;
+  document.getElementById('price-val').textContent='5000';
+  var bac=document.getElementById('filter-before-after-care'); if(bac) bac.checked=false;
+  var mal=document.getElementById('filter-meals'); if(mal) mal.checked=false;
+  var ovn=document.getElementById('filter-overnight'); if(ovn) ovn.checked=false;
+  applyFilters();
+}
+
+// Pending onboarding callback (set when sign-up is triggered mid-action)
+var _obCallback = null;
+
+
+function obReset() {
+  var steps = ['ob-step-1','ob-step-2','ob-step-3','ob-step-4'];
+  var dots  = ['pd1','pd2','pd3','pd4'];
+  steps.forEach(function(s,i){ document.getElementById(s).style.display = i===0?'block':'none'; });
+  dots.forEach(function(d,i){ document.getElementById(d).style.background = i===0?'var(--forest)':'#eef2ef'; });
+  // Clear inputs
+  ['ob-fname','ob-lname','ob-email','ob-pass','ob-zip'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+}
+
+function obStep(from) {
+  var steps = ['ob-step-1','ob-step-2','ob-step-3','ob-step-4'];
+  var dots  = ['pd1','pd2','pd3','pd4'];
+
+  // Validate step 1 before advancing
+  if (from === 0) {
+    var fname = document.getElementById('ob-fname') ? document.getElementById('ob-fname').value.trim() : '';
+    var lname = document.getElementById('ob-lname') ? document.getElementById('ob-lname').value.trim() : '';
+    var email = document.getElementById('ob-email') ? document.getElementById('ob-email').value.trim() : '';
+    var pass  = document.getElementById('ob-pass')  ? document.getElementById('ob-pass').value : '';
+    var zip   = document.getElementById('ob-zip')   ? document.getElementById('ob-zip').value.trim() : '';
+    if (!fname||!lname) { showToast('Please enter your full name.'); return; }
+    if (!email||!email.includes('@')) { showToast('Please enter a valid email.'); return; }
+    if (pass.length < 6) { showToast('Password must be at least 6 characters.'); return; }
+    if (!/^\d{5}$/.test(zip)) { showToast('Please enter a valid 5-digit zip code.'); return; }
+    if (registeredUsers.find(function(u){ return u.email.toLowerCase()===email.toLowerCase(); })) {
+      showToast('An account with this email already exists.'); return;
+    }
+    // Save account data temporarily
+    window._obDraft = {fname:fname,lname:lname,email:email,pass:pass,zip:zip};
+  }
+
+  // Step 3 → 4: save child if entered
+  if (from === 2) {
+    var cname = document.getElementById('ob-child-name') ? document.getElementById('ob-child-name').value.trim() : '';
+    if (cname) {
+      var cage  = document.getElementById('ob-child-age')   ? document.getElementById('ob-child-age').value.trim() : '';
+      var cemoji= document.getElementById('ob-child-emoji') ? document.getElementById('ob-child-emoji').value.trim() : '\uD83E\uDDD2';
+      if (!cemoji) cemoji = '\uD83E\uDDD2';
+      var childId = cname.toLowerCase().replace(/\s+/g,'-') + '-' + Date.now();
+      children.push({id:childId, name:cname, age:cage||'?', emoji:cemoji});
+      addChildTab(childId, cname, cage, cemoji);
+      activeChild = childId;
+    }
+  }
+
+  var to = from + 1;
+  steps.forEach(function(s,i){ document.getElementById(s).style.display = i===from ? 'block' : 'none'; });
+  dots.forEach(function(d,i){ document.getElementById(d).style.background = i < to ? 'var(--forest)' : '#eef2ef'; });
+}
+
+function obFinish() {
+  // Create the user account from draft
+  var d = window._obDraft || {};
+  var user = {
+    id: 'u_' + Date.now(),
+    name: (d.fname||'') + ' ' + (d.lname||''),
+    email: d.email || '',
+    password: d.pass || '',
+    zip: d.zip || '',
+    createdAt: new Date().toISOString()
+  };
+  registeredUsers.push(user);
+  saveUsers();
+  currentUser = user;
+  window._obDraft = null;
+  updateNavForUser();
+  showToast('Welcome to CampQuest, ' + (d.fname||'friend') + '! \uD83C\uDF89');
+  showPage('search');
+  if (_obCallback) { var cb = _obCallback; _obCallback = null; cb(); }
+}
+
+function showResults() {
+  // Ensure we're on the search page
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-search').classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(el => el.classList.remove('active'));
+  const navEl = document.getElementById('nav-search');
+  if (navEl) navEl.classList.add('active');
+  // Show results section
+  const s = document.getElementById('results-section');
+  s.style.display = 'block';
+  applyFilters();
+  // Scroll after a paint cycle
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      s.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+}
+
+
+/* ─── DETAIL ─── */
+
+/* ─── UW PROGRAMS DATA ─── */
+var uwPrograms = [
+  {id:'uw01',name:'Marine Biology Discovery',subject:'Science',grades:'Gr 4–7',dates:'Jun 15–19',time:'9am–12pm',price:'$395',priceNum:395,avail:'open',online:false,desc:'Explore Puget Sound ecosystems, dissect specimens, and tour UW marine labs.'},
+  {id:'uw02',name:'Game Design with Unity',subject:'STEM',grades:'Gr 6–10',dates:'Jun 15–19',time:'9am–3pm',price:'$485',priceNum:485,avail:'open',online:false,desc:'Build a 2D platformer game from scratch using Unity and C# scripting.'},
+  {id:'uw03',name:'Creative Writing Intensive',subject:'Writing',grades:'Gr 5–9',dates:'Jun 22–26',time:'9am–12pm',price:'$345',priceNum:345,avail:'open',online:false,desc:'Short stories, poetry, and worldbuilding with UW creative writing faculty.'},
+  {id:'uw04',name:'Robotics & AI Foundations',subject:'STEM',grades:'Gr 7–12',dates:'Jun 22–26',time:'9am–4pm',price:'$550',priceNum:550,avail:'limited',online:false,desc:'Build autonomous robots and intro to machine learning concepts.'},
+  {id:'uw05',name:'Filmmaking & Storytelling',subject:'Media',grades:'Gr 6–10',dates:'Jun 29–Jul 3',time:'9am–3pm',price:'$465',priceNum:465,avail:'open',online:false,desc:'Script, shoot, and edit a short film using professional camera equipment.'},
+  {id:'uw06',name:'Architecture & Urban Design',subject:'STEM',grades:'Gr 8–12',dates:'Jun 29–Jul 3',time:'9am–3pm',price:'$495',priceNum:495,avail:'open',online:false,desc:'Design buildings and neighborhoods using CAD software and physical models.'},
+  {id:'uw07',name:'Astronomy & Space Science',subject:'Science',grades:'Gr 5–9',dates:'Jul 6–10',time:'9am–12pm',price:'$375',priceNum:375,avail:'open',online:false,desc:'Telescope observation, planetary science, and tour UW astronomy facilities.'},
+  {id:'uw08',name:'Debate & Public Speaking',subject:'Writing',grades:'Gr 7–12',dates:'Jul 6–10',time:'9am–3pm',price:'$385',priceNum:385,avail:'open',online:false,desc:'Competitive debate formats, argumentation theory, and persuasive speaking.'},
+  {id:'uw09',name:'Digital Photography & Editing',subject:'Media',grades:'Gr 6–10',dates:'Jul 13–17',time:'9am–12pm',price:'$355',priceNum:355,avail:'open',online:false,desc:'Composition, lighting, and Lightroom editing on the UW campus.'},
+  {id:'uw10',name:'Chemistry Lab Experience',subject:'Science',grades:'Gr 8–12',dates:'Jul 13–17',time:'9am–3pm',price:'$495',priceNum:495,avail:'limited',online:false,desc:'Real lab experiments in UW chemistry facilities with graduate student mentors.'},
+  {id:'uw11',name:'Graphic Novel Workshop',subject:'Arts',grades:'Gr 5–9',dates:'Jul 20–24',time:'9am–12pm',price:'$345',priceNum:345,avail:'open',online:false,desc:'Character design, panel layout, inking, and digital coloring techniques.'},
+  {id:'uw12',name:'Environmental Science Field Camp',subject:'Outdoor',grades:'Gr 6–10',dates:'Jul 20–24',time:'9am–4pm',price:'$475',priceNum:475,avail:'open',online:false,desc:'Field work in UW forests and shorelines, water quality testing, species ID.'},
+  {id:'uw13',name:'Pre-Med: Human Anatomy',subject:'Health',grades:'Gr 9–12',dates:'Jul 27–31',time:'9am–3pm',price:'$525',priceNum:525,avail:'limited',online:false,desc:'Dissection labs, diagnostic imaging review, and hospital simulation in UW Medical.'},
+  {id:'uw14',name:'Music Production & Mixing',subject:'Media',grades:'Gr 7–12',dates:'Jul 27–31',time:'9am–3pm',price:'$445',priceNum:445,avail:'open',online:false,desc:'DAW fundamentals, beat production, mixing, and mastering in UW recording studios.'},
+  {id:'uw15',name:'App Development (Swift)',subject:'STEM',grades:'Gr 8–12',dates:'Aug 3–7',time:'9am–4pm',price:'$550',priceNum:550,avail:'open',online:false,desc:'Build an iPhone app from concept to submission using Swift and Xcode.'},
+  {id:'uw16',name:'Watercolor & Mixed Media',subject:'Arts',grades:'Gr 4–8',dates:'Aug 3–7',time:'9am–12pm',price:'$325',priceNum:325,avail:'open',online:false,desc:'Wet-on-wet techniques, layering, and collage with professional instruction.'},
+  {id:'uw17',name:'Biomedical Engineering Intro',subject:'Science',grades:'Gr 9–12',dates:'Aug 10–14',time:'9am–4pm',price:'$555',priceNum:555,avail:'limited',online:false,desc:'3D-print prosthetic designs and explore tissue engineering in UW Bioengineering labs.'},
+  {id:'uw18',name:'Creative Nonfiction Writing',subject:'Writing',grades:'Gr 7–11',dates:'Aug 10–14',time:'9am–12pm',price:'$355',priceNum:355,avail:'open',online:false,desc:'Personal essay, memoir, and journalism techniques with professional writers.'},
+  {id:'uw19',name:'Psychology & Neuroscience',subject:'Health',grades:'Gr 9–12',dates:'Aug 17–21',time:'9am–3pm',price:'$495',priceNum:495,avail:'open',online:false,desc:'Cognitive experiments, brain anatomy, and behavioral psychology research methods.'},
+  {id:'uw20',name:'Illustration & Concept Art (Online)',subject:'Arts',grades:'Gr 6–10',dates:'Jun 15–19',time:'1–4pm',price:'$285',priceNum:285,avail:'open',online:true,desc:'Digital illustration fundamentals using Procreate — live instruction, fully remote.'},
+];
+
+// Lookup helper for both main camps and UW sub-programs
+function getCampById(id) {
+  if (typeof id === 'number' || (typeof id === 'string' && /^\d+$/.test(id))) {
+    return camps[parseInt(id)];
+  }
+  var prog = uwPrograms.find(function(p){ return p.id === id; });
+  if (!prog) return null;
+  // Return a camp-shaped object from the UW program
+  return {
+    id:       prog.id,
+    name:     prog.name,
+    type:     prog.subject,
+    icon:     subjIcon[prog.subject] || '🎓',
+    imgClass: subjImgClass[prog.subject] || 'img-stem',
+    dates:    prog.dates,
+    time:     prog.time,
+    price:    prog.price,
+    priceNum: prog.priceNum,
+    week:     prog.dates.split('–')[0],
+    regType:  'external',
+    website:  'uwpce.uw.edu/youth',
+    phone:    null,
+    isUWProgram: true
+  };
+}
+
+var pbActiveSubj = 'all';
+var pbSearchQuery = '';
+var pbShownCount = 8;
+var pbShortlist = [];
+var umbrellaCurrentCamp = null;
+
+function openUmbrellaDetail(id) {
+  umbrellaCurrentCamp = camps[id];
+  var c = umbrellaCurrentCamp;
+  document.getElementById('umb-name').textContent = c.name;
+  document.getElementById('umb-loc').textContent = c.location;
+  document.getElementById('umb-summary').textContent = c.umbrellaSummary;
+  document.getElementById('umb-price').textContent = c.price;
+  document.getElementById('umb-ages').textContent = 'Ages ' + c.ages;
+  var wb = document.getElementById('umb-website-btn');
+  if (c.website) { wb.href = 'https://' + c.website; wb.style.display = 'inline-block'; }
+  else { wb.style.display = 'none'; }
+  pbActiveSubj = 'all';
+  pbSearchQuery = '';
+  pbShownCount = 8;
+  pbShortlist = [];
+  // Reset filter buttons
+  document.querySelectorAll('.pb-filter').forEach(function(b){ b.classList.remove('active'); });
+  var allBtn = document.querySelector('.pb-filter[data-subj="all"]');
+  if (allBtn) allBtn.classList.add('active');
+  var searchEl = document.getElementById('pb-search');
+  if (searchEl) searchEl.value = '';
+  pbRender();
+  renderShortlist();
+  showPage('umbrella');
+}
+
+function pbGetFiltered() {
+  return uwPrograms.filter(function(p) {
+    var subjMatch = pbActiveSubj === 'all' || p.subject === pbActiveSubj;
+    var q = pbSearchQuery.toLowerCase().trim();
+    var searchMatch = !q ||
+      p.name.toLowerCase().includes(q) ||
+      p.subject.toLowerCase().includes(q) ||
+      p.grades.toLowerCase().includes(q) ||
+      p.desc.toLowerCase().includes(q);
+    return subjMatch && searchMatch;
+  });
+}
+
+function pbRender() {
+  var filtered = pbGetFiltered();
+  var shown = filtered.slice(0, pbShownCount);
+  var list = document.getElementById('pb-list');
+  var countBadge = document.getElementById('pb-count');
+  var showMoreBtn = document.getElementById('pb-show-more');
+  if (countBadge) countBadge.textContent = filtered.length + ' program' + (filtered.length !== 1 ? 's' : '');
+  if (!filtered.length) {
+    list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted);font-size:.85rem;">No programs match your search</div>';
+    if (showMoreBtn) showMoreBtn.style.display = 'none';
+    return;
+  }
+  var subjColors = {STEM:'stem',Science:'science',Arts:'arts',Writing:'writing',Media:'media',Outdoor:'outdoor',Health:'health'};
+  list.innerHTML = shown.map(function(p) {
+    var saved = pbShortlist.some(function(s){ return s.id === p.id; });
+    return '<div class="program-item' + (saved ? ' saved' : '') + '" id="pi-' + p.id + '" style="cursor:pointer;">' +
+      '<div onclick="openUWProgramDetail(\'' + p.id + '\')" style="flex:1;">' +
+        '<div><span class="pi-subject-tag ' + (subjColors[p.subject]||'stem') + '">' + p.subject + (p.online ? ' · Online' : '') + '</span></div>' +
+        '<div class="pi-name">' + p.name + '</div>' +
+        '<div class="pi-meta">' +
+          '<span>📅 ' + p.dates + '</span>' +
+          '<span>🕐 ' + p.time + '</span>' +
+          '<span>👤 ' + p.grades + '</span>' +
+        '</div>' +
+        '<div style="font-size:.72rem;color:var(--muted);margin-top:.3rem;line-height:1.4;">' + p.desc + '</div>' +
+      '</div>' +
+      '<div class="pi-right">' +
+        '<div class="pi-price">' + p.price + '</div>' +
+        '<button class="pi-save-btn' + (saved ? ' saved' : '') + '" onclick="pbToggleSave(\'' + p.id + '\')">' +
+          (saved ? '♥' : '♡') +
+        '</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  if (showMoreBtn) showMoreBtn.style.display = filtered.length > pbShownCount ? 'block' : 'none';
+}
+
+function pbFilterClick(btn) {
+  document.querySelectorAll('.pb-filter').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  pbActiveSubj = btn.getAttribute('data-subj');
+  pbShownCount = 8;
+  pbRender();
+}
+
+function pbSearchInput(val) {
+  pbSearchQuery = val;
+  pbShownCount = 8;
+  pbRender();
+}
+
+function pbShowMore() {
+  pbShownCount += 8;
+  pbRender();
+}
+
+function pbToggleSave(pid) {
+  var prog = uwPrograms.find(function(p){ return p.id === pid; });
+  if (!prog) return;
+  var idx = pbShortlist.findIndex(function(s){ return s.id === pid; });
+  if (idx === -1) {
+    pbShortlist.push(prog);
+    showToast('Saved to shortlist: ' + prog.name);
+  } else {
+    pbShortlist.splice(idx, 1);
+    showToast('Removed from shortlist');
+  }
+  pbRender();
+  renderShortlist();
+}
+
+function renderShortlist() {
+  var el = document.getElementById('sl-items');
+  var btn = document.getElementById('sl-reg-btn');
+  if (!el) return;
+  if (!pbShortlist.length) {
+    el.innerHTML = '<div class="sl-empty">Save programs to build your shortlist</div>';
+    if (btn) { btn.disabled = true; btn.style.opacity = '.4'; }
+    return;
+  }
+  el.innerHTML = pbShortlist.map(function(p) {
+    return '<div class="sl-item">' +
+      '<div style="flex:1;">' +
+        '<div class="sl-item-name">' + p.name + '</div>' +
+        '<div class="sl-item-meta">' + p.dates + ' · ' + p.price + '</div>' +
+      '</div>' +
+      '<button onclick="pbToggleSave(\'' + p.id + '\')" style="background:none;border:none;cursor:pointer;font-size:.8rem;color:var(--muted);padding:.1rem .3rem;">✕</button>' +
+    '</div>';
+  }).join('');
+  if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+}
+
+function slRegister() {
+  if (!pbShortlist.length) return;
+  var c = umbrellaCurrentCamp;
+  var url = c && c.website ? 'https://' + c.website : '#';
+  window.open(url, '_blank', 'noopener');
+  showToast('Opening UW registration portal…');
+}
+
+
+
+/* ─── UW SUB-PROGRAM DETAIL ─── */
+var detailSource = 'search'; // 'search' or 'umbrella'
+
+var subjImgClass = {
+  STEM:    'img-stem',
+  Science: 'img-water',
+  Arts:    'img-arts',
+  Writing: 'img-outdoor',
+  Media:   'img-music',
+  Outdoor: 'img-outdoor',
+  Health:  'img-sports'
+};
+var subjIcon = {
+  STEM:    '💻',
+  Science: '🔬',
+  Arts:    '🎨',
+  Writing: '✍️',
+  Media:   '🎬',
+  Outdoor: '🌲',
+  Health:  '🏃'
+};
+
+function openUWProgramDetail(pid) {
+  var p = uwPrograms.find(function(x){ return x.id === pid; });
+  if (!p) return;
+
+  detailSource = 'umbrella';
+
+  // Build a camp-like object from the UW program
+  var c = {
+    id: pid,
+    name: p.name,
+    type: p.subject,
+    regType: 'external',
+    location: p.online ? 'Online (Live)' : 'University of Washington, Seattle',
+    ages: p.grades,
+    price: p.price,
+    priceNum: p.priceNum,
+    dates: p.dates,
+    time: p.time,
+    desc: p.desc,
+    icon: subjIcon[p.subject] || '🎓',
+    imgClass: subjImgClass[p.subject] || 'img-stem',
+    website: 'uwpce.uw.edu/youth',
+    phone: null,
+    tags: [p.subject, p.grades, p.time],
+    ratingNum: 4.8,
+    rating: '⭐ 4.8',
+    parentName: 'UW Youth & Teen Programs',
+    isUWProgram: true,
+    uwProgramId: pid
+  };
+
+  currentCamp = c;
+
+  document.getElementById('detail-icon').textContent = c.icon;
+  document.getElementById('detail-type').textContent = c.type;
+  document.getElementById('detail-name').textContent = c.name;
+  document.getElementById('detail-loc').textContent = '📍 ' + c.location;
+  document.getElementById('detail-price').textContent = c.price;
+  document.getElementById('detail-ages').textContent = c.ages;
+  document.getElementById('detail-hero-img').className = 'detail-hero-img ' + c.imgClass;
+
+  var datesEl = document.getElementById('detail-dates');
+  if (datesEl) datesEl.textContent = c.dates;
+
+  var pill = document.getElementById('detail-reg-pill');
+  pill.textContent = '🔵 Visit Camp Website';
+  pill.className = 'reg-route-pill external';
+
+  // Parent camp breadcrumb
+  var backBtn = document.getElementById('detail-back-btn');
+  if (backBtn) backBtn.textContent = '← Back to UW Youth & Teen Programs';
+
+  // Show and sync heart save button using the UW program id
+  var saveBtn = document.getElementById('detail-save-btn');
+  if (saveBtn) {
+    saveBtn.style.display = 'flex';
+    var isSaved = savedCamps.has(pid);
+    saveBtn.textContent = isSaved ? '♥' : '♡';
+    saveBtn.style.background = isSaved ? 'var(--coral)' : '#fff';
+    saveBtn.style.color = isSaved ? '#fff' : 'inherit';
+  }
+
+  // Hide claim button for UW sub-programs
+  var claimBtn = document.querySelector('#page-detail .detail-hero-img button[onclick="claimFromDetail()"]');
+  if (claimBtn) claimBtn.style.display = 'none';
+
+  buildUWProgramCTA(c, p);
+  showPage('detail');
+}
+
+function buildUWProgramCTA(c, p) {
+  var cta = document.getElementById('detail-cta-card');
+
+  cta.innerHTML =
+    '<div class="cta-reg-explainer external" style="font-size:.84rem;line-height:1.6;margin-bottom:1rem;">' +
+      'This program registers through the UW Youth & Teen Programs portal. Click below to visit the official registration page.' +
+    '</div>' +
+    '<div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:1rem;color:var(--muted)">' +
+      '<span>Program fee</span><strong style="color:var(--forest)">' + p.price + '</strong>' +
+    '</div>';
+
+  var regBtn = document.createElement('a');
+  regBtn.href = 'https://uwpce.uw.edu/youth';
+  regBtn.target = '_blank';
+  regBtn.rel = 'noopener';
+  regBtn.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:.5rem;text-decoration:none;width:100%;box-sizing:border-box;padding:.9rem;border-radius:10px;margin-bottom:.6rem;font-weight:700;font-size:.95rem;background:var(--blue);color:#fff;';
+  regBtn.textContent = 'Register at UW Youth Programs ↗';
+  cta.appendChild(regBtn);
+
+  // Add to Schedule button — same behaviour as regular camps
+  var alreadyAdded = scheduleItems.some(function(i){ return i.campId === c.id && i.child === activeChild; });
+  var schedBtn = document.createElement('button');
+  schedBtn.id = 'uw-sched-btn';
+  schedBtn.style.cssText = 'width:100%;padding:.75rem;border-radius:10px;margin-top:.6rem;border:2px solid var(--forest);background:#fff;color:var(--forest);font-weight:600;font-size:.85rem;cursor:pointer;font-family:"DM Sans",sans-serif;';
+  schedBtn.textContent = alreadyAdded ? '✓ Added to My Schedule' : '📅 Add to My Schedule';
+  schedBtn.onclick = function(){
+    requireAccount(function(){
+      ensureChildThenScheduleUW(c);
+    });
+  };
+  cta.appendChild(schedBtn);
+
+  var backBtn2 = document.createElement('button');
+  backBtn2.style.cssText = 'width:100%;padding:.75rem;border-radius:10px;margin-top:.4rem;border:2px solid var(--border);background:#fff;color:var(--forest);font-weight:600;font-size:.85rem;cursor:pointer;font-family:"DM Sans",sans-serif;';
+  backBtn2.textContent = '← View All UW Programs';
+  backBtn2.onclick = function(){ showPage('umbrella'); };
+  cta.appendChild(backBtn2);
+}
+
+// Schedule a UW sub-program — uses its string id, same flow as regular camps
+function ensureChildThenScheduleUW(campObj) {
+  // Store as currentCamp so ensureChildThenSchedule flow can use it
+  currentCamp = campObj;
+  if (children.length === 0) {
+    showAddFirstChildModal(function() { showAddToScheduleModal(); });
+    return;
+  }
+  showAddToScheduleModal();
+}
+
+function detailGoBack() {
+  if (detailSource === 'umbrella') {
+    detailSource = 'search';
+    showPage('umbrella');
+  } else {
+    showPage('search');
+  }
+  // Restore claim and save buttons for regular camp detail
+  var saveBtn = document.getElementById('detail-save-btn');
+  if (saveBtn) saveBtn.style.display = 'flex';
+  var claimBtn = document.querySelector('#page-detail .detail-hero-img button[onclick="claimFromDetail()"]');
+  if (claimBtn) claimBtn.style.display = '';
+}
+
+
+function openDetail(id) {
+  detailSource = 'search';
+  // Restore save and claim buttons in case we came from a UW sub-program
+  var saveBtn = document.getElementById('detail-save-btn');
+  if (saveBtn) saveBtn.style.display = 'flex';
+  var claimBtn = document.querySelector('#page-detail .detail-hero-img button[onclick="claimFromDetail()"]');
+  if (claimBtn) claimBtn.style.display = '';
+  var backBtn = document.getElementById('detail-back-btn');
+  if (backBtn) backBtn.textContent = '← Back to results';
+  currentCamp = camps[id];
+  var c = currentCamp;
+  document.getElementById('detail-icon').textContent = c.icon;
+  document.getElementById('detail-type').textContent = c.type;
+  document.getElementById('detail-name').textContent = c.name;
+  document.getElementById('detail-loc').textContent = '\uD83D\uDCCD ' + c.location;
+  document.getElementById('detail-price').textContent = c.price;
+  document.getElementById('detail-ages').textContent = c.ages + ' years';
+  // Dates — support single string or array of sessions
+  var datesEl = document.getElementById('detail-dates');
+  if (datesEl) {
+    if (Array.isArray(c.dates)) {
+      datesEl.innerHTML = c.dates.map(function(d){ return '<div>' + d + '</div>'; }).join('');
+    } else {
+      datesEl.textContent = c.dates || 'TBD';
+    }
+  }
+  document.getElementById('detail-hero-img').className = 'detail-hero-img ' + c.imgClass;
+
+  var pillLabels = {external:'\uD83D\uDD35 Visit Camp Website', contact:'\uD83D\uDFE1 Send an Inquiry', phone:'\uD83D\uDFE3 Call to Register'};
+  var pill = document.getElementById('detail-reg-pill');
+  var pillKey = c.regType === 'native' ? 'external' : c.regType;
+  pill.textContent = pillLabels[pillKey] || pillLabels.external;
+  pill.className = 'reg-route-pill ' + pillKey;
+
+  buildDetailCTA(c);
+
+  // Sync heart button state
+  var detailSaveBtn = document.getElementById('detail-save-btn');
+  if (detailSaveBtn) {
+    var isSaved = savedCamps.has(c.id);
+    detailSaveBtn.textContent = isSaved ? '♥' : '♡';
+    detailSaveBtn.style.background = isSaved ? 'var(--coral)' : '#fff';
+    detailSaveBtn.style.color = isSaved ? '#fff' : 'inherit';
+  }
+
+  showPage('detail');
+}
+
+function toggleSaveFromDetail() {
+  if (!currentCamp) return;
+  var btn = document.getElementById('detail-save-btn');
+  toggleSave(currentCamp.id, btn);
+  var isSaved = savedCamps.has(currentCamp.id);
+  if (btn) {
+    btn.textContent = isSaved ? '♥' : '♡';
+    btn.style.background = isSaved ? 'var(--coral)' : '#fff';
+    btn.style.color = isSaved ? '#fff' : 'inherit';
+  }
+  renderCamps(currentFilteredData || camps);
+}
+
+function buildDetailCTA(c) {
+  var cta = document.getElementById('detail-cta-card');
+  var type = (c.regType === 'native') ? 'external' : c.regType;
+  var websiteUrl = c.website ? 'https://' + c.website : '#';
+
+  var explainerText = {
+    external: 'This camp registers on their own website. Click the button below to visit their registration page directly.',
+    contact:  'This camp prefers to connect with families first. Send a quick inquiry and they will respond within 1 to 2 business days.',
+    phone:    'This camp uses phone registration. Call them directly to check availability and reserve your spot.'
+  }[type] || '';
+
+  cta.innerHTML =
+    '<h4>How to Register</h4>' +
+    '<div class="cta-reg-explainer ' + type + '" style="font-size:.84rem;line-height:1.6;margin-bottom:1rem;">' + explainerText + '</div>' +
+    '<div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:1rem;color:var(--muted)">' +
+      '<span>Starting from</span><strong style="color:var(--forest)">' + c.price + '/week</strong>' +
+    '</div>';
+
+  // Primary action button
+  var regBtn;
+  if (type === 'external') {
+    regBtn = document.createElement('a');
+    regBtn.href = websiteUrl;
+    regBtn.target = '_blank';
+    regBtn.rel = 'noopener';
+    regBtn.className = 'cta-btn-external';
+    regBtn.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:.5rem;text-decoration:none;width:100%;box-sizing:border-box;padding:.9rem;border-radius:10px;margin-bottom:.6rem;font-weight:700;font-size:.95rem;background:var(--blue);color:#fff;';
+    regBtn.textContent = 'Visit Camp Website';
+  } else if (type === 'contact') {
+    regBtn = document.createElement('button');
+    regBtn.className = 'cta-btn-contact';
+    regBtn.style.width = '100%';
+    regBtn.textContent = 'Send an Inquiry';
+    regBtn.onclick = function(){ openRegFlow('contact'); };
+  } else {
+    regBtn = document.createElement('button');
+    regBtn.className = 'cta-btn-phone';
+    regBtn.style.width = '100%';
+    regBtn.textContent = 'Get Phone Number & Script';
+    regBtn.onclick = function(){ openRegFlow('phone'); };
+  }
+  cta.appendChild(regBtn);
+
+  // Add to schedule button
+  var alreadyAdded = scheduleItems.some(function(i){ return i.campId === c.id && i.child === activeChild; });
+  var schedBtn = document.createElement('button');
+  schedBtn.style.cssText = 'width:100%;padding:.75rem;border-radius:10px;margin-top:.6rem;border:2px solid var(--forest);background:#fff;color:var(--forest);font-weight:600;font-size:.85rem;cursor:pointer;';
+  schedBtn.textContent = alreadyAdded ? '\u2713 Added to My Schedule' : '\uD83D\uDCC5 Add to My Schedule';
+  schedBtn.onclick = function(){ requireAccount(function(){ ensureChildThenSchedule(); }); };
+  cta.appendChild(schedBtn);
+}
+
+
+
+/* ─── REGISTRATION ROUTER ─── */
+function openRegFlow(type) {
+  if (!currentCamp) return;
+  const c = currentCamp;
+
+  // Update header
+  document.getElementById('router-icon').textContent = c.icon;
+  document.getElementById('router-name').textContent = c.name;
+  document.getElementById('router-meta').textContent = '📍 ' + c.location + ' · Jun 9–13, 2025';
+  document.getElementById('router-price').textContent = c.price;
+
+  const container = document.getElementById('reg-flow-container');
+
+  if (type === 'external') container.innerHTML = buildExternalFlow(c);
+  else if (type === 'contact') container.innerHTML = buildContactFlow(c);
+  else if (type === 'phone') container.innerHTML = buildPhoneFlow(c);
+
+  showPage('register');
+}
+
+/* ── EXTERNAL FLOW ── */
+function buildExternalFlow(c) {
+  const url = c.website || 'camps-website.com/register';
+  return `
+  <div class="route-type-card external">
+    <div class="route-type-header">
+      <div class="route-type-icon-circle external">🔵</div>
+      <div><div class="route-type-title">Register on ${c.name}'s Website</div><div class="route-type-subtitle">We'll hand you off with your info pre-filled</div></div>
+    </div>
+    <div class="route-type-desc">This camp manages registration on their own website. We'll open their page and pre-fill as much of your info as possible so you don't have to re-enter everything. Your spot in your CampQuest schedule will be tracked either way.</div>
+    <div class="route-type-steps">
+      <div class="route-step"><div class="route-step-num external">1</div>Confirm your details below</div>
+      <div class="route-step"><div class="route-step-num external">2</div>We open ${c.name}'s registration page</div>
+      <div class="route-step"><div class="route-step-num external">3</div>Complete registration on their site</div>
+      <div class="route-step"><div class="route-step-num external">4</div>Come back to add it to your CampQuest schedule</div>
+    </div>
+  </div>
+
+  <div class="external-preview">
+    <div class="external-preview-bar">
+      <div class="browser-dots">
+        <div class="browser-dot" style="background:#ff5f57"></div>
+        <div class="browser-dot" style="background:#febc2e"></div>
+        <div class="browser-dot" style="background:#28c840"></div>
+      </div>
+      <div class="browser-url">🔒 ${url}</div>
+    </div>
+    <div class="external-preview-content">
+      <div class="external-camp-icon-big">${c.icon}</div>
+      <h4>${c.name}</h4>
+      <p>Summer Registration Portal</p>
+    </div>
+  </div>
+
+  <div class="prefill-info">
+    <h4>✨ We'll pre-fill this info for you</h4>
+    <div class="prefill-row"><span class="prefill-label">Child's Name</span><span class="prefill-val">Emma Rodriguez</span></div>
+    <div class="prefill-row"><span class="prefill-label">Date of Birth</span><span class="prefill-val">Jun 12, 2015 (Age 9)</span></div>
+    <div class="prefill-row"><span class="prefill-label">Parent Email</span><span class="prefill-val">maria@example.com</span></div>
+    <div class="prefill-row"><span class="prefill-label">Parent Phone</span><span class="prefill-val">(512) 555-0100</span></div>
+    <div class="prefill-row"><span class="prefill-label">Session Interest</span><span class="prefill-val">Jun 9–13 (Session 1)</span></div>
+  </div>
+
+  <div class="track-note">
+    📌 <div><strong>We'll still track this in your schedule.</strong> After you register on their site, come back and confirm so we can add ${c.name} to your family calendar and send you reminders.</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:.7rem">
+    <button class="cta-btn-external" onclick="completeExternal('${url}')">Open ${c.name}'s Registration Site ↗</button>
+    <button class="btn-outline" style="width:100%;padding:.8rem;border-radius:10px;" onclick="showToast('Already registered there? Great — added to your schedule!')">I already registered on their site ✓</button>
+  </div>`;
+}
+
+/* ── CONTACT FLOW ── */
+function buildContactFlow(c) {
+  return `
+  <div class="route-type-card contact">
+    <div class="route-type-header">
+      <div class="route-type-icon-circle contact">🟡</div>
+      <div><div class="route-type-title">Send an Inquiry to ${c.name}</div><div class="route-type-subtitle">Camp will respond within 1–2 business days</div></div>
+    </div>
+    <div class="route-type-desc">This camp prefers to connect with families before enrolling. Fill out your inquiry below — we'll send it on your behalf and notify you the moment they respond.</div>
+    <div class="route-type-steps">
+      <div class="route-step"><div class="route-step-num contact">1</div>Fill in your inquiry below</div>
+      <div class="route-step"><div class="route-step-num contact">2</div>We email it to ${c.name} with your details</div>
+      <div class="route-step"><div class="route-step-num contact">3</div>Camp replies to you (usually within 48 hrs)</div>
+      <div class="route-step"><div class="route-step-num contact">4</div>We hold your spot in your schedule while you wait</div>
+    </div>
+  </div>
+
+  <div class="contact-form-card">
+    <h4>Your Inquiry</h4>
+
+    <div style="font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem">I'm interested in...</div>
+    <div class="interest-selector">
+      <div class="interest-option sel" onclick="selectInterest(this)">
+        <div class="interest-option-radio"></div>
+        <div><strong style="font-size:.88rem;display:block">Enrolling my child for summer</strong><span style="font-size:.78rem;color:var(--muted)">Looking to register for a specific session</span></div>
+      </div>
+      <div class="interest-option" onclick="selectInterest(this)">
+        <div class="interest-option-radio"></div>
+        <div><strong style="font-size:.88rem;display:block">Getting more information first</strong><span style="font-size:.78rem;color:var(--muted)">Not ready to commit, just exploring</span></div>
+      </div>
+      <div class="interest-option" onclick="selectInterest(this)">
+        <div class="interest-option-radio"></div>
+        <div><strong style="font-size:.88rem;display:block">Asking about financial aid or discounts</strong><span style="font-size:.78rem;color:var(--muted)">Want to discuss payment options</span></div>
+      </div>
+    </div>
+
+    <div class="form-grid-2" style="margin-bottom:.8rem">
+      <div class="form-field"><label>Child's Name</label><input type="text" value="Emma Rodriguez"/></div>
+      <div class="form-field"><label>Child's Age</label><input type="text" value="9 years old"/></div>
+      <div class="form-field"><label>Session Interested In</label>
+        <select><option>Jun 9–13 (Session 1)</option><option>Jun 23–27 (Session 2)</option><option>Flexible / any available</option></select>
+      </div>
+      <div class="form-field"><label>Your Phone</label><input type="tel" value="(512) 555-0100"/></div>
+      <div class="form-field form-full"><label>Message to Camp</label>
+        <textarea style="min-height:90px">Hi! I'm interested in enrolling my daughter Emma (age 9) for the June session. She loves outdoor activities and has no previous experience with this type of camp. Could you let me know about availability and any gear she'd need to bring? Thank you!</textarea>
+      </div>
+    </div>
+
+    <div class="what-happens-next">
+      <h5>What happens after you send this</h5>
+      <div class="whpn-step"><span class="whpn-icon">📧</span>We email your inquiry to ${c.name} on your behalf — you don't need to find their contact info</div>
+      <div class="whpn-step"><span class="whpn-icon">🔔</span>You'll get a CampQuest notification the moment they reply</div>
+      <div class="whpn-step"><span class="whpn-icon">📅</span>We add ${c.name} to your schedule marked "Inquiry Sent" so you can track it</div>
+      <div class="whpn-step"><span class="whpn-icon">⏰</span>If no reply in 3 days, we'll follow up with the camp for you</div>
+    </div>
+
+    <button class="btn-coral" style="width:100%;padding:.9rem;border-radius:10px;font-size:.95rem;font-weight:700" onclick="completeContact()">Send My Inquiry →</button>
+  </div>`;
+}
+
+/* ── PHONE FLOW ── */
+function buildPhoneFlow(c) {
+  const phone = c.phone || '(512) 555-0100';
+  return `
+  <div class="route-type-card phone">
+    <div class="route-type-header">
+      <div class="route-type-icon-circle phone">🟣</div>
+      <div><div class="route-type-title">Call ${c.name} to Register</div><div class="route-type-subtitle">We'll give you everything you need for the call</div></div>
+    </div>
+    <div class="route-type-desc">This camp registers families by phone so they can match your child to the right skill group and answer questions personally. It usually takes 5–10 minutes.</div>
+    <div class="route-type-steps">
+      <div class="route-step"><div class="route-step-num phone">1</div>Call them using the number below (or tap to call on mobile)</div>
+      <div class="route-step"><div class="route-step-num phone">2</div>Use our script so you have everything ready</div>
+      <div class="route-step"><div class="route-step-num phone">3</div>They'll confirm your spot and send a paper or email form</div>
+      <div class="route-step"><div class="route-step-num phone">4</div>Come back here to mark it as booked in your schedule</div>
+    </div>
+  </div>
+
+  <div class="phone-card">
+    <h4>📞 Their Phone Number</h4>
+    <div class="phone-number-display">
+      <div class="phone-num">${phone}</div>
+      <div class="phone-hours">Mon–Fri · 9am–5pm CT · Best time: 10am–2pm</div>
+    </div>
+    <div style="display:flex;gap:.7rem;margin-bottom:1rem;flex-wrap:wrap">
+      <button class="btn-primary" style="flex:1;padding:.8rem;border-radius:10px" onclick="showToast('Opening dialer: ${phone}')">📞 Tap to Call</button>
+      <button class="btn-outline" style="flex:1;padding:.8rem;border-radius:10px" onclick="showToast('Phone number copied!')">📋 Copy Number</button>
+    </div>
+  </div>
+
+  <div class="phone-card">
+    <h4>📋 What to Say — Your Call Script</h4>
+    <div class="call-script">
+      <h5>🎙 Ready-to-use script</h5>
+      <div class="script-line"><span class="script-label">Opening:</span> "Hi, I'm calling to register my daughter for your summer camp."</div>
+      <div class="script-line"><span class="script-label">Child's info:</span> "Her name is Emma Rodriguez, she's 9 years old."</div>
+      <div class="script-line"><span class="script-label">Session:</span> "I'm interested in the June 9th session if you have availability."</div>
+      <div class="script-line"><span class="script-label">Experience level:</span> "She's a complete beginner / has some experience."</div>
+      <div class="script-line"><span class="script-label">Questions to ask:</span> "What should she bring? Is there a payment plan? When's the deadline?"</div>
+      <div class="script-line"><span class="script-label">To close:</span> "Great — can you send me a confirmation email to maria@example.com?"</div>
+    </div>
+  </div>
+
+  <div class="phone-card">
+    <h4>💬 Prefer to Text or Email?</h4>
+    <div class="sms-option" onclick="showToast('Opening SMS to ${phone}')">
+      <div class="sms-icon">💬</div>
+      <div class="sms-text"><strong>Send a text message</strong><span>Pre-written intro text ready to send</span></div>
+      <button class="card-reg-btn phone" style="padding:.4rem .9rem">Text Them</button>
+    </div>
+    <div class="sms-option" onclick="showToast('Opening email draft...')">
+      <div class="sms-icon">📧</div>
+      <div class="sms-text"><strong>Send an email inquiry</strong><span>Opens a pre-written email to their director</span></div>
+      <button class="card-reg-btn phone" style="padding:.4rem .9rem">Email Them</button>
+    </div>
+  </div>
+
+  `;
+}
+
+/* ─── COMPLETION HANDLERS ─── */
+function completeNative() {
+  document.getElementById('reg-flow-container').innerHTML = `
+    <div class="route-type-card native" style="text-align:center">
+      <div class="confirmation-screen">
+        <span class="conf-icon">🎉</span>
+        <div class="conf-title">You're registered!</div>
+        <div class="conf-subtitle">Emma is confirmed for ${currentCamp.name}. Confirmation sent to maria@example.com and added to your schedule.</div>
+        <div class="conf-details">
+          <div class="conf-row"><span>Camp</span><strong>${currentCamp.name}</strong></div>
+          <div class="conf-row"><span>Session</span><strong>Jun 9 – Jun 13</strong></div>
+          <div class="conf-row"><span>Drop-off</span><strong>8:00am · ${currentCamp.location}</strong></div>
+          <div class="conf-row"><span>Confirmation #</span><strong>CQ-2025-${Math.floor(Math.random()*90000+10000)}</strong></div>
+          <div class="conf-row"><span>Total Paid</span><strong>$328</strong></div>
+        </div>
+        <div class="conf-actions">
+          <button class="btn-primary" onclick="showPage('schedule')">View in My Schedule →</button>
+          <button class="btn-outline" onclick="showPage('search')">Find More Camps</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function completeExternal(url) {
+  document.getElementById('reg-flow-container').innerHTML = `
+    <div class="route-type-card external">
+      <div class="confirmation-screen">
+        <span class="conf-icon">🔵</span>
+        <div class="conf-title">Opening ${currentCamp.name}'s site</div>
+        <div class="conf-subtitle">In a real app, this would open <strong>${url}</strong> in a new tab with your info pre-filled. We've added ${currentCamp.name} to your schedule as "Pending External Registration."</div>
+        <div class="conf-details">
+          <div class="conf-row"><span>Camp</span><strong>${currentCamp.name}</strong></div>
+          <div class="conf-row"><span>Their website</span><strong>${url}</strong></div>
+          <div class="conf-row"><span>Status</span><strong>⏳ Pending — finish on their site</strong></div>
+        </div>
+        <div class="conf-actions">
+          <button class="cta-btn-external" onclick="showToast('Would open: ${url}')">↗ Open Their Registration Page</button>
+          <button class="btn-outline" onclick="showToast('Marked confirmed in schedule!');showPage('schedule')" style="width:100%;padding:.8rem;border-radius:10px;margin-top:.5rem">I completed it on their site ✓</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function completeContact() {
+  if (currentCamp) { showAddToScheduleModal(); }
+}
+
+function completePhone() {
+  if (currentCamp) { showAddToScheduleModal(); }
+}
+
+/* ─── HELPERS ─── */
+function selectRegSession(el, dates) {
+  document.querySelectorAll('.session-option').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.session-radio').classList.remove('selected'); });
+  el.classList.add('selected');
+  el.querySelector('.session-radio').classList.add('selected');
+}
+
+function selectInterest(el) {
+  document.querySelectorAll('.interest-option').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function setPayOpt(el) {
+  document.querySelectorAll('.pay-opt').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function toggleSave(id, btn) {
+  if(savedCamps.has(id)){savedCamps.delete(id);btn.classList.remove('saved');btn.textContent='♡';showToast('Removed from saved');}
+  else{savedCamps.add(id);btn.classList.add('saved');btn.textContent='♥';showToast('Saved ♥');}
+}
+
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  const navEl=document.getElementById('nav-'+p);
+  if(navEl) navEl.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function switchToSaved(tab) {
+  document.querySelectorAll('.child-tab').forEach(function(t){ t.classList.remove('active'); });
+  tab.classList.add('active');
+  activeChild = '__saved__';
+  document.getElementById('sched-empty').style.display  = 'none';
+  document.getElementById('sched-layout').style.display = 'none';
+  renderFavorites();
+}
+
+function renderFavorites() {
+  var el = document.getElementById('sched-favorites');
+  if (!el) return;
+  el.style.display = 'block';
+
+  if (savedCamps.size === 0) {
+    el.innerHTML =
+      '<div style="text-align:center;padding:4rem 2rem;color:var(--muted);">' +
+        '<div style="font-size:3.5rem;margin-bottom:1rem;">♡</div>' +
+        '<h3 style="font-family:\'Playfair Display\',serif;color:var(--forest);margin-bottom:.5rem;">No saved camps yet</h3>' +
+        '<p style="font-size:.9rem;margin-bottom:1.5rem;">Click the ♡ on any camp card to save it here.</p>' +
+        '<button class="btn-primary" onclick="showPage(\'search\')">Browse Camps →</button>' +
+      '</div>';
+    return;
+  }
+
+  var savedList = camps.filter(function(c){ return savedCamps.has(c.id); });
+  var html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;">';
+  savedList.forEach(function(c) {
+    html +=
+      '<div style="background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.07);overflow:hidden;cursor:pointer;position:relative;" onclick="openDetail(' + c.id + ');showPage(\'detail\')">' +
+        '<div class="camp-hero-img ' + c.imgClass + '" style="height:110px;position:relative;">' +
+          '<div class="camp-icon">' + c.icon + '</div>' +
+          '<button class="save-btn saved" onclick="event.stopPropagation();toggleSave(' + c.id + ',this);renderFavorites();" style="position:absolute;bottom:.6rem;right:.6rem;">♥</button>' +
+        '</div>' +
+        '<div style="padding:.9rem 1rem;">' +
+          '<div style="font-weight:700;color:var(--forest);font-size:.92rem;margin-bottom:.25rem;">' + c.name + '</div>' +
+          '<div style="font-size:.78rem;color:var(--muted);margin-bottom:.4rem;">📍 ' + c.location + '</div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+            '<span style="font-size:.8rem;color:var(--moss);font-weight:600;">' + c.price + '</span>' +
+            '<span style="font-size:.78rem;color:var(--muted);">Ages ' + c.ages + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  });
+  html += '</div>';
+
+  el.innerHTML =
+    '<div style="margin-bottom:1.2rem;display:flex;align-items:center;justify-content:space-between;">' +
+      '<h2 style="font-family:\'Playfair Display\',serif;color:var(--forest);font-size:1.1rem;">Saved Camps <span style="font-size:.85rem;font-weight:400;color:var(--muted);">(' + savedList.length + ')</span></h2>' +
+    '</div>' + html;
+}
+
+
+function switchChild(tab, child) {
+  document.querySelectorAll('.child-tab').forEach(function(t){ t.classList.remove('active'); });
+  tab.classList.add('active');
+  activeChild = child;
+  var favEl = document.getElementById('sched-favorites');
+  if (favEl) favEl.style.display = 'none';
+  var emptyH3 = document.querySelector('#sched-empty h3');
+  var childObj = children.find(function(c){ return c.id === child; });
+  if (emptyH3) emptyH3.textContent = childObj ? 'No camps added for ' + childObj.name + ' yet' : 'No camps added yet';
+  renderSchedule();
+}
+
+function setStatus(campId, registered) {
+  var item = scheduleItems.find(function(i){ return i.campId === campId; });
+  if (item) { item.registered = registered; renderSchedule(); showToast(registered ? "\u2705 Marked as Registered" : "Marked as Not Yet Registered"); }
+}
+
+
+function removeFromWishlist(cardId) {
+  const card = document.getElementById(cardId);
+  if (!card) return;
+  card.style.transition = 'opacity .2s, max-height .3s';
+  card.style.opacity = '0';
+  card.style.overflow = 'hidden';
+  setTimeout(() => { card.style.maxHeight = '0'; card.style.margin = '0'; card.style.padding = '0'; }, 200);
+  setTimeout(() => card.remove(), 500);
+  showToast('Removed from planner');
+}
+
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+
+/* ─── SCHEDULE STATE ─── */
+var scheduleItems = []; // [{campId, registered, child}]
+var activeChild = null;
+var children = [];
+
+function showAddChildModal() {
+  closeOverlay('add-child-modal');
+  var overlay = document.createElement('div');
+  overlay.id = 'add-child-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center;padding:1.5rem;';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;padding:2rem;max-width:380px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,.25);';
+
+  var title = document.createElement('div');
+  title.style.cssText = 'font-family:"Playfair Display",serif;font-size:1.2rem;font-weight:700;color:var(--forest);margin-bottom:1.2rem;';
+  title.textContent = 'Add a Child';
+
+  function field(labelText, inputId, type, placeholder) {
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'margin-bottom:.9rem;';
+    var lbl = document.createElement('label');
+    lbl.style.cssText = 'display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.35rem;';
+    lbl.textContent = labelText;
+    var inp = document.createElement('input');
+    inp.id = inputId;
+    inp.type = type || 'text';
+    inp.placeholder = placeholder || '';
+    inp.style.cssText = 'width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:10px;font-size:.92rem;outline:none;box-sizing:border-box;';
+    inp.onfocus = function(){ this.style.borderColor = 'var(--moss)'; };
+    inp.onblur  = function(){ this.style.borderColor = 'var(--border)'; };
+    wrap.appendChild(lbl);
+    wrap.appendChild(inp);
+    return wrap;
+  }
+
+  var nameField  = field('First Name',   'new-child-name',  'text',   'e.g. Sofia');
+  var ageField   = field('Age',          'new-child-age',   'number', 'e.g. 8');
+  var emojiField = field('Emoji / Icon', 'new-child-emoji', 'text',   'e.g. 🦋');
+
+  var saveBtn = document.createElement('button');
+  saveBtn.style.cssText = 'width:100%;padding:.9rem;border:none;border-radius:10px;background:var(--moss);color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;margin-bottom:.6rem;';
+  saveBtn.textContent = 'Add Child';
+  saveBtn.onclick = function() {
+    var name  = document.getElementById('new-child-name').value.trim();
+    var age   = document.getElementById('new-child-age').value.trim();
+    var emoji = document.getElementById('new-child-emoji').value.trim() || '🧒';
+    if (!name) { document.getElementById('new-child-name').style.borderColor = 'var(--coral)'; return; }
+    var childId = name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+    children.push({id: childId, name: name, age: age || '?', emoji: emoji});
+    addChildTab(childId, name, age, emoji);
+    closeOverlay('add-child-modal');
+    // Switch to new child
+    var newTab = document.querySelector('[data-child-id="' + childId + '"]');
+    if (newTab) switchChild(newTab, childId);
+    showToast(emoji + ' ' + name + ' added!');
+  };
+
+  var cancelBtn = document.createElement('button');
+  cancelBtn.style.cssText = 'width:100%;padding:.6rem;border:none;background:none;font-size:.82rem;cursor:pointer;color:var(--muted);';
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.onclick = function() { closeOverlay('add-child-modal'); };
+
+  box.appendChild(title);
+  box.appendChild(nameField);
+  box.appendChild(ageField);
+  box.appendChild(emojiField);
+  box.appendChild(saveBtn);
+  box.appendChild(cancelBtn);
+  overlay.appendChild(box);
+  overlay.addEventListener('click', function(e){ if (e.target === overlay) closeOverlay('add-child-modal'); });
+  document.body.appendChild(overlay);
+  setTimeout(function(){ document.getElementById('new-child-name').focus(); }, 50);
+}
+
+function addChildTab(childId, name, age, emoji) {
+  var tabsEl = document.querySelector('.children-tabs');
+  var addBtn = tabsEl.querySelector('.add-child-tab');
+  var tab = document.createElement('button');
+  tab.className = 'child-tab';
+  tab.dataset.childId = childId;
+  tab.textContent = emoji + ' ' + name + (age ? ', ' + age : '');
+  tab.onclick = function(){ switchChild(tab, childId); };
+  tabsEl.insertBefore(tab, addBtn);
+  renderProfileChildren();
+}
+
+function renderProfileChildren() {
+  var list = document.getElementById('profile-children-list');
+  if (!list) return;
+  var bgColors = ['#d4ead8','#e4d4ea','#dde8f4','#f4e8d4','#f0e0f0','#e8f4d4'];
+  list.innerHTML = children.map(function(child, i) {
+    var isLast = i === children.length - 1;
+    return '<div style="display:flex;align-items:center;gap:1rem;padding:.7rem 0;' + (isLast ? '' : 'border-bottom:1px solid #f5f8f5') + '">' +
+      '<div style="width:42px;height:42px;border-radius:50%;background:' + (bgColors[i % bgColors.length]) + ';display:flex;align-items:center;justify-content:center;font-size:1.2rem">' + child.emoji + '</div>' +
+      '<div style="flex:1"><div style="font-weight:600;color:var(--forest)">' + child.name + '</div>' +
+      '<div style="font-size:.78rem;color:var(--muted)">Age ' + child.age + '</div></div>' +
+      '<button onclick="showEditChildModal(' + i + ')" style="background:var(--sky);border:none;color:var(--moss);padding:.35rem .7rem;border-radius:8px;font-family:\'DM Sans\',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer">Edit</button>' +
+      '</div>';
+  }).join('');
+}
+
+function showEditChildModal(index) {
+  var child = children[index];
+  if (!child) return;
+  closeOverlay('edit-child-modal');
+
+  var overlay = document.createElement('div');
+  overlay.id = 'edit-child-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center;padding:1.5rem;';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;padding:2rem;max-width:380px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,.25);';
+
+  var title = document.createElement('div');
+  title.style.cssText = 'font-family:"Playfair Display",serif;font-size:1.2rem;font-weight:700;color:var(--forest);margin-bottom:1.2rem;';
+  title.textContent = 'Edit Child';
+  box.appendChild(title);
+
+  function field(labelText, inputId, value, type) {
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'margin-bottom:.9rem;';
+    var lbl = document.createElement('label');
+    lbl.style.cssText = 'display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.35rem;';
+    lbl.textContent = labelText;
+    var inp = document.createElement('input');
+    inp.id = inputId; inp.type = type || 'text'; inp.value = value || '';
+    inp.style.cssText = 'width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:10px;font-size:.92rem;outline:none;box-sizing:border-box;';
+    inp.onfocus = function(){ this.style.borderColor = 'var(--moss)'; };
+    inp.onblur  = function(){ this.style.borderColor = 'var(--border)'; };
+    wrap.appendChild(lbl); wrap.appendChild(inp);
+    return wrap;
+  }
+
+  box.appendChild(field('First Name',   'edit-child-name',  child.name,  'text'));
+  box.appendChild(field('Age',          'edit-child-age',   child.age,   'number'));
+  box.appendChild(field('Emoji / Icon', 'edit-child-emoji', child.emoji, 'text'));
+
+  // Save button
+  var saveBtn = document.createElement('button');
+  saveBtn.style.cssText = 'width:100%;padding:.9rem;border:none;border-radius:10px;background:var(--moss);color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;margin-bottom:.5rem;';
+  saveBtn.textContent = 'Save Changes';
+  saveBtn.onclick = function() {
+    var name  = document.getElementById('edit-child-name').value.trim();
+    var age   = document.getElementById('edit-child-age').value.trim();
+    var emoji = document.getElementById('edit-child-emoji').value.trim() || child.emoji;
+    if (!name) { document.getElementById('edit-child-name').style.borderColor = 'var(--coral)'; return; }
+    children[index].name  = name;
+    children[index].age   = age || child.age;
+    children[index].emoji = emoji;
+    // Update schedule tab label
+    var tab = document.querySelector('[data-child-id="' + child.id + '"]');
+    if (tab) tab.textContent = emoji + ' ' + name + (age ? ', ' + age : '');
+    renderProfileChildren();
+    closeOverlay('edit-child-modal');
+    showToast('Updated ' + name + ' ✓');
+  };
+
+  // Remove button
+  var removeBtn = document.createElement('button');
+  removeBtn.style.cssText = 'width:100%;padding:.75rem;border:1.5px solid #f0c0b8;border-radius:10px;background:#fff8f7;color:var(--coral);font-weight:600;font-size:.88rem;cursor:pointer;margin-bottom:.5rem;';
+  removeBtn.textContent = 'Remove Child';
+  removeBtn.onclick = function() {
+    // Replace button with inline confirm
+    removeBtn.style.display = 'none';
+    var confirmRow = document.createElement('div');
+    confirmRow.style.cssText = 'background:#fff8f7;border:1.5px solid #f0c0b8;border-radius:10px;padding:.9rem;margin-bottom:.5rem;text-align:center;';
+    confirmRow.innerHTML = '<div style="font-size:.85rem;color:var(--coral);font-weight:600;margin-bottom:.7rem;">Remove ' + child.name + ' and all their scheduled camps?</div>' +
+      '<div style="display:flex;gap:.5rem;">' +
+      '<button id="confirm-remove-yes" style="flex:1;padding:.6rem;border:none;border-radius:8px;background:var(--coral);color:#fff;font-weight:700;font-size:.85rem;cursor:pointer;">Yes, Remove</button>' +
+      '<button id="confirm-remove-no" style="flex:1;padding:.6rem;border:1.5px solid var(--border);border-radius:8px;background:#fff;color:var(--text);font-weight:600;font-size:.85rem;cursor:pointer;">Cancel</button>' +
+      '</div>';
+    box.insertBefore(confirmRow, cancelBtn);
+    document.getElementById('confirm-remove-yes').onclick = function() {
+      scheduleItems = scheduleItems.filter(function(i){ return i.child !== child.id; });
+      var schedTab = document.querySelector('[data-child-id="' + child.id + '"]');
+      if (schedTab) schedTab.remove();
+      children.splice(index, 1);
+      if (activeChild === child.id) {
+        activeChild = children.length > 0 ? children[0].id : 'emma';
+        var firstTab = document.querySelector('.child-tab');
+        if (firstTab) { firstTab.classList.add('active'); }
+        renderSchedule();
+      }
+      renderProfileChildren();
+      closeOverlay('edit-child-modal');
+      showToast('Removed ' + child.name);
+    };
+    document.getElementById('confirm-remove-no').onclick = function() {
+      confirmRow.remove();
+      removeBtn.style.display = '';
+    };
+  };
+
+  var cancelBtn = document.createElement('button');
+  cancelBtn.style.cssText = 'width:100%;padding:.5rem;border:none;background:none;font-size:.82rem;cursor:pointer;color:var(--muted);';
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.onclick = function() { closeOverlay('edit-child-modal'); };
+
+  box.appendChild(saveBtn);
+  box.appendChild(removeBtn);
+  box.appendChild(cancelBtn);
+  overlay.appendChild(box);
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) closeOverlay('edit-child-modal'); });
+  document.body.appendChild(overlay);
+  setTimeout(function(){ document.getElementById('edit-child-name').focus(); }, 50);
+}
+
+function addToSchedule(campId, registered) {
+  if (scheduleItems.some(function(i){ return i.campId === campId && i.child === activeChild; })) {
+    var ac = children.find(function(c){ return c.id === activeChild; });
+    showToast('Already in ' + (ac ? ac.name + "'s" : 'this') + ' schedule');
+    return;
+  }
+  scheduleItems.push({campId: campId, registered: registered, child: activeChild});
+  renderSchedule();
+}
+
+function toggleRegistered(campId) {
+  var item = scheduleItems.find(function(i){ return i.campId === campId && i.child === activeChild; });
+  if (!item) return;
+  item.registered = !item.registered;
+  renderSchedule();
+  showToast(item.registered ? '\u2705 Marked as Registered' : 'Marked as Not Yet Registered');
+}
+
+function removeFromSchedule(campId) {
+  scheduleItems = scheduleItems.filter(function(i){ return !(i.campId === campId && i.child === activeChild); });
+  renderSchedule();
+  showToast('Removed from schedule');
+}
+
+function closeOverlay(id) {
+  var el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+function renderSchedule() {
+  var emptyEl  = document.getElementById('sched-empty');
+  var layoutEl = document.getElementById('sched-layout');
+  var calEl    = document.getElementById('sched-calendar');
+  var panelEl  = document.getElementById('sched-panel');
+  if (!calEl) return;
+
+  var childItems = scheduleItems.filter(function(i){ return i.child === activeChild; });
+
+  if (childItems.length === 0) {
+    if (layoutEl) layoutEl.style.display = 'none';
+    if (emptyEl)  emptyEl.style.display  = 'block';
+    return;
+  }
+  if (layoutEl) layoutEl.style.display = 'grid';
+  if (emptyEl)  emptyEl.style.display  = 'none';
+
+  // ── Date helpers ──────────────────────────────────────────────
+  var MONTH_MAP = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+  var YEAR = 2025;
+
+  function parseDate(str) {
+    // Handles "Jun 9", "Jul 4", "Aug 1" etc.
+    str = str.trim();
+    var parts = str.split(' ');
+    if (parts.length < 2) return null;
+    var mon = MONTH_MAP[parts[0]];
+    var day = parseInt(parts[1]);
+    if (isNaN(day) || mon === undefined) return null;
+    return new Date(YEAR, mon, day);
+  }
+
+  function parseDateRange(datesStr) {
+    // Handles "Jun 9–13", "Jun 30–Jul 4", "Aug 4–8", "Jul 14" (single day)
+    if (!datesStr) return null;
+    var parts = datesStr.split('\u2013');
+    var start = parseDate(parts[0].trim());
+    if (!start) return null;
+    var end;
+    if (parts.length < 2) {
+      end = new Date(start);
+    } else {
+      var endStr = parts[1].trim();
+      // If end has no month, inherit from start
+      if (/^\d+$/.test(endStr)) {
+        end = new Date(YEAR, start.getMonth(), parseInt(endStr));
+      } else {
+        end = parseDate(endStr);
+      }
+    }
+    if (!end) end = new Date(start);
+    return {start: start, end: end};
+  }
+
+  function getMondayOf(d) {
+    var day = d.getDay(); // 0=Sun
+    var diff = (day === 0) ? -6 : 1 - day;
+    var m = new Date(d);
+    m.setDate(m.getDate() + diff);
+    m.setHours(0,0,0,0);
+    return m;
+  }
+
+  function addDays(d, n) {
+    var r = new Date(d);
+    r.setDate(r.getDate() + n);
+    return r;
+  }
+
+  function fmtWeekLabel(mon) {
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return months[mon.getMonth()] + ' ' + mon.getDate();
+  }
+
+  function dayOfWeekIdx(d) {
+    // Mon=0 … Fri=4, Sat/Sun treated as Fri end
+    var dow = d.getDay(); // 0=Sun,1=Mon...6=Sat
+    if (dow === 0) return 4;
+    if (dow === 6) return 4;
+    return dow - 1;
+  }
+
+  // ── Collect all week-mondays needed ───────────────────────────
+  var sorted = childItems.slice().sort(function(a,b){ return a.campId - b.campId; });
+  var weekSet = {};
+  var campRanges = [];
+
+  sorted.forEach(function(item) {
+    var c = getCampById(item.campId);
+    if (!c) return;
+    var datesVal = item.session || (Array.isArray(c.dates) ? c.dates[0] : c.dates);
+    var range = parseDateRange(datesVal);
+    if (!range) {
+      // fallback: use week field
+      var fb = parseDate(c.week);
+      range = fb ? {start: fb, end: addDays(fb, 4)} : null;
+    }
+    campRanges.push({item: item, camp: c, range: range});
+    if (!range) return;
+    // collect all mondays this camp spans
+    var cur = getMondayOf(range.start);
+    var endMon = getMondayOf(range.end);
+    while (cur <= endMon) {
+      weekSet[cur.getTime()] = cur;
+      cur = addDays(cur, 7);
+    }
+  });
+
+  var weekMondays = Object.values(weekSet).sort(function(a,b){ return a-b; });
+  if (weekMondays.length === 0) {
+    calEl.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--muted)">No date info available</div>';
+    return;
+  }
+
+  // ── Build grid: one row per week ──────────────────────────────
+  var rows = '<div class="week-header"><div>Week of</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div></div>';
+
+  weekMondays.forEach(function(mon) {
+    // cells[0..4] = Mon..Fri, each is array of event html
+    var cells = [[],[],[],[],[]];
+
+    campRanges.forEach(function(cr) {
+      if (!cr.range) return;
+      var item = cr.item;
+      var c    = cr.camp;
+      var bg   = item.registered ? 'var(--moss)' : '#8fa89a';
+      var lbl  = item.registered ? 'Registered' : 'Not yet registered';
+
+      // Clamp range to this week (Mon–Fri)
+      var weekStart = mon;           // Monday
+      var weekEnd   = addDays(mon, 4); // Friday
+
+      var clampStart = cr.range.start > weekStart ? cr.range.start : weekStart;
+      var clampEnd   = cr.range.end   < weekEnd   ? cr.range.end   : weekEnd;
+
+      if (clampStart > weekEnd || clampEnd < weekStart) return; // not this week
+
+      // Cap to Mon–Fri
+      var startIdx = dayOfWeekIdx(clampStart);
+      var endIdx   = dayOfWeekIdx(clampEnd);
+      if (startIdx > 4) startIdx = 4;
+      if (endIdx   > 4) endIdx   = 4;
+      var span = endIdx - startIdx + 1;
+
+      // Build event block — only show in start cell, use colspan via absolute width
+      var isMultiDay = span > 1;
+      var eventHtml =
+        '<div class="sched-event" style="background:' + bg + ';cursor:pointer;' +
+        (isMultiDay ? 'position:absolute;left:0;right:0;z-index:2;' : '') +
+        '" onclick="openEventPopup(' + c.id + ')" data-span="' + span + '">' +
+          '<div class="sched-event-name">' + c.icon + ' ' + c.name + '</div>' +
+          '<div class="sched-event-time">' + c.time + '</div>' +
+          '<div class="sched-event-regtype" style="font-size:.68rem;opacity:.8;">' + lbl + '</div>' +
+        '</div>';
+
+      cells[startIdx].push({html: eventHtml, span: span});
+    });
+
+    // Render row with proper colspan
+    var rowHtml = '<div class="week-row"><div class="week-label">' + fmtWeekLabel(mon) + '</div>';
+
+    // We need to render 5 cells (Mon–Fri), skipping cells consumed by spanning events
+    var skip = 0;
+    for (var d = 0; d < 5; d++) {
+      if (skip > 0) { skip--; continue; }
+      var cellEvents = cells[d];
+      // Find max span starting here
+      var maxSpan = 1;
+      var innerHtml = '';
+      if (cellEvents.length > 0) {
+        cellEvents.forEach(function(ev) {
+          if (ev.span > maxSpan) maxSpan = ev.span;
+          innerHtml += ev.html;
+        });
+      }
+      // Cap span to remaining columns
+      var remaining = 5 - d;
+      if (maxSpan > remaining) maxSpan = remaining;
+
+      var colStyle = maxSpan > 1 ? 'grid-column:span ' + maxSpan + ';position:relative;' : '';
+      rowHtml += '<div class="week-cell" style="' + colStyle + '">' + innerHtml + '</div>';
+      if (maxSpan > 1) skip = maxSpan - 1;
+    }
+    rowHtml += '</div>';
+    rows += rowHtml;
+  });
+
+  calEl.innerHTML = rows;
+
+  // ── Right panel (unchanged logic) ────────────────────────────
+  var regCount = childItems.filter(function(i){ return i.registered; }).length;
+  var total    = childItems.length;
+  var pct      = total > 0 ? Math.round(regCount / total * 100) : 0;
+
+  var panelItems = '';
+  sorted.forEach(function(item) {
+    var c   = getCampById(item.campId);
+    if (!c) return;
+    var reg = item.registered;
+    var btn = reg
+      ? '<button onclick="toggleRegistered(' + c.id + ')" class="panel-reg-btn panel-reg-on">\u2705 Registered</button>'
+      : '<button onclick="toggleRegistered(' + c.id + ')" class="panel-reg-btn panel-reg-off">Mark Registered</button>';
+    panelItems +=
+      '<div style="padding:.7rem 0;border-bottom:1px solid #f0f4f1;">' +
+        '<div class="saved-name">' + c.icon + ' ' + c.name + '</div>' +
+        '<div class="saved-dates">' + (item.session || (Array.isArray(c.dates) ? c.dates[0] : (c.dates || c.week))) + ' \u00b7 ' + c.price + '</div>' +
+        '<div style="display:flex;gap:.4rem;margin-top:.5rem;align-items:center;">' +
+          btn +
+          '<button onclick="removeFromSchedule(' + c.id + ')" class="panel-remove-btn" title="Remove">\u2715</button>' +
+        '</div>' +
+      '</div>';
+  });
+
+  panelEl.innerHTML =
+    '<h3 class="sched-panel-title">\uD83D\uDCCB My Camps</h3>' +
+    '<p class="sched-panel-sub">' + regCount + ' of ' + total + ' registered</p>' +
+    panelItems +
+    '<div class="sched-panel-footer">' +
+      '<div class="sched-panel-prog-row"><span>Registration progress</span><span>' + pct + '%</span></div>' +
+      '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+    '</div>' +
+    '<button class="find-more-btn" onclick="showPage(\'search\')">+ Find More Camps</button>';
+}
+
+function openEventPopup(campId) {
+  var item = scheduleItems.find(function(i){ return i.campId === campId; });
+  var c    = getCampById(campId);
+  if (!item || !c) return;
+  closeOverlay('event-popup');
+
+  var overlay = document.createElement('div');
+  overlay.id = 'event-popup';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center;padding:1.5rem;';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;padding:1.8rem;max-width:380px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,.25);';
+
+  // Header
+  var hdr = document.createElement('div');
+  hdr.style.cssText = 'display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem;';
+  hdr.innerHTML =
+    '<div style="width:48px;height:48px;border-radius:12px;background:#eef7f0;display:flex;align-items:center;justify-content:center;font-size:1.6rem;">' + c.icon + '</div>' +
+    '<div><div style="font-weight:700;color:var(--forest);font-size:1rem;">' + c.name + '</div>' +
+    '<div style="font-size:.8rem;color:var(--muted);">' + c.dates + ' \u00b7 ' + c.time + '</div></div>';
+
+  // Status box
+  var statusBox = document.createElement('div');
+  statusBox.style.cssText = 'background:var(--sky);border-radius:10px;padding:.9rem;margin-bottom:1.2rem;font-size:.84rem;color:var(--muted);line-height:1.5;';
+  statusBox.innerHTML =
+    '<strong style="display:block;color:var(--forest);margin-bottom:.2rem;">Registration status</strong>' +
+    (item.registered
+      ? '\u2705 You have marked this camp as registered.'
+      : 'Not yet registered. Update this once you have signed up directly with the camp.');
+
+  // Primary action button
+  var primaryBtn = document.createElement('button');
+  primaryBtn.style.cssText = 'width:100%;padding:.85rem;border-radius:10px;margin-bottom:.6rem;font-size:.88rem;font-weight:700;cursor:pointer;';
+  if (item.registered) {
+    primaryBtn.style.cssText += 'border:1.5px solid var(--border);background:#fff;color:var(--muted);';
+    primaryBtn.textContent = 'Mark as Not Yet Registered';
+  } else {
+    primaryBtn.style.cssText += 'border:none;background:var(--moss);color:#fff;';
+    primaryBtn.textContent = '\u2705 Mark as Registered';
+  }
+  primaryBtn.onclick = function() { toggleRegistered(campId); closeOverlay('event-popup'); };
+
+  // View details
+  var detailBtn = document.createElement('button');
+  detailBtn.style.cssText = 'width:100%;padding:.75rem;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-size:.85rem;cursor:pointer;color:var(--text);margin-bottom:.6rem;';
+  detailBtn.textContent = 'View camp details \u2192';
+  detailBtn.onclick = function() { openDetail(campId); closeOverlay('event-popup'); };
+
+  // Remove
+  var removeBtn = document.createElement('button');
+  removeBtn.style.cssText = 'width:100%;padding:.6rem;border:none;background:none;font-size:.8rem;cursor:pointer;color:var(--muted);';
+  removeBtn.textContent = 'Remove from schedule';
+  removeBtn.onclick = function() { removeFromSchedule(campId); closeOverlay('event-popup'); };
+
+  box.appendChild(hdr);
+  box.appendChild(statusBox);
+  box.appendChild(primaryBtn);
+  box.appendChild(detailBtn);
+  box.appendChild(removeBtn);
+  overlay.appendChild(box);
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) closeOverlay('event-popup'); });
+  document.body.appendChild(overlay);
+}
+
+function showAddToScheduleModal() {
+  if (!currentCamp) return;
+  var c = currentCamp;
+  closeOverlay('add-sched-modal');
+
+  var overlay = document.createElement('div');
+  overlay.id = 'add-sched-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center;padding:1.5rem;';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;padding:2rem;max-width:400px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,.25);';
+
+  // Camp header
+  var header = document.createElement('div');
+  header.style.cssText = 'display:flex;align-items:center;gap:.9rem;margin-bottom:1.4rem;padding-bottom:1.2rem;border-bottom:1px solid var(--border);';
+  var datesDisplay = Array.isArray(c.dates) ? c.dates[0] + ' + more' : (c.dates || 'Summer 2025');
+  header.innerHTML = '<div style="width:48px;height:48px;border-radius:12px;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;">' + c.icon + '</div>' +
+    '<div style="text-align:left;"><div style="font-weight:700;color:var(--forest);font-size:1rem;">' + c.name + '</div>' +
+    '<div style="font-size:.8rem;color:var(--muted);">' + datesDisplay + ' \u00b7 ' + (c.time || '') + '</div></div>';
+  box.appendChild(header);
+
+  var selectedChild = null;
+  var selectedSession = Array.isArray(c.dates) ? null : (c.dates || c.week);
+  var hasSessions = Array.isArray(c.dates) && c.dates.length > 1;
+
+  // Step 1: Session picker
+  if (hasSessions) {
+    var sessLabel = document.createElement('div');
+    sessLabel.style.cssText = 'font-size:.88rem;font-weight:700;color:var(--forest);margin-bottom:.7rem;';
+    sessLabel.textContent = 'Which session?';
+    box.appendChild(sessLabel);
+
+    var sessGrid = document.createElement('div');
+    sessGrid.style.cssText = 'display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.2rem;';
+
+    c.dates.forEach(function(dateStr) {
+      var sbtn = document.createElement('button');
+      sbtn.style.cssText = 'display:flex;align-items:center;gap:.7rem;padding:.65rem 1rem;border:2px solid var(--border);border-radius:10px;background:#fff;cursor:pointer;text-align:left;transition:all .15s;font-size:.88rem;';
+      sbtn.innerHTML = '<span>\uD83D\uDCC5</span><span style="font-weight:600;color:var(--forest);">' + dateStr + '</span>';
+      sbtn.onclick = function() {
+        sessGrid.querySelectorAll('button').forEach(function(b){ b.style.borderColor='var(--border)'; b.style.background='#fff'; });
+        sbtn.style.borderColor = 'var(--moss)'; sbtn.style.background = '#f0f8f2';
+        selectedSession = dateStr;
+        if (children.length > 1) { childSection.style.display = 'block'; }
+        else { selectedChild = children[0] ? children[0].id : 'emma'; regSection.style.display = 'block'; }
+      };
+      sessGrid.appendChild(sbtn);
+    });
+    box.appendChild(sessGrid);
+  }
+
+  // Step 2: Child picker
+  var childSection = document.createElement('div');
+  childSection.style.display = (children.length > 1 && !hasSessions) ? 'block' : 'none';
+
+  if (children.length > 1) {
+    var pickLabel = document.createElement('div');
+    pickLabel.style.cssText = 'font-size:.88rem;font-weight:700;color:var(--forest);margin-bottom:.7rem;';
+    pickLabel.textContent = 'Which child is this camp for?';
+    childSection.appendChild(pickLabel);
+
+    var childGrid = document.createElement('div');
+    childGrid.style.cssText = 'display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.2rem;';
+
+    children.forEach(function(child) {
+      var alreadyAdded = scheduleItems.some(function(i){ return i.campId === c.id && i.child === child.id; });
+      var cbtn = document.createElement('button');
+      cbtn.style.cssText = 'display:flex;align-items:center;gap:.8rem;padding:.75rem 1rem;border:2px solid var(--border);border-radius:12px;background:#fff;cursor:pointer;text-align:left;transition:all .15s;' + (alreadyAdded ? 'opacity:.5;cursor:default;' : '');
+      cbtn.innerHTML = '<span style="font-size:1.4rem;">' + child.emoji + '</span>' +
+        '<div><div style="font-weight:600;color:var(--forest);font-size:.9rem;">' + child.name + ', ' + child.age + '</div>' +
+        (alreadyAdded ? '<div style="font-size:.75rem;color:var(--muted);">Already in schedule</div>' : '') + '</div>';
+      if (!alreadyAdded) {
+        cbtn.onclick = function() {
+          childGrid.querySelectorAll('button').forEach(function(b){ b.style.borderColor='var(--border)'; b.style.background='#fff'; });
+          cbtn.style.borderColor = 'var(--moss)'; cbtn.style.background = '#f0f8f2';
+          selectedChild = child.id;
+          regSection.style.display = 'block';
+        };
+      }
+      childGrid.appendChild(cbtn);
+    });
+    childSection.appendChild(childGrid);
+  } else {
+    selectedChild = children[0] ? children[0].id : 'emma';
+  }
+  box.appendChild(childSection);
+
+  // Step 3: Registration status
+  var regSection = document.createElement('div');
+  regSection.style.display = (!hasSessions && children.length <= 1) ? 'block' : 'none';
+
+  var qEl = document.createElement('div');
+  qEl.style.cssText = 'font-size:.88rem;font-weight:700;color:var(--forest);margin-bottom:.7rem;';
+  qEl.textContent = 'Have you already registered?';
+
+  function doAdd(registered) {
+    if (!selectedChild) { showToast('Please select a child first'); return; }
+    if (!selectedSession) { showToast('Please select a session first'); return; }
+    var campId = c.id;
+    if (scheduleItems.some(function(i){ return i.campId===campId && i.child===selectedChild && i.session===selectedSession; })) {
+      showToast('Already in schedule for this session'); closeOverlay('add-sched-modal'); return;
+    }
+    var prev = activeChild;
+    activeChild = selectedChild;
+    scheduleItems.push({campId: campId, registered: registered, child: selectedChild, session: selectedSession});
+    renderSchedule();
+    activeChild = prev;
+    closeOverlay('add-sched-modal');
+    showPage('schedule');
+    var tab = document.querySelector('[data-child-id="' + selectedChild + '"]') ||
+              (selectedChild === 'emma' ? document.querySelector('.child-tab') : document.querySelectorAll('.child-tab')[1]);
+    if (tab) switchChild(tab, selectedChild);
+  }
+
+  var yesBtn = document.createElement('button');
+  yesBtn.style.cssText = 'width:100%;padding:.85rem;border:none;border-radius:10px;background:var(--moss);color:#fff;font-weight:700;font-size:.92rem;cursor:pointer;margin-bottom:.5rem;';
+  yesBtn.textContent = '\u2705 Yes, I am registered';
+  yesBtn.onclick = function() { doAdd(true); };
+
+  var noBtn = document.createElement('button');
+  noBtn.style.cssText = 'width:100%;padding:.85rem;border:2px solid var(--border);border-radius:10px;background:#fff;color:var(--text);font-weight:600;font-size:.92rem;cursor:pointer;margin-bottom:.8rem;';
+  noBtn.textContent = 'Not yet \u2014 I will update later';
+  noBtn.onclick = function() { doAdd(false); };
+
+  regSection.appendChild(qEl); regSection.appendChild(yesBtn); regSection.appendChild(noBtn);
+  box.appendChild(regSection);
+
+  var cancelBtn = document.createElement('button');
+  cancelBtn.style.cssText = 'width:100%;padding:.5rem;border:none;background:none;font-size:.82rem;cursor:pointer;color:var(--muted);';
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.onclick = function() { closeOverlay('add-sched-modal'); };
+  box.appendChild(cancelBtn);
+
+  overlay.appendChild(box);
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) closeOverlay('add-sched-modal'); });
+  document.body.appendChild(overlay);
+}
+function ensureChildThenSchedule() {
+  // If no children yet, prompt to add one first, then open schedule modal
+  if (children.length === 0) {
+    showAddFirstChildModal(function() {
+      showAddToScheduleModal();
+    });
+    return;
+  }
+  showAddToScheduleModal();
+}
+
+function showAddFirstChildModal(onDone) {
+  closeOverlay('first-child-modal');
+  var overlay = document.createElement('div');
+  overlay.id = 'first-child-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:600;display:flex;align-items:center;justify-content:center;padding:1.5rem;';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;padding:2rem;max-width:400px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,.25);';
+
+  function mkInput(id, type, ph, maxlen) {
+    var inp = document.createElement('input');
+    inp.id = id; inp.type = type; inp.placeholder = ph || '';
+    if (maxlen) inp.maxLength = maxlen;
+    inp.style.cssText = 'width:100%;padding:.7rem .9rem;border:2px solid var(--border);border-radius:10px;font-size:.9rem;outline:none;box-sizing:border-box;';
+    inp.onfocus = function(){ this.style.borderColor='var(--moss)'; };
+    inp.onblur  = function(){ this.style.borderColor='var(--border)'; };
+    inp.onkeydown = function(e){ if(e.key==='Enter') saveBtn.click(); };
+    return inp;
+  }
+  function mkLbl(t) {
+    var d = document.createElement('div');
+    d.style.cssText = 'font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.3rem;';
+    d.textContent = t; return d;
+  }
+
+  var hdr = document.createElement('div');
+  hdr.style.cssText = 'text-align:center;margin-bottom:1.4rem;';
+  hdr.innerHTML = '<div style="font-size:2rem;margin-bottom:.4rem;">&#128100;</div>' +
+    '<h2 style="font-family:\'Playfair Display\',serif;color:var(--forest);font-size:1.3rem;margin-bottom:.3rem;">Add your child first</h2>' +
+    '<p style="color:var(--muted);font-size:.83rem;line-height:1.5;">To assign a camp to a schedule, you need at least one child added to your account.</p>';
+
+  var nameInp  = mkInput('fc-name',  'text',   'e.g. Sofia');
+  var ageInp   = mkInput('fc-age',   'number', 'e.g. 8');
+  var emojiInp = mkInput('fc-emoji', 'text',   'e.g. \uD83E\uDD84');
+
+  var nameWrap = document.createElement('div'); nameWrap.style.marginBottom='.8rem';
+  nameWrap.appendChild(mkLbl('Child\'s Name')); nameWrap.appendChild(nameInp);
+
+  var ageEmojiRow = document.createElement('div');
+  ageEmojiRow.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1.2rem;';
+  var ageWrap = document.createElement('div'); ageWrap.appendChild(mkLbl('Age')); ageWrap.appendChild(ageInp);
+  var emojiWrap = document.createElement('div'); emojiWrap.appendChild(mkLbl('Emoji')); emojiWrap.appendChild(emojiInp);
+  ageEmojiRow.appendChild(ageWrap); ageEmojiRow.appendChild(emojiWrap);
+
+  var saveBtn = document.createElement('button');
+  saveBtn.style.cssText = 'width:100%;padding:.9rem;border:none;border-radius:10px;background:var(--moss);color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;margin-bottom:.5rem;';
+  saveBtn.textContent = 'Add Child & Continue';
+
+  var cancelBtn = document.createElement('button');
+  cancelBtn.style.cssText = 'width:100%;padding:.5rem;border:none;background:none;font-size:.78rem;color:var(--muted);cursor:pointer;';
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.onclick = function(){ closeOverlay('first-child-modal'); };
+
+  box.appendChild(hdr); box.appendChild(nameWrap); box.appendChild(ageEmojiRow);
+  box.appendChild(saveBtn); box.appendChild(cancelBtn);
+  overlay.appendChild(box);
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) closeOverlay('first-child-modal'); });
+  document.body.appendChild(overlay);
+
+  saveBtn.onclick = function() {
+    var name  = nameInp.value.trim();
+    var age   = ageInp.value.trim();
+    var emoji = emojiInp.value.trim() || '\uD83E\uDDD2';
+    if (!name) { nameInp.style.borderColor='var(--coral)'; return; }
+    var childId = name.toLowerCase().replace(/\s+/g,'-') + '-' + Date.now();
+    children.push({id:childId, name:name, age:age||'?', emoji:emoji});
+    addChildTab(childId, name, age, emoji);
+    activeChild = childId;
+    closeOverlay('first-child-modal');
+    showToast(emoji + ' ' + name + ' added!');
+    if (onDone) onDone();
+  };
+
+  setTimeout(function(){ nameInp.focus(); }, 50);
+}
+
+function claimFromDetail() {
+  if (currentCamp) {
+    selectClaimCamp(currentCamp.id);
+  }
+  showPage('portal');
+  // Scroll to claim section
+  setTimeout(function(){
+    var el = document.getElementById('claim-form-section');
+    if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 100);
+}
+
+/* ─── CLAIM YOUR LISTING ─── */
+var claimTargetCamp = null;
+
+function claimSearch(query) {
+  var resultsEl = document.getElementById('claim-results');
+  if (!resultsEl) return;
+  query = (query || '').trim().toLowerCase();
+  if (query.length < 2) { resultsEl.innerHTML = ''; return; }
+
+  var matches = camps.filter(function(c) {
+    return c.name.toLowerCase().includes(query) ||
+           c.location.toLowerCase().includes(query);
+  });
+
+  if (matches.length === 0) {
+    resultsEl.innerHTML =
+      '<div style="padding:1rem;background:#fafcfa;border-radius:10px;text-align:center;color:var(--muted);font-size:.88rem;">' +
+        'No listings found for <strong>"' + query + '"</strong>. ' +
+        '<span style="color:var(--moss);font-weight:600;cursor:pointer;" onclick="document.getElementById(\'claim-search-section\').style.display=\'none\';document.getElementById(\'claim-form-section\').style.display=\'block\';claimTargetCamp={name:document.getElementById(\'claim-search-input\').value};">Submit a new listing instead →</span>' +
+      '</div>';
+    return;
+  }
+
+  var html = '<div style="display:flex;flex-direction:column;gap:.5rem;">';
+  matches.forEach(function(c) {
+    html +=
+      '<div onclick="selectClaimCamp(' + c.id + ')" style="display:flex;align-items:center;gap:1rem;padding:.85rem 1rem;border:2px solid var(--border);border-radius:12px;cursor:pointer;background:#fff;transition:all .15s;" onmouseover="this.style.borderColor=\'var(--moss)\';this.style.background=\'#f5faf6\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.background=\'#fff\'">' +
+        '<div style="font-size:1.6rem;">' + c.icon + '</div>' +
+        '<div style="flex:1;">' +
+          '<div style="font-weight:700;color:var(--forest);font-size:.92rem;">' + c.name + '</div>' +
+          '<div style="font-size:.78rem;color:var(--muted);">📍 ' + c.location + ' · ' + c.type + ' · Ages ' + c.ages + '</div>' +
+        '</div>' +
+        '<div style="font-size:.78rem;color:var(--moss);font-weight:600;">Claim →</div>' +
+      '</div>';
+  });
+  html += '</div>';
+  resultsEl.innerHTML = html;
+}
+
+function selectClaimCamp(campId) {
+  var c = camps[campId];
+  if (!c) return;
+  claimTargetCamp = c;
+
+  var selectedEl = document.getElementById('claim-selected-camp');
+  selectedEl.innerHTML =
+    '<div style="font-size:1.8rem;">' + c.icon + '</div>' +
+    '<div>' +
+      '<div style="font-weight:700;color:var(--forest);">' + c.name + '</div>' +
+      '<div style="font-size:.8rem;color:var(--muted);">📍 ' + c.location + ' · ' + c.type + '</div>' +
+      '<div style="font-size:.75rem;color:var(--moss);margin-top:.2rem;">✓ Listing found — fill in your details below</div>' +
+    '</div>';
+
+  document.getElementById('claim-search-section').style.display = 'none';
+  document.getElementById('claim-form-section').style.display = 'block';
+}
+
+function submitClaim() {
+  var name  = document.getElementById('claim-name').value.trim();
+  var email = document.getElementById('claim-email').value.trim();
+  var phone = document.getElementById('claim-phone').value.trim();
+  if (!name)  { showToast('Please enter your name.'); return; }
+  if (!email || !email.includes('@')) { showToast('Please enter a valid work email.'); return; }
+
+  // In production this would POST to your backend
+  var campName = claimTargetCamp ? claimTargetCamp.name : 'your camp';
+  document.getElementById('claim-form-section').innerHTML =
+    '<div style="text-align:center;padding:2rem 1rem;">' +
+      '<div style="font-size:3rem;margin-bottom:1rem;">🎉</div>' +
+      '<h3 style="font-family:\'Playfair Display\',serif;color:var(--forest);font-size:1.2rem;margin-bottom:.5rem;">Claim request submitted!</h3>' +
+      '<p style="color:var(--muted);font-size:.88rem;line-height:1.6;max-width:360px;margin:0 auto 1.2rem;">We\'ll verify your connection to <strong>' + campName + '</strong> and send access to <strong>' + email + '</strong> within 1–2 business days.</p>' +
+      '<div style="background:var(--sky);border-radius:10px;padding:.9rem;font-size:.82rem;color:var(--forest);text-align:left;">' +
+        '<strong>What happens next:</strong><br>' +
+        '1. We verify your role at ' + campName + '<br>' +
+        '2. You get an email with login credentials<br>' +
+        '3. You can edit your listing, add photos, and manage inquiries' +
+      '</div>' +
+    '</div>';
+}
+
+// ─── IMAGE UPLOADS ───
+var galleryCount = 0;
+var MAX_GALLERY = 8;
+
+function handleCoverUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  if (file.size > 5 * 1024 * 1024) { showToast('Image must be under 5MB'); return; }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var preview = document.getElementById('cover-preview');
+    var placeholder = document.getElementById('cover-placeholder');
+    var label = document.getElementById('cover-upload-label');
+    preview.innerHTML =
+      '<div style="position:relative;width:100%;">' +
+        '<img src="' + e.target.result + '" style="width:100%;height:160px;object-fit:cover;border-radius:8px;display:block;">' +
+        '<button onclick="event.preventDefault();removeCover()" style="position:absolute;top:.4rem;right:.4rem;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:26px;height:26px;font-size:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>' +
+        '<div style="margin-top:.5rem;font-size:.75rem;color:var(--muted);">Click to replace</div>' +
+      '</div>';
+    preview.style.display = 'block';
+    placeholder.style.display = 'none';
+    label.style.padding = '.75rem';
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeCover() {
+  var preview = document.getElementById('cover-preview');
+  var placeholder = document.getElementById('cover-placeholder');
+  var label = document.getElementById('cover-upload-label');
+  preview.style.display = 'none';
+  preview.innerHTML = '';
+  placeholder.style.display = 'block';
+  label.style.padding = '2rem';
+  // Reset file input
+  var inp = label.querySelector('input[type=file]');
+  if (inp) inp.value = '';
+}
+
+function handleGalleryUpload(input) {
+  if (!input.files) return;
+  var files = Array.from(input.files);
+  var grid = document.getElementById('gallery-grid');
+  var addTile = document.getElementById('gallery-add-tile');
+
+  files.forEach(function(file) {
+    if (galleryCount >= MAX_GALLERY) { showToast('Maximum 8 photos reached'); return; }
+    if (file.size > 5 * 1024 * 1024) { showToast(file.name + ' is over 5MB, skipped'); return; }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      galleryCount++;
+      var tileId = 'gallery-tile-' + Date.now() + '-' + galleryCount;
+      var tile = document.createElement('div');
+      tile.id = tileId;
+      tile.style.cssText = 'aspect-ratio:1;position:relative;border-radius:10px;overflow:hidden;';
+      tile.innerHTML =
+        '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;display:block;">' +
+        '<button onclick="removeGalleryTile(\'' + tileId + '\')" style="position:absolute;top:.3rem;right:.3rem;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>';
+      grid.insertBefore(tile, addTile);
+      if (galleryCount >= MAX_GALLERY) addTile.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = ''; // reset so same file can be re-added if removed
+}
+
+function removeGalleryTile(id) {
+  var tile = document.getElementById(id);
+  if (tile) { tile.remove(); galleryCount--; }
+  var addTile = document.getElementById('gallery-add-tile');
+  if (addTile) addTile.style.display = '';
+}
+
+
+/* ─── SIGN-UP / ACCOUNT SYSTEM ─── */
+var currentUser = null; // null = not signed up, object = signed up
+
+// In-browser user store (prototype)
+var registeredUsers = JSON.parse(localStorage.getItem('cq_users') || '[]');
+
+function saveUsers() {
+  try { localStorage.setItem('cq_users', JSON.stringify(registeredUsers)); } catch(e){}
+}
+
+function requireAccount(callback) {
+  if (currentUser) { callback(); return; }
+  goToSignUp(callback);
+}
+
+function logOut() {
+  currentUser = null;
+  scheduleItems = [];
+  children = [];
+  activeChild = null;
+  savedCamps = new Set();
+  // Remove all dynamically added child tabs
+  document.querySelectorAll('.children-tabs .child-tab').forEach(function(t){
+    if (t.id !== 'saved-tab') t.remove();
+  });
+  // Clear profile children list
+  renderProfileChildren();
+  renderSchedule();
+  renderProfileAccount();
+  updateNavForUser();
+  closeOverlay('account-modal');
+  showToast('Logged out. See you soon!');
+  showPage('search');
+}
+
+function updateNavForUser() {
+  var btn = document.getElementById('nav-signup-btn');
+  if (!btn) return;
+  if (currentUser) {
+    btn.textContent = '👤 ' + currentUser.name.split(' ')[0];
+    btn.onclick = showAccountModal;
+    btn.style.background = 'var(--sun)';
+  } else {
+    btn.textContent = 'Sign Up';
+    btn.onclick = function(){ goToSignUp(); };
+    btn.style.background = '#fff';
+  }
+  renderProfileAccount();
+}
+
+function renderProfileAccount() {
+  var box = document.getElementById('profile-account-box');
+  if (!box) return;
+  if (currentUser) {
+    box.innerHTML =
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">' +
+        '<div><div style="font-size:.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:.25rem">Name</div><div style="font-weight:600;color:var(--forest)">' + currentUser.name + '</div></div>' +
+        '<div><div style="font-size:.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:.25rem">Zip Code</div><div style="font-weight:600;color:var(--forest)">' + currentUser.zip + '</div></div>' +
+        '<div><div style="font-size:.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:.25rem">Email</div><div style="font-weight:600;color:var(--forest)">' + currentUser.email + '</div></div>' +
+        '<div><div style="font-size:.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:.25rem">Member Since</div><div style="font-weight:600;color:var(--forest)">' + new Date(currentUser.createdAt).toLocaleDateString('en-US',{month:'short',year:'numeric'}) + '</div></div>' +
+      '</div>' +
+      '<button onclick="logOut();" style="margin-top:1rem;padding:.5rem 1.2rem;border:1.5px solid var(--border);border-radius:8px;background:#fff;font-size:.82rem;cursor:pointer;color:var(--text);">Log Out</button>';
+  } else {
+    box.innerHTML =
+      '<div style="text-align:center;padding:1rem 0;">' +
+        '<p style="color:var(--muted);font-size:.88rem;margin-bottom:1rem;">Sign up to save your profile and manage your family\'s camps.</p>' +
+        '<button onclick="goToSignUp()" style="background:var(--moss);color:#fff;border:none;padding:.75rem 1.8rem;border-radius:10px;font-weight:700;font-size:.92rem;cursor:pointer;font-family:\'DM Sans\',sans-serif;">Sign Up Free</button>' +
+        '<div style="margin-top:.8rem;font-size:.8rem;color:var(--muted);">Already have an account? <span onclick="showLoginModal()" style="color:var(--moss);font-weight:600;cursor:pointer;">Log in</span></div>' +
+      '</div>';
+  }
+}
+
+function goToSignUp(onSuccess) {
+  closeOverlay('signup-modal');
+  var overlay = document.createElement('div');
+  overlay.id = 'signup-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:600;display:flex;align-items:center;justify-content:center;padding:1.5rem;';
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;padding:2rem;max-width:420px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,.25);';
+
+  function mkInput(id, type, ph, maxlen) {
+    var inp = document.createElement('input');
+    inp.id = id; inp.type = type; inp.placeholder = ph || '';
+    if (maxlen) inp.maxLength = maxlen;
+    inp.style.cssText = 'width:100%;padding:.7rem .9rem;border:2px solid var(--border);border-radius:10px;font-size:.9rem;outline:none;box-sizing:border-box;';
+    inp.onfocus = function(){ this.style.borderColor='var(--moss)'; };
+    inp.onblur  = function(){ this.style.borderColor='var(--border)'; };
+    inp.onkeydown = function(e){ if(e.key==='Enter') submitBtn.click(); };
+    return inp;
+  }
+  function mkLbl(t) { var d=document.createElement('div'); d.style.cssText='font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.3rem;'; d.textContent=t; return d; }
+  function mkField(lbl,inp) { var w=document.createElement('div'); w.appendChild(mkLbl(lbl)); w.appendChild(inp); return w; }
+
+  var errEl = document.createElement('div');
+  errEl.style.cssText = 'display:none;background:#fff0f0;border:1.5px solid #f0c0b8;border-radius:8px;padding:.6rem .9rem;font-size:.82rem;color:var(--coral);margin-bottom:1rem;';
+
+  var fnameInp = mkInput('su-fname','text','Maria');
+  var lnameInp = mkInput('su-lname','text','Rodriguez');
+  var emailInp = mkInput('su-email','email','maria@example.com');
+  var passInp  = mkInput('su-pass','password','Min. 6 characters');
+  var zipInp   = mkInput('su-zip','text','78701',5);
+
+  var hdr = document.createElement('div');
+  hdr.style.cssText = 'text-align:center;margin-bottom:1.5rem;';
+  hdr.innerHTML = '<div style="font-size:2rem;margin-bottom:.4rem;">&#127957;</div><h2 style="font-family:\'Playfair Display\',serif;color:var(--forest);font-size:1.4rem;margin-bottom:.3rem;">Create your CampQuest account</h2><p style="color:var(--muted);font-size:.85rem;">Save camps, track schedules, and manage your kids.</p>';
+
+  var nameRow = document.createElement('div');
+  nameRow.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.8rem;';
+  nameRow.appendChild(mkField('First Name', fnameInp));
+  nameRow.appendChild(mkField('Last Name', lnameInp));
+
+  var emailWrap = document.createElement('div');
+  emailWrap.style.marginBottom = '.8rem';
+  emailWrap.appendChild(mkLbl('Email'));
+  emailWrap.appendChild(emailInp);
+
+  var passZipRow = document.createElement('div');
+  passZipRow.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1.2rem;';
+  passZipRow.appendChild(mkField('Password', passInp));
+  passZipRow.appendChild(mkField('Zip Code', zipInp));
+
+  var submitBtn = document.createElement('button');
+  submitBtn.style.cssText = 'width:100%;padding:.9rem;border:none;border-radius:10px;background:var(--moss);color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;margin-bottom:.6rem;';
+  submitBtn.textContent = 'Create Account';
+
+  var loginLink = document.createElement('div');
+  loginLink.style.cssText = 'text-align:center;font-size:.8rem;color:var(--muted);margin-bottom:.4rem;';
+  loginLink.innerHTML = 'Already have an account? <span onclick="showLoginModal()" style="color:var(--moss);font-weight:600;cursor:pointer;">Log in</span>';
+
+  var cancelBtn = document.createElement('button');
+  cancelBtn.style.cssText = 'width:100%;padding:.5rem;border:none;background:none;font-size:.78rem;color:var(--muted);cursor:pointer;';
+  cancelBtn.textContent = 'Maybe later';
+  cancelBtn.onclick = function(){ closeOverlay('signup-modal'); };
+
+  box.appendChild(hdr); box.appendChild(errEl); box.appendChild(nameRow);
+  box.appendChild(emailWrap); box.appendChild(passZipRow);
+  box.appendChild(submitBtn); box.appendChild(loginLink); box.appendChild(cancelBtn);
+  overlay.appendChild(box);
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) closeOverlay('signup-modal'); });
+  document.body.appendChild(overlay);
+
+  submitBtn.onclick = function() {
+    var fname=fnameInp.value.trim(), lname=lnameInp.value.trim();
+    var email=emailInp.value.trim(), pass=passInp.value, zip=zipInp.value.trim();
+    if (!fname||!lname) { showErr(errEl,'Please enter your full name.'); return; }
+    if (!email||!email.includes('@')) { showErr(errEl,'Please enter a valid email address.'); return; }
+    if (pass.length<6) { showErr(errEl,'Password must be at least 6 characters.'); return; }
+    if (!/^\d{5}$/.test(zip)) { showErr(errEl,'Please enter a valid 5-digit zip code.'); return; }
+    if (registeredUsers.find(function(u){ return u.email.toLowerCase()===email.toLowerCase(); })) {
+      showErr(errEl,'An account with this email already exists. Try logging in.'); return;
+    }
+    var user={id:'u_'+Date.now(),name:fname+' '+lname,email:email,password:pass,zip:zip,createdAt:new Date().toISOString()};
+    registeredUsers.push(user); saveUsers();
+    currentUser=user; closeOverlay('signup-modal'); updateNavForUser();
+    showToast('Welcome to CampQuest, '+fname+'!');
+    // New users always add a child next
+    showAddFirstChildModal(function() {
+      if (onSuccess) onSuccess();
+    });
+  };
+  setTimeout(function(){ fnameInp.focus(); }, 50);
+}
+
+function showLoginModal(source) {
+  closeOverlay('signup-modal');
+  closeOverlay('login-modal');
+  var overlay = document.createElement('div');
+  overlay.id = 'login-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:600;display:flex;align-items:center;justify-content:center;padding:1.5rem;';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;padding:2rem;max-width:380px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,.25);';
+
+  box.innerHTML =
+    '<div style="text-align:center;margin-bottom:1.5rem;">' +
+      '<div style="font-size:2rem;margin-bottom:.4rem;">👋</div>' +
+      '<h2 style="font-family:\'Playfair Display\',serif;color:var(--forest);font-size:1.3rem;margin-bottom:.3rem;">Welcome back</h2>' +
+    '</div>' +
+    '<div id="login-error" style="display:none;background:#fff0f0;border:1.5px solid #f0c0b8;border-radius:8px;padding:.6rem .9rem;font-size:.82rem;color:var(--coral);margin-bottom:1rem;"></div>' +
+    '<div style="margin-bottom:.8rem;">' +
+      '<div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.3rem;">Email</div>' +
+      '<input id="li-email" type="email" placeholder="maria@example.com" style="width:100%;padding:.7rem .9rem;border:2px solid var(--border);border-radius:10px;font-size:.9rem;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'var(--moss)\'" onblur="this.style.borderColor=\'var(--border)\'">' +
+    '</div>' +
+    '<div style="margin-bottom:1.2rem;">' +
+      '<div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.3rem;">Password</div>' +
+      '<input id="li-pass" type="password" style="width:100%;padding:.7rem .9rem;border:2px solid var(--border);border-radius:10px;font-size:.9rem;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'var(--moss)\'" onblur="this.style.borderColor=\'var(--border)\'">' +
+    '</div>' +
+    '<button id="li-submit" style="width:100%;padding:.9rem;border:none;border-radius:10px;background:var(--moss);color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;margin-bottom:.6rem;">Log In →</button>' +
+    '<div style="text-align:center;font-size:.8rem;color:var(--muted);">No account yet? <span onclick="goToSignUp()" style="color:var(--moss);font-weight:600;cursor:pointer;">Sign up free</span></div>' +
+    '<button style="width:100%;padding:.5rem;border:none;background:none;font-size:.78rem;color:var(--muted);cursor:pointer;margin-top:.5rem;" onclick="closeOverlay(\'login-modal\')">Cancel</button>';
+
+  box.querySelector('#li-submit').onclick = function() {
+    var email = box.querySelector('#li-email').value.trim();
+    var pass  = box.querySelector('#li-pass').value;
+    var errEl = box.querySelector('#login-error');
+    var user  = registeredUsers.find(function(u){ return u.email.toLowerCase() === email.toLowerCase() && u.password === pass; });
+    if (!user) { showErr(errEl, 'Email or password is incorrect.'); return; }
+    currentUser = user;
+    closeOverlay('login-modal');
+    updateNavForUser();
+    showToast('Welcome back, ' + user.name.split(' ')[0] + '! 👋');
+  };
+
+  box.querySelectorAll('input').forEach(function(inp) {
+    inp.onkeydown = function(e){ if (e.key === 'Enter') box.querySelector('#li-submit').click(); };
+  });
+
+  overlay.appendChild(box);
+  overlay.addEventListener('click', function(e){ if (e.target === overlay) closeOverlay('login-modal'); });
+  document.body.appendChild(overlay);
+  setTimeout(function(){ box.querySelector('#li-email').focus(); }, 50);
+}
+
+function showAccountModal() {
+  if (!currentUser) return;
+  closeOverlay('account-modal');
+  var overlay = document.createElement('div');
+  overlay.id = 'account-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:600;display:flex;align-items:flex-start;justify-content:flex-end;padding:70px 1.5rem 0;';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:16px;padding:1.4rem;min-width:220px;box-shadow:0 8px 40px rgba(0,0,0,.18);';
+  box.innerHTML =
+    '<div style="font-weight:700;color:var(--forest);margin-bottom:.2rem;">' + currentUser.name + '</div>' +
+    '<div style="font-size:.78rem;color:var(--muted);margin-bottom:.2rem;">' + currentUser.email + '</div>' +
+    '<div style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;">📍 ' + currentUser.zip + '</div>' +
+    '<div style="font-size:.72rem;color:var(--muted);margin-bottom:1rem;padding-top:.8rem;border-top:1px solid var(--border);">Member since ' + new Date(currentUser.createdAt).toLocaleDateString('en-US',{month:'short',year:'numeric'}) + '</div>' +
+    '<button onclick="logOut();" style="width:100%;padding:.6rem;border:1.5px solid var(--border);border-radius:8px;background:#fff;font-size:.85rem;cursor:pointer;color:var(--text);">Log Out</button>';
+
+  overlay.appendChild(box);
+  overlay.addEventListener('click', function(e){ if (e.target === overlay) closeOverlay('account-modal'); });
+  document.body.appendChild(overlay);
+}
+
+function showErr(el, msg) {
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(function(){ el.style.display = 'none'; }, 4000);
+}
+
+// Auto-render camps on page load so Search page shows results immediately
+window.addEventListener('DOMContentLoaded', function() {
+  var s = document.getElementById('results-section');
+  if (s) { s.style.display = 'block'; applyFilters(); }
+  renderProfileChildren();
+  updateNavForUser();
+
+  document.addEventListener('click', function(e) {
+    var menu = document.getElementById('mob-menu');
+    var hamburger = document.querySelector('.hamburger');
+    if (menu && menu.classList.contains('open')) {
+      if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+        menu.classList.remove('open');
+      }
+    }
+  });
+});
+</script>
+</body>
+</html>
