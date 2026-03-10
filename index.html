@@ -1154,7 +1154,7 @@ async function loadCampsFromAirtable() {
   }
 }
 
-const camps = [
+let camps = [
   {id:0,name:"Wildwood Sports Camp",type:"Sports",regType:"external",location:"Zilker Park, Austin",ages:"6–14",ageMin:6,ageMax:14,priceNum:275,price:"$275",ratingNum:4.9,rating:"⭐ 4.9",tags:["Soccer","Basketball","Swimming"],beforeAfterCare:true,mealsAvailable:true,imgClass:"img-sports",icon:"⚽",week:"Jun 9",dates:["Jun 9–13","Jun 23–27","Jul 14–18"],time:"8am–3pm",desc:"Austin's top multi-sport camp. Kids rotate through soccer, basketball, and swimming with certified coaches in a safe, inclusive environment. All skill levels welcome.",website:null,phone:null},
   {id:1,name:"Art Explorers Camp",type:"Arts",regType:"external",location:"Austin Arts Center",ages:"5–12",ageMin:5,ageMax:12,priceNum:320,price:"$320",ratingNum:4.7,rating:"⭐ 4.7",tags:["Painting","Sculpture","Mixed Media"],beforeAfterCare:false,mealsAvailable:true,imgClass:"img-arts",icon:"🎨",week:"Jun 16",dates:"Jun 16–20",time:"9am–3pm",desc:"A week-long immersive arts program where kids explore painting, clay sculpture, and digital art with professional Austin artists as mentors.",website:null,phone:null},
   {id:2,name:"Code Galaxy",type:"STEM",regType:"external",location:"UT Austin Campus",ages:"8–15",ageMin:8,ageMax:15,priceNum:495,price:"$495",ratingNum:4.8,rating:"⭐ 4.8",tags:["Python","Robotics","Game Design"],beforeAfterCare:true,mealsAvailable:false,imgClass:"img-stem",icon:"💻",week:"Jun 23",dates:"Jun 23–27",time:"9am–4pm",desc:"Hands-on coding camp where kids build games, learn Python, and assemble robots. Hosted at UT Austin. Register directly on their university portal.",website:"codegalaxy.utexas.edu/summer-registration",phone:null},
