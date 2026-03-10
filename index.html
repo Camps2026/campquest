@@ -1053,22 +1053,6 @@ function showLoadError(msg) {
 }
 
 // Auto-discover the real table name (handles renames after reimport)
-async function discoverTableName() {
-  var metaUrl = 'https://api.airtable.com/v0/meta/bases/' + AIRTABLE_BASE_ID + '/tables';
-  try {
-    var res = await fetch(metaUrl, { headers: { 'Authorization': 'Bearer ' + AIRTABLE_TOKEN } });
-    if (!res.ok) return null;
-    var data = await res.json();
-    var tables = data.tables || [];
-    console.log('📋 Tables in base:', tables.map(function(t){ return t.name; }));
-    // Prefer exact match, then fallback to first table
-    var match = tables.find(function(t){ return t.name === AIRTABLE_TABLE; });
-    return match ? match.name : (tables[0] ? tables[0].name : null);
-  } catch(e) {
-    return null;
-  }
-}
-
 // Main fetch — pages through all Airtable records (100 per page max)
 async function fetchAllAirtableRecords(offset) {
   var url = 'https://api.airtable.com/v0/' + AIRTABLE_BASE_ID + '/' + encodeURIComponent(AIRTABLE_TABLE);
@@ -1100,13 +1084,6 @@ async function loadCampsFromAirtable() {
   }
 
   try {
-    // Auto-discover real table name in case it changed after reimport
-    var discovered = await discoverTableName();
-    if (discovered && discovered !== AIRTABLE_TABLE) {
-      console.log('ℹ️ Table name updated: "' + AIRTABLE_TABLE + '" → "' + discovered + '"');
-      AIRTABLE_TABLE = discovered;
-    }
-
     var allRecords = [];
     var offset = null;
 
