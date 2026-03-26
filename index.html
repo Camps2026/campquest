@@ -3063,22 +3063,22 @@ function showAddToScheduleModal() {
 
   function doAdd(registered) {
     if (!selectedChild) { showToast('Please select a child first'); return; }
-    if (!selectedSession) { showToast('Please select a session first'); return; }
+    if (hasSessions && !selectedSession) { showToast('Please select a session first'); return; }
     if (!hasSessions && (!customStart || !customEnd)) { showToast('Please confirm your dates first'); return; }
     var campId = c.id;
-    if (scheduleItems.some(function(i){ return i.campId===campId && i.child===selectedChild && i.session===selectedSession; })) {
-      showToast('Already in schedule for this session'); closeOverlay('add-sched-modal'); return;
+    if (scheduleItems.some(function(i){ return i.campId===campId && i.child===selectedChild; })) {
+      showToast('Already in this child\'s schedule'); closeOverlay('add-sched-modal'); return;
     }
-    var prev = activeChild;
-    activeChild = selectedChild;
     scheduleItems.push({campId: campId, registered: registered, child: selectedChild, session: selectedSession, customStart: customStart, customEnd: customEnd});
-    renderSchedule();
-    activeChild = prev;
     closeOverlay('add-sched-modal');
     showPage('schedule');
-    var tab = document.querySelector('[data-child-id="' + selectedChild + '"]') ||
-              (selectedChild === 'emma' ? document.querySelector('.child-tab') : document.querySelectorAll('.child-tab')[1]);
-    if (tab) switchChild(tab, selectedChild);
+    var tab = document.querySelector('[data-child-id="' + selectedChild + '"]');
+    if (tab) {
+      switchChild(tab, selectedChild);
+    } else {
+      activeChild = selectedChild;
+      renderSchedule();
+    }
   }
 
   var yesBtn = document.createElement('button');
