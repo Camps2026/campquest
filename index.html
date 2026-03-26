@@ -3069,7 +3069,23 @@ function showAddToScheduleModal() {
     if (scheduleItems.some(function(i){ return i.campId===campId && i.child===selectedChild; })) {
       showToast('Already in this child\'s schedule'); closeOverlay('add-sched-modal'); return;
     }
-    scheduleItems.push({campId: campId, registered: registered, child: selectedChild, session: selectedSession, customStart: customStart, customEnd: customEnd});
+    var newItem = {campId: campId, registered: registered, child: selectedChild, session: selectedSession, customStart: customStart, customEnd: customEnd};
+    scheduleItems.push(newItem);
+    if (currentUser) {
+      var campObj = camps.find(function(cc){ return cc.id === campId; });
+      if (campObj) {
+        var customDatesStr = (customStart && customEnd) ? customStart + '|' + customEnd : null;
+        sbClient.from('user_schedules').insert({
+          user_id: currentUser.id,
+          child_id: selectedChild,
+          camp_supabase_id: campObj.supabaseId,
+          registered: registered,
+          custom_dates: customDatesStr
+        }).select().single().then(function(insResp) {
+          if (insResp.data) newItem.dbId = insResp.data.id;
+        });
+      }
+    }
     closeOverlay('add-sched-modal');
     showPage('schedule');
     var tab = document.querySelector('[data-child-id="' + selectedChild + '"]');
@@ -3394,7 +3410,14 @@ async function loadUserData(userId) {
   if (schedResp.data) {
     schedResp.data.forEach(function(r) {
       var camp = camps.find(function(c){ return c.supabaseId === r.camp_supabase_id; });
-      if (camp) scheduleItems.push({campId: camp.id, registered: r.registered, child: r.child_id, dbId: r.id});
+      if (camp) {
+          var item = {campId: camp.id, registered: r.registered, child: r.child_id, dbId: r.id};
+          if (r.custom_dates) {
+            var parts = r.custom_dates.split('|');
+            if (parts.length === 2) { item.customStart = parts[0]; item.customEnd = parts[1]; }
+          }
+          scheduleItems.push(item);
+        }
     });
   }
   renderProfileChildren();
