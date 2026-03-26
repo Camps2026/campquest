@@ -3035,7 +3035,7 @@ function showAddToScheduleModal() {
 
   function doAdd(registered) {
     if (!selectedChild) { showToast('Please select a child first'); return; }
-    if (!hasSessions && (!customStart || !customEnd)) { showToast('Please confirm your dates first'); return; }
+    if (!customStart || !customEnd) { showToast('Please confirm your dates first'); return; }
     var campId = c.id;
     if (scheduleItems.some(function(i){ return i.campId===campId && i.child===selectedChild; })) {
       showToast('Already in this child\'s schedule'); closeOverlay('add-sched-modal'); return;
