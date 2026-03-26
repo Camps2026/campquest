@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CampQuest — Find the Perfect Camp</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --forest:#1a3a2a; --moss:#2d5a3d; --sage:#7aa67f; --sun:#f5c842;
@@ -95,7 +96,7 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
 
 /* ── MAIN LAYOUT ── */
 .main-layout{display:grid;grid-template-columns:270px 1fr;gap:2rem;max-width:1300px;margin:0 auto;padding:2rem;}
-.filters-panel{background:#fff;border-radius:16px;padding:1.5rem;height:fit-content;position:sticky;top:80px;box-shadow:0 2px 16px rgba(0,0,0,.06);}
+.filters-panel{background:#fff;border-radius:16px;padding:1.5rem;height:fit-content;position:sticky;top:80px;box-shadow:0 2px 16px rgba(0,0,0,.06);max-height:calc(100vh - 100px);overflow-y:auto;}
 .filters-panel h3{font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:1.2rem;color:var(--forest);}
 .filter-group{margin-bottom:1.2rem;}
 .filter-group label{display:block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.5rem;}
@@ -149,15 +150,17 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
 .card-reg-btn.phone{background:var(--purple);color:#fff;}
 .card-reg-btn.phone:hover{background:#5a2a6a;}
 .camp-icon{font-size:2.8rem;position:absolute;bottom:1rem;left:1rem;opacity:.4;}
-.img-sports{background:linear-gradient(135deg,#2d5a3d,#4a8a5a);}
-.img-arts{background:linear-gradient(135deg,#7a4a8a,#b07ac0);}
-.img-stem{background:linear-gradient(135deg,#1a4a7a,#3a7ab0);}
-.img-outdoor{background:linear-gradient(135deg,#6a4a1a,#aa7a3a);}
-.img-water{background:linear-gradient(135deg,#1a6a7a,#3aaab0);}
-.img-music{background:linear-gradient(135deg,#7a1a2a,#c04a5a);}
-.img-dance{background:linear-gradient(135deg,#c04a8a,#e07ab0);}
-.img-cooking{background:linear-gradient(135deg,#7a5a1a,#c09a4a);}
-.img-chess{background:linear-gradient(135deg,#3a3a5a,#6a6a9a);}
+.img-sports{background:#185FA5;}
+.img-arts{background:#534AB7;}
+.img-stem{background:#BA7517;}
+.img-outdoor{background:#2D6A4F;}
+.img-water{background:#2D6A4F;}
+.img-music{background:#C1440E;}
+.img-dance{background:#D4537E;}
+.img-cooking{background:#3B9E6A;}
+.img-chess{background:#5F5E5A;}
+.img-variety{background:#7B3FA0;}
+.img-neurodiversity{background:#0F7E9E;}
 
 /* ══════════════════════════════════════
    SMART REGISTRATION ROUTER PAGE
@@ -294,12 +297,17 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
 
 /* ── DETAIL PAGE ── */
 .detail-page{max-width:1100px;margin:0 auto;padding:2rem;}
-.detail-hero{border-radius:20px;overflow:hidden;margin-bottom:2rem;display:grid;grid-template-columns:1fr 360px;min-height:300px;}
-.detail-hero-img{position:relative;padding:2.5rem;display:flex;flex-direction:column;justify-content:flex-end;}
-.detail-big-icon{font-size:4.5rem;margin-bottom:.8rem;}
-.detail-type-badge{display:inline-block;background:var(--sun);color:var(--forest);font-size:.75rem;font-weight:700;padding:.25rem .7rem;border-radius:10px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.7rem;}
-.detail-hero h1{font-family:'Playfair Display',serif;font-size:2rem;color:#fff;font-weight:900;line-height:1.15;margin-bottom:.4rem;}
-.detail-hero-loc{color:rgba(255,255,255,.75);font-size:.9rem;}
+.detail-top{border-radius:20px;overflow:hidden;margin-bottom:2rem;box-shadow:0 2px 20px rgba(0,0,0,.1);}
+.detail-banner{height:160px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:1.2rem 1.8rem;gap:1rem;}
+.detail-big-icon{font-size:5rem;opacity:.25;position:absolute;right:2rem;bottom:.5rem;}
+.detail-type-badge{display:inline-block;background:var(--sun);color:var(--forest);font-size:.75rem;font-weight:700;padding:.25rem .7rem;border-radius:10px;text-transform:uppercase;letter-spacing:.08em;}
+.detail-header{background:#fff;padding:1.4rem 1.8rem 1rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;border-bottom:1px solid var(--sky);}
+.detail-header h1{font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--forest);font-weight:900;line-height:1.2;margin-bottom:.3rem;}
+.detail-hero-loc{color:var(--muted);font-size:.88rem;}
+.detail-facts-row{display:flex;background:#fff;}
+.detail-fact{flex:1;padding:.85rem 1.8rem;border-right:1px solid var(--sky);}
+.detail-fact:last-child{border-right:none;}
+.detail-fact-label{display:block;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.2rem;}
 .detail-sidebar{background:var(--forest);padding:2rem;display:flex;flex-direction:column;justify-content:space-between;}
 .quick-fact{display:flex;align-items:center;gap:.7rem;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.85);font-size:.85rem;}
 .quick-fact:last-child{border-bottom:none;margin-bottom:1rem;}
@@ -309,7 +317,7 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
 .reg-route-pill.external{background:rgba(58,122,176,.3);color:#90c0e8;}
 .reg-route-pill.contact{background:rgba(196,122,26,.3);color:#e8a860;}
 .reg-route-pill.phone{background:rgba(122,74,138,.3);color:#d0a0e0;}
-.detail-body{display:grid;grid-template-columns:1fr 320px;gap:2rem;align-items:start;}
+.detail-body{display:grid;grid-template-columns:1fr 300px;gap:2rem;align-items:start;}
 .detail-section{background:#fff;border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;box-shadow:0 2px 12px rgba(0,0,0,.06);}
 .detail-section h3{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--forest);margin-bottom:.9rem;padding-bottom:.6rem;border-bottom:1px solid #f0f4f1;}
 .detail-section p{color:var(--muted);line-height:1.7;font-size:.9rem;}
@@ -380,17 +388,26 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
 .toast.show{transform:translateY(0);opacity:1;}
 
 @media(max-width:900px){
-  .main-layout{grid-template-columns:1fr;}
-  .filters-panel{position:static;}
+  .main-layout{grid-template-columns:1fr;padding:1rem;}
+  .filters-panel{position:static;display:none;}
+  .filters-panel.mobile-open{display:block;}
+  .mobile-filter-toggle{display:flex;align-items:center;gap:.5rem;background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:.6rem 1.1rem;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;color:var(--forest);cursor:pointer;margin:0 1rem 1rem;}
+  .mobile-filter-toggle svg{width:16px;height:16px;flex-shrink:0;}
   .detail-hero,.detail-body,.schedule-layout{grid-template-columns:1fr;}
   nav .nav-links{display:none;}
   .hamburger{display:flex;}
   .form-grid-2,.card-fields{grid-template-columns:1fr;}
+  .search-row-2{flex-direction:column;gap:.6rem;padding:.75rem 0 .75rem;}
+  .search-row-2 .search-field{padding:0 .2rem;}
+  .search-row-2 .search-divider{display:none;}
+  .save-btn{width:40px;height:40px;font-size:1.1rem;}
+  .pi-save-btn{width:40px;height:40px;font-size:1.1rem;}
 }
+.mobile-filter-toggle{display:none;}
 /* ── UMBRELLA CAMP CARD ── */
 .camp-card.umbrella-card{border:2px solid transparent;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,var(--sun) 0%,#e8a020 100%) border-box;}
 .umbrella-img-area{height:155px;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--forest) 0%,#3a7a50 100%);}
-.umbrella-pill{display:inline-flex;align-items:center;gap:.25rem;background:rgba(245,200,66,.2);color:var(--sun);font-size:.65rem;font-weight:700;padding:.18rem .52rem;border-radius:8px;border:1px solid rgba(245,200,66,.35);position:absolute;top:.7rem;left:.75rem;}
+.umbrella-pill{display:inline-flex;align-items:center;gap:.25rem;background:rgba(245,200,66,.2);color:var(--sun);font-size:.65rem;font-weight:700;padding:.18rem .52rem;border-radius:8px;border:1px solid rgba(245,200,66,.35);}
 .umbrella-prog-count{position:absolute;top:.7rem;right:.75rem;background:rgba(0,0,0,.25);color:#fff;font-size:.68rem;font-weight:700;padding:.18rem .52rem;border-radius:8px;}
 .umbrella-body{padding:.85rem 1rem .7rem;}
 .umbrella-summary{font-size:.72rem;color:var(--muted);line-height:1.4;margin:.25rem 0 .5rem;}
@@ -480,25 +497,28 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
 <div id="page-search" class="page active">
   <div class="hero">
     <h1>Find the <em>Perfect</em> Camp</h1>
-    <p>Browse camps. Find the perfect fit and connect directly with camp staff.</p>
     <div class="search-bar">
-      <div class="search-row-1">
-        <div class="search-field-label">📍 Location</div>
-        <input class="search-input" type="text" placeholder="City, state, or zip code..." id="location-input" onkeydown="if(event.key==='Enter')showResults()" oninput="if(document.getElementById('results-section').style.display==='block')applyFilters()"/>
+      <div class="search-row-1" style="position:relative;">
+        <div class="search-field-label">Location</div>
+        <div style="display:flex;align-items:center;gap:.3rem;">
+          <input class="search-input" type="text" placeholder="City" id="location-input" list="city-list" onkeydown="if(event.key==='Enter')showResults()" oninput="updateLocationClear();if(document.getElementById('results-section').style.display==='block')applyFilters()"/>
+          <button id="location-clear-btn" onclick="clearLocationInput()" style="display:none;background:none;border:none;cursor:pointer;color:#b0bcb5;font-size:1rem;padding:.1rem .2rem;line-height:1;flex-shrink:0;" title="Clear">✕</button>
+        </div>
+        <datalist id="city-list"></datalist>
       </div>
       <div class="search-row-2">
         <div class="search-field">
-          <div class="search-field-label">🎂 Child's Age</div>
-          <select class="search-select" id="age-filter" onchange="if(document.getElementById('results-section').style.display==='block')applyFilters()"><option selected>Any</option><option>4–6 yrs</option><option>7–9 yrs</option><option>10–12 yrs</option><option>13–17 yrs</option></select>
+          <div class="search-field-label">Child's Age</div>
+          <select class="search-select" id="age-filter" onchange="if(document.getElementById('results-section').style.display==='block')applyFilters()"><option selected>Any</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option><option>17</option></select>
         </div>
         <div class="search-divider"></div>
         <div class="search-field">
-          <div class="search-field-label">📅 Start Date</div>
-          <input class="search-date" type="date" id="date-start" onchange="if(document.getElementById('results-section').style.display==='block')applyFilters()"/>
+          <div class="search-field-label">Start Date</div>
+          <input class="search-date" type="date" id="date-start" onchange="autoSetEndDate();if(document.getElementById('results-section').style.display==='block')applyFilters()"/>
         </div>
         <div class="search-divider"></div>
         <div class="search-field">
-          <div class="search-field-label">📅 End Date</div>
+          <div class="search-field-label">End Date</div>
           <input class="search-date" type="date" id="date-end" onchange="if(document.getElementById('results-section').style.display==='block')applyFilters()"/>
         </div>
       </div>
@@ -508,41 +528,72 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
 
 
   <div id="results-section" style="display:block;">
+    <button class="mobile-filter-toggle" id="mobile-filter-btn" onclick="toggleMobileFilters()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+      <span id="mobile-filter-label">Show Filters</span>
+    </button>
     <div class="main-layout">
-      <aside class="filters-panel">
+      <aside class="filters-panel" id="filters-panel-aside">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;">
-          <h3 style="margin:0;">🎯 Filters <span class="filter-count" id="filter-count" style="display:none">0</span></h3>
+          <h3 style="margin:0;">Filters <span class="filter-count" id="filter-count" style="display:none">0</span></h3>
           <button class="clear-filters" id="clear-btn" style="display:none" onclick="clearFilters()">Clear all</button>
         </div>
 
+        <!-- CAMP NAME SEARCH -->
+        <div class="filter-group">
+          <label>Search by Name</label>
+          <div style="position:relative;">
+            <input type="text" id="filter-name-search" placeholder="Type a camp name..." oninput="applyFilters();document.getElementById('filter-name-clear').style.display=this.value?'flex':'none';" style="width:100%;padding:.5rem 2rem .5rem .75rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;color:var(--text);box-sizing:border-box;">
+            <button id="filter-name-clear" onclick="document.getElementById('filter-name-search').value='';document.getElementById('filter-name-clear').style.display='none';applyFilters();" style="display:none;position:absolute;right:.4rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#999;font-size:1rem;padding:0;width:1.2rem;height:1.2rem;align-items:center;justify-content:center;line-height:1;">✕</button>
+          </div>
+        </div>
+        <div class="filter-divider"></div>
+
+        <!-- CAMP TYPE FILTER -->
         <div class="filter-group"><label>Camp Type</label>
           <div class="filter-chips">
             <button class="chip" data-filter="type" data-val="Sports" onclick="toggleChip(this)">Sports</button>
             <button class="chip" data-filter="type" data-val="Arts" onclick="toggleChip(this)">Arts</button>
             <button class="chip" data-filter="type" data-val="STEM" onclick="toggleChip(this)">STEM</button>
-            <button class="chip" data-filter="type" data-val="Outdoor" onclick="toggleChip(this)">Outdoor</button>
+            <button class="chip" data-filter="type" data-val="Outdoor" onclick="toggleChip(this)">Outdoor / Nature</button>
             <button class="chip" data-filter="type" data-val="Music" onclick="toggleChip(this)">Music</button>
             <button class="chip" data-filter="type" data-val="Dance" onclick="toggleChip(this)">Dance</button>
             <button class="chip" data-filter="type" data-val="Cooking" onclick="toggleChip(this)">Cooking</button>
+            <button class="chip" data-filter="type" data-val="Academic" onclick="toggleChip(this)">Academic</button>
+            <button class="chip" data-filter="type" data-val="Variety" onclick="toggleChip(this)">Variety</button>
             <button class="chip" data-filter="type" data-val="Neurodiversity" onclick="toggleChip(this)">Neurodiversity</button>
           </div>
         </div>
         <div class="filter-divider"></div>
 
-        <!-- REG TYPE FILTER — the new key feature -->
-        <div class="filter-group"><label>Registration Method</label>
-          <div class="filter-chips reg-filter-chips">
-            <button class="chip native" data-filter="regType" data-val="native" onclick="toggleChip(this)" title="Register & pay entirely on CampQuest">🟢 Book on CampQuest</button>
-            <button class="chip external" data-filter="regType" data-val="external" onclick="toggleChip(this)" title="We link you to the camp's website">🔵 Camp Website</button>
-            <button class="chip contact" data-filter="regType" data-val="contact" onclick="toggleChip(this)" title="Send inquiry, camp responds">🟡 Request Info</button>
-            <button class="chip phone" data-filter="regType" data-val="phone" onclick="toggleChip(this)" title="Call or email the camp directly">🟣 Call / Email</button>
+        <!-- LOCATION FILTER -->
+        <div class="filter-group">
+          <label>Location</label>
+          <div id="location-filter-chips" class="filter-chips" style="max-height:140px;overflow-y:auto;padding-right:.2rem;">
+            <span style="font-size:.78rem;color:var(--muted);">Loading cities...</span>
           </div>
         </div>
         <div class="filter-divider"></div>
 
-        <!-- AMENITIES FILTERS -->
+        <!-- DATE RANGE FILTER -->
         <div class="filter-group">
-          <label>Amenities</label>
+          <label>Date Range</label>
+          <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.2rem;">
+            <div style="display:flex;flex-direction:column;gap:.2rem;">
+              <span style="font-size:.72rem;color:var(--muted);font-weight:500;">Start</span>
+              <input type="date" id="fp-date-start" onchange="applyFilters()" style="width:100%;padding:.45rem .6rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.82rem;outline:none;color:var(--text);">
+            </div>
+            <div style="display:flex;flex-direction:column;gap:.2rem;">
+              <span style="font-size:.72rem;color:var(--muted);font-weight:500;">End</span>
+              <input type="date" id="fp-date-end" onchange="applyFilters()" style="width:100%;padding:.45rem .6rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.82rem;outline:none;color:var(--text);">
+            </div>
+          </div>
+        </div>
+        <div class="filter-divider"></div>
+
+        <!-- OPTIONS (formerly Amenities) -->
+        <div class="filter-group">
+          <label>Options</label>
           <div style="display:flex;flex-direction:column;gap:.6rem;margin-top:.3rem;">
             <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;font-size:.88rem;font-weight:500;color:var(--text);">
               <input type="checkbox" id="filter-before-after-care" onchange="applyFilters()" style="width:16px;height:16px;accent-color:var(--moss);cursor:pointer;">
@@ -558,7 +609,6 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
             </label>
           </div>
         </div>
-
 
       </aside>
 
@@ -583,31 +633,39 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
 <div id="page-detail" class="page">
 <div class="detail-page">
   <button class="back-btn" id="detail-back-btn" onclick="detailGoBack()">← Back to results</button>
-  <div class="detail-hero">
-    <div class="detail-hero-img img-sports" id="detail-hero-img">
+
+  <div class="detail-top">
+    <div class="detail-banner img-sports" id="detail-hero-img">
       <div class="detail-big-icon" id="detail-icon">⚽</div>
       <div class="detail-type-badge" id="detail-type">Sports</div>
       <button id="detail-save-btn" onclick="toggleSaveFromDetail()" style="position:absolute;top:.9rem;right:.9rem;background:#fff;border:none;width:36px;height:36px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.25);transition:transform .15s;">♡</button>
-      <h1 id="detail-name">Camp Name</h1>
-      <div class="detail-hero-loc" id="detail-loc">📍 Location</div>
-      <div style="margin-top:.6rem;">
-        <button onclick="claimFromDetail()" style="background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);color:#fff;padding:.35rem .85rem;border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Is this your camp? Claim this listing</button>
-      </div>
     </div>
-    <div class="detail-sidebar">
+    <div class="detail-header">
       <div>
-        <div class="reg-route-pill external" id="detail-reg-pill">🔵 Visit Camp Website</div>
+        <h1 id="detail-name">Camp Name</h1>
+        <div class="detail-hero-loc" id="detail-loc">📍 Location</div>
       </div>
-      <div>
-        <div class="quick-fact"><span>🎂</span><div><span class="quick-fact-label">Ages</span><span id="detail-ages">6–14</span></div></div>
-        <div class="quick-fact"><span>☀️</span><div><span class="quick-fact-label">Session</span><span>Day Camp · 8am–3pm</span></div></div>
-        <div class="quick-fact"><span>📅</span><div><span class="quick-fact-label">Dates</span><span id="detail-dates">Jun 9–13</span></div></div>
-
+      <button onclick="claimFromDetail()" id="detail-claim-btn" style="background:none;border:1.5px solid var(--border);color:var(--muted);padding:.4rem .9rem;border-radius:20px;font-size:.75rem;font-weight:500;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;flex-shrink:0;align-self:flex-start;margin-top:.3rem;">Is this your camp? Claim listing</button>
+    </div>
+    <div class="detail-facts-row">
+      <div class="detail-fact">
+        <span class="detail-fact-label">Ages</span>
+        <span id="detail-ages">6–14</span>
+      </div>
+      <div class="detail-fact">
+        <span class="detail-fact-label">Hours</span>
+        <span id="detail-hours">9am–3pm</span>
       </div>
     </div>
   </div>
 
   <div class="detail-body">
+    <div>
+      <div class="detail-section">
+        <h3>Session Dates</h3>
+        <div id="detail-dates">Jun 9–13</div>
+      </div>
+    </div>
     <div>
       <div class="cta-card" id="detail-cta-card">
         <!-- Injected dynamically based on reg type -->
@@ -624,7 +682,7 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
 <!-- ── UMBRELLA DETAIL PAGE ── -->
 <div id="page-umbrella" class="page">
   <div style="max-width:1100px;margin:0 auto;padding:2rem 1.5rem;">
-    <button class="back-btn" onclick="showPage('search')" style="margin-bottom:1.5rem;">← Back to results</button>
+    <button class="back-btn" onclick="showPage('search');window.scrollTo(0,_searchScrollPos);" style="margin-bottom:1.5rem;">← Back to results</button>
 
     <!-- Hero banner -->
     <div style="background:linear-gradient(160deg,var(--forest) 0%,var(--moss) 100%);border-radius:20px;padding:2.5rem;margin-bottom:1.5rem;display:flex;align-items:flex-start;gap:1.5rem;flex-wrap:wrap;">
@@ -880,37 +938,44 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
 /* ─── CAMP DATA with regType ─── */
 
 /* ═══════════════════════════════════════════════
-   AIRTABLE INTEGRATION
+   SUPABASE INTEGRATION
    Fetches live camp data on page load.
-   Data flows: Airtable → parseAirtableRecords()
+   Data flows: Supabase → parseSupabaseRecord()
    → camps[] → applyFilters() → renderCamps()
 ═══════════════════════════════════════════════ */
 
-var AIRTABLE_TOKEN   = 'patvbhTRA9BAxkNCE.db61c38fb0eac29b9dbc3a5dca624e755c796f98f7bea0d9a35ec6a5a44f8c49';
-var AIRTABLE_BASE_ID = 'appRCq4XOz2sKdfhn';
-var AIRTABLE_TABLE   = 'Camps';
+var SUPABASE_URL = 'https://ikhvkrbwwnapeofqpxdb.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_YPY0o2fRbGoDP1CBFoZb-A_11ucDenw';
+var sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Maps Airtable Camp Type → imgClass and icon
 var typeStyles = {
-  'Sports':    {imgClass:'img-sports',  icon:'⚽'},
-  'Arts':      {imgClass:'img-arts',    icon:'🎨'},
-  'STEM':      {imgClass:'img-stem',    icon:'💻'},
-  'Outdoor':   {imgClass:'img-outdoor', icon:'🏕️'},
-  'Music':     {imgClass:'img-music',   icon:'🎸'},
-  'Dance':     {imgClass:'img-dance',   icon:'💃'},
-  'Cooking':   {imgClass:'img-cooking', icon:'🍳'},
-  'Academic':  {imgClass:'img-chess',   icon:'♟️'},
-  'Day Camp':  {imgClass:'img-sports',  icon:'☀️'},
-  'Swimming':  {imgClass:'img-water',   icon:'🏊'},
-  'Science':   {imgClass:'img-water',   icon:'🔬'},
-  'Writing':   {imgClass:'img-outdoor', icon:'✍️'},
-  'Media':     {imgClass:'img-music',   icon:'🎬'},
-  'Health':    {imgClass:'img-sports',  icon:'🏃'},
-  'Default':   {imgClass:'img-stem',    icon:'🎓'},
+  'Sports':           {imgClass:'img-sports',        icon:'⚽'},
+  'Arts':             {imgClass:'img-arts',           icon:'🎨'},
+  'STEM':             {imgClass:'img-stem',           icon:'💻'},
+  'Outdoor':          {imgClass:'img-outdoor',        icon:'🏕️'},
+  'Outdoor / Nature': {imgClass:'img-outdoor',        icon:'🏕️'},
+  'Music':            {imgClass:'img-music',          icon:'🎸'},
+  'Dance':            {imgClass:'img-dance',          icon:'💃'},
+  'Cooking':          {imgClass:'img-cooking',        icon:'🍳'},
+  'Academic':         {imgClass:'img-chess',          icon:'♟️'},
+  'Variety':          {imgClass:'img-variety',         icon:'🎪'},
+  'Neurodiversity':   {imgClass:'img-neurodiversity', icon:'🌈'},
+  'Day Camp':         {imgClass:'img-sports',         icon:'☀️'},
+  'Swimming':         {imgClass:'img-water',          icon:'🏊'},
+  'Science':          {imgClass:'img-stem',           icon:'🔬'},
+  'Writing':          {imgClass:'img-outdoor',        icon:'✍️'},
+  'Media':            {imgClass:'img-music',          icon:'🎬'},
+  'Health':           {imgClass:'img-sports',         icon:'🏃'},
+  'Default':          {imgClass:'img-stem',           icon:'🎓'},
 };
 
 function getTypeStyle(type) {
-  return typeStyles[type] || typeStyles['Default'];
+  if (!type) return typeStyles['Default'];
+  if (typeStyles[type]) return typeStyles[type];
+  // For compound types like "Academic, Variety" — use the first type
+  var first = type.split(',')[0].trim();
+  return typeStyles[first] || typeStyles['Default'];
 }
 
 // Registration type mapping from sheet values
@@ -932,25 +997,23 @@ function parseBoolean(val) {
 
 
 
-// Convert one Airtable record → camp object the UI expects
-function parseAirtableRecord(record, index) {
-  var f = record.fields;
-
-  var campName    = f['Camp Name']         || '';
-  var campType    = f['Camp Type']         || 'Default';
-  var cityState   = f['City / State']      || '';
-  var website     = f['Website URL']       || null;
-  var phone       = f['Phone Number']      || null;
-  var ageMin      = parseInt(f['Age Min']) || 0;
-  var ageMax      = parseInt(f['Age Max']) || 99;
-  var regTypeRaw  = f['Registration Type'] || '';
-  var dates       = f['Session Dates']     || '';
-  var beforeAfter = parseBoolean(f['Before & After Care']);
-  var meals       = parseBoolean(f['Meals Available']);
-  var overnight   = parseBoolean(f['Overnight Camp']);
-  var displayType = f['Display Type']      || 'standard';
-  var parentId    = f['Parent Camp ID']    || null;
-  var subject     = f['Subject Tag']       || campType;
+// Convert one Supabase row → camp object the UI expects
+function parseSupabaseRecord(row, index) {
+  var campName    = row.camp_name         || '';
+  var campType    = row.camp_type         || 'Default';
+  var cityState   = row.city_state        || '';
+  var website     = row.website_url       || null;
+  var phone       = row.phone_number      || null;
+  var ageMin      = parseInt(row.age_min) || 0;
+  var ageMax      = parseInt(row.age_max) || 99;
+  var regTypeRaw  = row.registration_type || '';
+  var dates       = row.session_dates     || '';
+  var beforeAfter = parseBoolean(row.before_after_care);
+  var meals       = parseBoolean(row.meals_available);
+  var overnight   = parseBoolean(row.overnight_camp);
+  var displayType = row.display_type      || 'standard';
+  var parentId    = row.parent_camp_id    || null;
+  var subject     = row.subject_tag       || campType;
 
   var style   = getTypeStyle(campType);
   var regType = parseRegType(regTypeRaw);
@@ -970,7 +1033,7 @@ function parseAirtableRecord(record, index) {
 
   var camp = {
     id:             index,
-    airtableId:     record.id,
+    supabaseId:     row.id,
     name:           campName,
     type:           campType,
     regType:        regType,
@@ -988,8 +1051,8 @@ function parseAirtableRecord(record, index) {
     icon:           style.icon,
     week:           week,
     dates:          parsedDates || 'TBD',
-    time:           '9am–3pm',
-    desc:           f['Notes'] || f['Description'] || '',
+    time:           row.hours || 'See website',
+    desc:           '',
     website:        website ? website.replace(/^https?:\/\//, '') : null,
     phone:          phone || null,
     displayType:    displayType,
@@ -1009,22 +1072,32 @@ function parseAirtableRecord(record, index) {
 
 // After parsing all records, count sub-programs per umbrella
 function linkUmbrellaPrograms(campsArr) {
-  // Build airtableId → index map
-  var idMap = {};
-  campsArr.forEach(function(c, i){ idMap[c.airtableId] = i; });
-
   campsArr.forEach(function(c) {
     if (c.displayType === 'sub-program' && c.parentId) {
-      // Find parent by airtable record id or by row number
-      var parent = campsArr.find(function(p){
-        return p.airtableId === c.parentId || String(p.id) === String(c.parentId);
-      });
+      // parent_camp_id contains the Camp Name of the parent
+      var parent = campsArr.find(function(p){ return p.name === c.parentId; });
       if (parent) {
         parent.programCount = (parent.programCount || 0) + 1;
         c.parentIndex = parent.id;
       }
     }
   });
+}
+
+function populateCityAutocomplete(cities) {
+  var dl = document.getElementById('city-list');
+  if (!dl) return;
+  var filtered = cities.filter(function(c){ return c !== 'Multiple locations, WA'; });
+  dl.innerHTML = filtered.map(function(c){ return '<option value="' + c + '">'; }).join('');
+}
+
+function populateCityFilter(cities) {
+  var container = document.getElementById('location-filter-chips');
+  if (!container) return;
+  var filtered = cities.filter(function(city){ return city !== 'Multiple locations, WA'; });
+  container.innerHTML = filtered.map(function(city) {
+    return '<button class="chip" data-filter="location" data-val="' + city + '" onclick="toggleChip(this)">' + city + '</button>';
+  }).join('');
 }
 
 // Show/hide loading overlay
@@ -1052,65 +1125,41 @@ function showLoadError(msg) {
   }
 }
 
-// Auto-discover the real table name (handles renames after reimport)
-// Main fetch — pages through all Airtable records (100 per page max)
-async function fetchAllAirtableRecords(offset) {
-  var url = 'https://api.airtable.com/v0/' + AIRTABLE_BASE_ID + '/' + encodeURIComponent(AIRTABLE_TABLE);
-  url += '?pageSize=100';
-  if (offset) url += '&offset=' + encodeURIComponent(offset);
-
-  var fetchPromise = fetch(url, {
-    headers: { 'Authorization': 'Bearer ' + AIRTABLE_TOKEN }
-  });
-  var timeoutPromise = new Promise(function(_, reject) {
-    setTimeout(function() { reject(new Error('Request timed out')); }, 8000);
-  });
-
-  var response = await Promise.race([fetchPromise, timeoutPromise]);
-
-  if (!response.ok) {
-    throw new Error('Airtable API error: ' + response.status + ' ' + response.statusText);
-  }
-
-  return response.json();
-}
-
-async function loadCampsFromAirtable() {
-  // Cannot fetch from file:// or sandboxed about: contexts — use demo data silently
-  var proto = window.location.protocol;
-  if (proto === 'file:' || proto === 'about:' || proto === 'blob:') {
-    console.log('ℹ️ Sandboxed context (' + proto + ') — using demo data. Open file directly in browser or deploy to GitHub Pages to load live Airtable data.');
-    return;
-  }
-
+async function loadCampsFromSupabase() {
   try {
-    var allRecords = [];
-    var offset = null;
+    var client = sbClient;
+    var allRows = [];
+    var from = 0;
+    var batchSize = 1000;
 
-    // Page through all records (Airtable returns max 100 at a time)
-    do {
-      var data = await fetchAllAirtableRecords(offset);
-      allRecords = allRecords.concat(data.records || []);
-      offset = data.offset || null;
-    } while (offset);
+    // Page through all records (Supabase returns max 1000 at a time)
+    while (true) {
+      var result = await client
+        .from('camps')
+        .select('*')
+        .range(from, from + batchSize - 1);
 
-    if (allRecords.length === 0) return;
+      if (result.error) throw new Error('Supabase error: ' + result.error.message);
+      if (!result.data || result.data.length === 0) break;
 
-    console.log('✅ Airtable connected. Total records fetched:', allRecords.length);
-    console.log('📋 Field names in your table:', Object.keys(allRecords[0].fields));
-    console.log('📄 First record sample:', JSON.stringify(allRecords[0].fields, null, 2));
+      allRows = allRows.concat(result.data);
+      if (result.data.length < batchSize) break;
+      from += batchSize;
+    }
 
-    // Filter out blank/header rows (rows where Camp Name is empty or starts with ←)
-    var validRecords = allRecords.filter(function(r) {
-      var name = r.fields['Camp Name'] || '';
+    if (allRows.length === 0) return;
+
+    console.log('✅ Supabase connected. Total records fetched:', allRows.length);
+
+    // Filter out blank/invalid rows
+    var validRows = allRows.filter(function(r) {
+      var name = r.camp_name || '';
       return name && !name.startsWith('←') && !name.startsWith('EXAMPLE');
     });
 
-    console.log('🏕️ Valid camp records after filtering:', validRecords.length);
-
     // Parse into camp objects
-    var parsed = validRecords.map(function(record, i) {
-      return parseAirtableRecord(record, i);
+    var parsed = validRows.map(function(row, i) {
+      return parseSupabaseRecord(row, i);
     });
 
     // Link sub-programs to their umbrella parents
@@ -1122,19 +1171,22 @@ async function loadCampsFromAirtable() {
     // Store sub-programs separately for umbrella browsers
     window.subPrograms = parsed.filter(function(c){ return c.displayType === 'sub-program'; });
 
-    console.log('✅ Loaded ' + camps.length + ' camps (' + window.subPrograms.length + ' sub-programs) from Airtable');
+    console.log('✅ Loaded ' + camps.length + ' camps (' + window.subPrograms.length + ' sub-programs) from Supabase');
+
+    // Extract distinct cities for autocomplete and filter
+    var cities = [...new Set(camps.map(function(c){ return c.location; }).filter(Boolean))].sort();
+    populateCityAutocomplete(cities);
+    populateCityFilter(cities);
 
     // Re-render with live data
     applyFilters();
 
+    // Restore any existing login session now that camps are loaded
+    await checkExistingSession();
+
   } catch (err) {
-    // Demo data is already rendered — log detail to help diagnose
-    console.warn('⚠️ Airtable unavailable, using demo data.');
+    console.warn('⚠️ Supabase unavailable, using demo data.');
     console.warn('  Error:', err.message);
-    console.warn('  Protocol:', window.location.protocol);
-    console.warn('  Base ID:', AIRTABLE_BASE_ID);
-    console.warn('  Table:', AIRTABLE_TABLE);
-    console.warn('  Token (first 20 chars):', AIRTABLE_TOKEN.substring(0, 20) + '...');
   }
 }
 
@@ -1163,7 +1215,7 @@ function var_amber(){return '#c47a1a';}
 function var_purple(){return '#7a4a8a';}
 
 /* ─── FILTER STATE ─── */
-let activeFilters = {type:[],regType:[]};
+let activeFilters = {type:[],regType:[],location:[]};
 let savedCamps = new Set();
 let currentCamp = null;
 let currentFilteredData = null;
@@ -1219,41 +1271,114 @@ function renderCamps(data) {
         '<div class="camp-tags">' + c.tags.map(function(t){ return '<span class="tag">' + t + '</span>'; }).join('') + '</div>' +
         '<div class="camp-footer">' +
           '<div><div class="camp-rating">Ages ' + c.ages + '</div></div>' +
-          '<button class="card-reg-btn ' + rt + '" onclick="event.stopPropagation();openDetail(' + c.id + ')">' + labels[rt] + '</button>' +
         '</div>' +
       '</div>' +
     '</div>';
   }).join('');
 }
 
+function isLikelySessionItem(str) {
+  var s = str.trim();
+  if (!s || s.length < 3) return false;
+  // Always remove these
+  if (/financial aid/i.test(s)) return false;
+  if (/early bird/i.test(s) && !/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/i.test(s)) return false;
+  if (/\b(Rd|Ave|Blvd|Dr|Ln|Way|Ct)\b/.test(s) && /\d{4,}/.test(s)) return false; // street address
+  // Keep if it has a real session signal
+  if (/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/i.test(s)) return true;
+  if (/\bSession\s+\d/i.test(s)) return true;
+  if (/\b\d{1,2}(am|pm)/i.test(s)) return true;
+  if (/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun)\b/i.test(s)) return true;
+  if (/\bDay Camp\b/i.test(s)) return true;
+  if (/\b(overnight|mini)\b/i.test(s)) return true;
+  return false;
+}
+
+function stripPrice(str) {
+  // Remove price patterns like ($1,450), ($450), — $1 450, etc.
+  return str
+    .replace(/\s*\(\s*\$[\d,\s]+\)/g, '')   // removes ($1 450) or ($1,450)
+    .replace(/\s*—\s*\$[\d,]+/g, '')          // removes — $450
+    .replace(/\s*\$[\d,]+(\.\d{2})?/g, '')   // removes standalone $450 or $1,450.00
+    .trim();
+}
+
+function parseSessionDate(str) {
+  var months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+  var m = str.trim().match(/^([A-Za-z]+)\s+(\d+)/);
+  if (!m) return null;
+  var mo = months[m[1]]; if (mo === undefined) return null;
+  return new Date(2026, mo, parseInt(m[2]));
+}
+
+function campHasSessionInRange(camp, startDate, endDate) {
+  var dates = camp.dates;
+  if (!dates || dates === 'TBD') return true;
+  if (!Array.isArray(dates)) dates = [dates];
+  return dates.some(function(dateStr) {
+    var parts = dateStr.split('–');
+    var sessStart = parseSessionDate(parts[0]);
+    if (!sessStart) return true;
+    var sessEnd = sessStart;
+    if (parts[1]) {
+      var endStr = parts[1].trim();
+      if (/^[A-Za-z]/.test(endStr)) {
+        sessEnd = parseSessionDate(endStr) || sessStart;
+      } else {
+        sessEnd = new Date(2026, sessStart.getMonth(), parseInt(endStr));
+      }
+    }
+    return sessStart <= endDate && sessEnd >= startDate;
+  });
+}
+
 function applyFilters() {
   let data = [...camps];
 
-  // Text search
+  // Location search bar (text match)
   const locEl = document.getElementById('location-input');
   const query = locEl ? locEl.value.trim().toLowerCase() : '';
   if (query && query.length > 1) {
     data = data.filter(c =>
-      c.name.toLowerCase().includes(query) ||
-      c.location.toLowerCase().includes(query) ||
-      c.type.toLowerCase().includes(query) ||
-      c.tags.some(t => t.toLowerCase().includes(query))
+      c.location.toLowerCase().includes(query)
     );
   }
 
-  // Age filter
-  const ageEl = document.getElementById('age-filter');
-  const ageVal = ageEl ? ageEl.value : '';
-  if (ageVal && ageVal !== 'Any Age' && ageVal !== 'Any') {
-    const [minA, maxA] = ageVal.replace(' yrs','').split('–').map(Number);
-    data = data.filter(c => c.ageMin <= maxA && c.ageMax >= minA);
+  // Camp name search (filter panel)
+  const nameEl = document.getElementById('filter-name-search');
+  const nameQuery = nameEl ? nameEl.value.trim().toLowerCase() : '';
+  if (nameQuery && nameQuery.length > 1) {
+    data = data.filter(c => c.name.toLowerCase().includes(nameQuery));
   }
 
-  // Price
+  // Age filter (exact age)
+  const ageEl = document.getElementById('age-filter');
+  const ageVal = ageEl ? ageEl.value : '';
+  if (ageVal && ageVal !== 'Any') {
+    var age = parseInt(ageVal);
+    data = data.filter(c => c.ageMin <= age && c.ageMax >= age);
+  }
 
-  // Chip filters
-  if (activeFilters.type.length) data = data.filter(c => activeFilters.type.includes(c.type));
-  if (activeFilters.regType.length) data = data.filter(c => activeFilters.regType.includes(c.regType));
+  // Date range filter (filter panel dates take priority; fall back to hero dates)
+  var fpStart = document.getElementById('fp-date-start');
+  var fpEnd = document.getElementById('fp-date-end');
+  var heroStart = document.getElementById('date-start');
+  var heroEnd = document.getElementById('date-end');
+  var startVal = (fpStart && fpStart.value) ? fpStart.value : (heroStart ? heroStart.value : '');
+  var endVal = (fpEnd && fpEnd.value) ? fpEnd.value : (heroEnd ? heroEnd.value : '');
+  if (startVal || endVal) {
+    var filterStart = startVal ? new Date(startVal + 'T00:00:00') : new Date(2000, 0, 1);
+    var filterEnd = endVal ? new Date(endVal + 'T23:59:59') : new Date(2099, 11, 31);
+    data = data.filter(function(c){ return campHasSessionInRange(c, filterStart, filterEnd); });
+  }
+
+  // Camp type chips
+  if (activeFilters.type.length) data = data.filter(c => activeFilters.type.some(t => c.type.includes(t)));
+
+  // Location chips
+  if (activeFilters.location && activeFilters.location.length) {
+    data = data.filter(c => activeFilters.location.includes(c.location));
+  }
 
   // Amenity checkboxes
   const beforeAfterEl = document.getElementById('filter-before-after-care');
@@ -1262,6 +1387,7 @@ function applyFilters() {
   if (mealsEl && mealsEl.checked) data = data.filter(c => c.mealsAvailable);
   const overnightEl = document.getElementById('filter-overnight');
   if (overnightEl && overnightEl.checked) data = data.filter(c => c.overnight);
+
   // Sort
   const sortEl = document.getElementById('sort-select');
   const sort = sortEl ? sortEl.value : 'match';
@@ -1270,8 +1396,8 @@ function applyFilters() {
   // Update count label
   const countEl = document.getElementById('results-count');
   if (countEl) {
-    const loc = (locEl && locEl.value.trim()) ? locEl.value.trim() : 'Austin, TX';
-    countEl.innerHTML = `<em>${data.length}</em> camp${data.length!==1?'s':''} near <em>${loc}</em>`;
+    const loc = (locEl && locEl.value.trim()) ? locEl.value.trim() : 'all areas';
+    countEl.innerHTML = `<em>${data.length}</em> camp${data.length!==1?'s':''} in <em>${loc}</em>`;
   }
 
   currentFilteredData = data;
@@ -1290,19 +1416,57 @@ function toggleChip(btn) {
 }
 
 function updateFilterCount() {
-  const n=activeFilters.type.length+activeFilters.regType.length;
+  const n=activeFilters.type.length+(activeFilters.location||[]).length;
   const fc=document.getElementById('filter-count');
   const cb=document.getElementById('clear-btn');
   if(fc){fc.textContent=n;fc.style.display=n?'':'none';}
   if(cb){cb.style.display=n?'':'none';}
 }
 
+function updateLocationClear() {
+  var input = document.getElementById('location-input');
+  var btn = document.getElementById('location-clear-btn');
+  if (btn) btn.style.display = (input && input.value.length > 0) ? 'inline' : 'none';
+}
+
+function clearLocationInput() {
+  var input = document.getElementById('location-input');
+  if (input) { input.value = ''; }
+  updateLocationClear();
+  if (document.getElementById('results-section').style.display === 'block') applyFilters();
+}
+
+function autoSetEndDate() {
+  var startEl = document.getElementById('date-start');
+  var endEl = document.getElementById('date-end');
+  if (!startEl || !startEl.value) return;
+  // Only auto-set if end date is empty or before the start date
+  var startDate = new Date(startEl.value + 'T00:00:00');
+  var nextDay = new Date(startDate);
+  nextDay.setDate(nextDay.getDate() + 1);
+  var nextDayStr = nextDay.toISOString().split('T')[0];
+  if (endEl && (!endEl.value || endEl.value <= startEl.value)) {
+    endEl.value = nextDayStr;
+  }
+}
+
+function toggleMobileFilters() {
+  var panel = document.getElementById('filters-panel-aside');
+  var label = document.getElementById('mobile-filter-label');
+  if (!panel) return;
+  panel.classList.toggle('mobile-open');
+  label.textContent = panel.classList.contains('mobile-open') ? 'Hide Filters' : 'Show Filters';
+}
+
 function clearFilters() {
-  activeFilters={type:[],regType:[]};
+  activeFilters={type:[],regType:[],location:[]};
   document.querySelectorAll('.chip.selected').forEach(c=>c.classList.remove('selected'));
   var bac=document.getElementById('filter-before-after-care'); if(bac) bac.checked=false;
   var mal=document.getElementById('filter-meals'); if(mal) mal.checked=false;
   var ovn=document.getElementById('filter-overnight'); if(ovn) ovn.checked=false;
+  var ns=document.getElementById('filter-name-search'); if(ns) ns.value='';
+  var fps=document.getElementById('fp-date-start'); if(fps) fps.value='';
+  var fpe=document.getElementById('fp-date-end'); if(fpe) fpe.value='';
   applyFilters();
 }
 
@@ -1336,9 +1500,7 @@ function obStep(from) {
     if (!email||!email.includes('@')) { showToast('Please enter a valid email.'); return; }
     if (pass.length < 6) { showToast('Password must be at least 6 characters.'); return; }
     if (!/^\d{5}$/.test(zip)) { showToast('Please enter a valid 5-digit zip code.'); return; }
-    if (registeredUsers.find(function(u){ return u.email.toLowerCase()===email.toLowerCase(); })) {
-      showToast('An account with this email already exists.'); return;
-    }
+    // (duplicate email check handled by Supabase on submit)
     // Save account data temporarily
     window._obDraft = {fname:fname,lname:lname,email:email,pass:pass,zip:zip};
   }
@@ -1362,21 +1524,29 @@ function obStep(from) {
   dots.forEach(function(d,i){ document.getElementById(d).style.background = i < to ? 'var(--forest)' : '#eef2ef'; });
 }
 
-function obFinish() {
-  // Create the user account from draft
+async function obFinish() {
   var d = window._obDraft || {};
-  var user = {
-    id: 'u_' + Date.now(),
-    name: (d.fname||'') + ' ' + (d.lname||''),
-    email: d.email || '',
-    password: d.pass || '',
-    zip: d.zip || '',
-    createdAt: new Date().toISOString()
-  };
-  registeredUsers.push(user);
-  saveUsers();
-  currentUser = user;
+  var signUpResp = await sbClient.auth.signUp({ email: d.email||'', password: d.pass||'' });
+  if (signUpResp.error) { showToast('Error: ' + signUpResp.error.message); return; }
+  var newUser = signUpResp.data.user;
+  await sbClient.from('user_profiles').insert({ id: newUser.id, full_name: (d.fname||'')+' '+(d.lname||''), zip: d.zip||'' });
+  currentUser = { id: newUser.id, name: (d.fname||'')+' '+(d.lname||''), email: d.email||'', zip: d.zip||'', createdAt: newUser.created_at };
   window._obDraft = null;
+  // Save any children added during onboarding
+  for (var i = 0; i < children.length; i++) {
+    var child = children[i];
+    var insResp = await sbClient.from('user_children').insert({user_id: newUser.id, name: child.name, age: child.age, emoji: child.emoji, sort_order: i}).select().single();
+    if (insResp.data) {
+      var oldId = child.id;
+      children[i].id = insResp.data.id;
+      var tab = document.querySelector('[data-child-id="' + oldId + '"]');
+      if (tab) {
+        tab.dataset.childId = insResp.data.id;
+        (function(t, newId){ t.onclick = function(){ switchChild(t, newId); }; })(tab, insResp.data.id);
+      }
+      if (activeChild === oldId) activeChild = insResp.data.id;
+    }
+  }
   updateNavForUser();
   showToast('Welcome to CampQuest, ' + (d.fname||'friend') + '! \uD83C\uDF89');
   showPage('search');
@@ -1429,28 +1599,14 @@ var uwPrograms = [
   {id:'uw20',name:'Illustration & Concept Art (Online)',subject:'Arts',grades:'Gr 6–10',dates:'Jun 15–19',time:'1–4pm',avail:'open',online:true,desc:'Digital illustration fundamentals using Procreate — live instruction, fully remote.'},
 ];
 
-// Lookup helper for both main camps and UW sub-programs
+// Lookup helper for both main camps and sub-programs
 function getCampById(id) {
-  if (typeof id === 'number' || (typeof id === 'string' && /^\d+$/.test(id))) {
-    return camps[parseInt(id)];
+  var numId = parseInt(id);
+  if (!isNaN(numId)) {
+    return camps.find(function(c){ return c.id === numId; }) ||
+           (window.subPrograms || []).find(function(p){ return p.id === numId; }) || null;
   }
-  var prog = uwPrograms.find(function(p){ return p.id === id; });
-  if (!prog) return null;
-  // Return a camp-shaped object from the UW program
-  return {
-    id:       prog.id,
-    name:     prog.name,
-    type:     prog.subject,
-    icon:     subjIcon[prog.subject] || '🎓',
-    imgClass: subjImgClass[prog.subject] || 'img-stem',
-    dates:    prog.dates,
-    time:     prog.time,
-    week:     prog.dates.split('–')[0],
-    regType:  'external',
-    website:  'uwpce.uw.edu/youth',
-    phone:    null,
-    isUWProgram: true
-  };
+  return null;
 }
 
 var pbActiveSubj = 'all';
@@ -1460,8 +1616,13 @@ var pbShortlist = [];
 var umbrellaCurrentCamp = null;
 
 function openUmbrellaDetail(id) {
-  umbrellaCurrentCamp = camps[id];
+  _searchScrollPos = window.scrollY;
+  umbrellaCurrentCamp = camps.find(function(c){ return c.id === id; });
   var c = umbrellaCurrentCamp;
+
+  // Populate uwPrograms with actual sub-programs belonging to this umbrella
+  uwPrograms = (window.subPrograms || []).filter(function(p){ return p.parentId === c.name; });
+
   document.getElementById('umb-name').textContent = c.name;
   document.getElementById('umb-loc').textContent = c.location;
   document.getElementById('umb-summary').textContent = c.umbrellaSummary;
@@ -1490,9 +1651,9 @@ function pbGetFiltered() {
     var q = pbSearchQuery.toLowerCase().trim();
     var searchMatch = !q ||
       p.name.toLowerCase().includes(q) ||
-      p.subject.toLowerCase().includes(q) ||
-      p.grades.toLowerCase().includes(q) ||
-      p.desc.toLowerCase().includes(q);
+      (p.subject || '').toLowerCase().includes(q) ||
+      (p.ages || '').toLowerCase().includes(q) ||
+      (p.desc || '').toLowerCase().includes(q);
     return subjMatch && searchMatch;
   });
 }
@@ -1514,12 +1675,12 @@ function pbRender() {
     var saved = pbShortlist.some(function(s){ return s.id === p.id; });
     return '<div class="program-item' + (saved ? ' saved' : '') + '" id="pi-' + p.id + '" style="cursor:pointer;">' +
       '<div onclick="openUWProgramDetail(\'' + p.id + '\')" style="flex:1;">' +
-        '<div><span class="pi-subject-tag ' + (subjColors[p.subject]||'stem') + '">' + p.subject + (p.online ? ' · Online' : '') + '</span></div>' +
+        '<div><span class="pi-subject-tag ' + (subjColors[p.subject]||'stem') + '">' + (p.subject || p.type) + '</span></div>' +
         '<div class="pi-name">' + p.name + '</div>' +
         '<div class="pi-meta">' +
-          '<span>📅 ' + p.dates + '</span>' +
-          '<span>🕐 ' + p.time + '</span>' +
-          '<span>👤 ' + p.grades + '</span>' +
+          '<span>📅 ' + (Array.isArray(p.dates) ? p.dates[0] : p.dates) + '</span>' +
+          '<span>🕐 ' + (p.time || '') + '</span>' +
+          '<span>👤 Ages ' + p.ages + '</span>' +
         '</div>' +
         '<div style="font-size:.72rem;color:var(--muted);margin-top:.3rem;line-height:1.4;">' + p.desc + '</div>' +
       '</div>' +
@@ -1553,7 +1714,7 @@ function pbShowMore() {
 }
 
 function pbToggleSave(pid) {
-  var prog = uwPrograms.find(function(p){ return p.id === pid; });
+  var prog = uwPrograms.find(function(p){ return String(p.id) === String(pid); });
   if (!prog) return;
   var idx = pbShortlist.findIndex(function(s){ return s.id === pid; });
   if (idx === -1) {
@@ -1600,6 +1761,7 @@ function slRegister() {
 
 /* ─── UW SUB-PROGRAM DETAIL ─── */
 var detailSource = 'search'; // 'search' or 'umbrella'
+var _searchScrollPos = 0;
 
 var subjImgClass = {
   STEM:    'img-stem',
@@ -1621,91 +1783,69 @@ var subjIcon = {
 };
 
 function openUWProgramDetail(pid) {
-  var p = uwPrograms.find(function(x){ return x.id === pid; });
+  var p = uwPrograms.find(function(x){ return String(x.id) === String(pid); });
   if (!p) return;
 
   detailSource = 'umbrella';
+  currentCamp = p;
 
-  // Build a camp-like object from the UW program
-  var c = {
-    id: pid,
-    name: p.name,
-    type: p.subject,
-    regType: 'external',
-    location: p.online ? 'Online (Live)' : 'University of Washington, Seattle',
-    ages: p.grades,
-    dates: p.dates,
-    time: p.time,
-    desc: p.desc,
-    icon: subjIcon[p.subject] || '🎓',
-    imgClass: subjImgClass[p.subject] || 'img-stem',
-    website: 'uwpce.uw.edu/youth',
-    phone: null,
-    tags: [p.subject, p.grades, p.time],
-    ratingNum: 4.8,
-    rating: '⭐ 4.8',
-    parentName: 'UW Youth & Teen Programs',
-    isUWProgram: true,
-    uwProgramId: pid
-  };
-
-  currentCamp = c;
-
-  document.getElementById('detail-icon').textContent = c.icon;
-  document.getElementById('detail-type').textContent = c.type;
-  document.getElementById('detail-name').textContent = c.name;
-  document.getElementById('detail-loc').textContent = '📍 ' + c.location;
-  document.getElementById('detail-ages').textContent = c.ages;
-  document.getElementById('detail-hero-img').className = 'detail-hero-img ' + c.imgClass;
+  document.getElementById('detail-icon').textContent = p.icon || '🎓';
+  document.getElementById('detail-type').textContent = p.type;
+  document.getElementById('detail-name').textContent = p.name;
+  document.getElementById('detail-loc').textContent = '📍 ' + p.location;
+  document.getElementById('detail-ages').textContent = 'Ages ' + p.ages;
+  var hoursEl = document.getElementById('detail-hours');
+  if (hoursEl) hoursEl.textContent = p.time || 'See website';
+  document.getElementById('detail-hero-img').className = 'detail-banner ' + (p.imgClass || 'img-stem');
 
   var datesEl = document.getElementById('detail-dates');
-  if (datesEl) datesEl.textContent = c.dates;
+  if (datesEl) {
+    var rawList = Array.isArray(p.dates) ? p.dates : (p.dates ? [p.dates] : ['TBD']);
+    var dateList = rawList.filter(isLikelySessionItem);
+    if (!dateList.length) dateList = rawList; // fallback: show all if filter removes everything
+    datesEl.innerHTML = dateList.map(function(d){
+      return '<div style="padding:.5rem .85rem;border-left:3px solid var(--moss);background:var(--sky);border-radius:0 8px 8px 0;font-size:.88rem;color:var(--forest);font-weight:500;margin-bottom:.35rem;">' + stripPrice(d) + '</div>';
+    }).join('');
+  }
 
-  var pill = document.getElementById('detail-reg-pill');
-  pill.textContent = '🔵 Visit Camp Website';
-  pill.className = 'reg-route-pill external';
-
-  // Parent camp breadcrumb
   var backBtn = document.getElementById('detail-back-btn');
-  if (backBtn) backBtn.textContent = '← Back to UW Youth & Teen Programs';
+  if (backBtn) backBtn.textContent = '← Back to ' + (umbrellaCurrentCamp ? umbrellaCurrentCamp.name : 'Programs');
 
-  // Show and sync heart save button using the UW program id
   var saveBtn = document.getElementById('detail-save-btn');
   if (saveBtn) {
     saveBtn.style.display = 'flex';
-    var isSaved = savedCamps.has(pid);
+    var isSaved = savedCamps.has(p.id);
     saveBtn.textContent = isSaved ? '♥' : '♡';
     saveBtn.style.background = isSaved ? 'var(--coral)' : '#fff';
     saveBtn.style.color = isSaved ? '#fff' : 'inherit';
   }
 
-  // Hide claim button for UW sub-programs
   var claimBtn = document.querySelector('#page-detail .detail-hero-img button[onclick="claimFromDetail()"]');
   if (claimBtn) claimBtn.style.display = 'none';
 
-  buildUWProgramCTA(c, p);
+  buildSubProgramCTA(p);
   showPage('detail');
 }
 
-function buildUWProgramCTA(c, p) {
+function buildSubProgramCTA(c) {
   var cta = document.getElementById('detail-cta-card');
+  var parentName = umbrellaCurrentCamp ? umbrellaCurrentCamp.name : 'Parent Program';
+  var websiteUrl = c.website ? 'https://' + c.website
+    : (umbrellaCurrentCamp && umbrellaCurrentCamp.website ? 'https://' + umbrellaCurrentCamp.website : '#');
 
   cta.innerHTML =
     '<div class="cta-reg-explainer external" style="font-size:.84rem;line-height:1.6;margin-bottom:1rem;">' +
-      'This program registers through the UW Youth & Teen Programs portal. Click below to visit the official registration page.' +
-    '</div>' +
-    '<div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:1rem;color:var(--muted)">' +
+      'This program registers through ' + parentName + '. Click below to visit the official registration page.' +
     '</div>';
 
   var regBtn = document.createElement('a');
-  regBtn.href = 'https://uwpce.uw.edu/youth';
+  regBtn.href = websiteUrl;
   regBtn.target = '_blank';
   regBtn.rel = 'noopener';
   regBtn.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:.5rem;text-decoration:none;width:100%;box-sizing:border-box;padding:.9rem;border-radius:10px;margin-bottom:.6rem;font-weight:700;font-size:.95rem;background:var(--blue);color:#fff;';
-  regBtn.textContent = 'Register at UW Youth Programs ↗';
+  regBtn.textContent = 'Check Availability & Register ↗';
   cta.appendChild(regBtn);
 
-  // Add to Schedule button — same behaviour as regular camps
   var alreadyAdded = scheduleItems.some(function(i){ return i.campId === c.id && i.child === activeChild; });
   var schedBtn = document.createElement('button');
   schedBtn.id = 'uw-sched-btn';
@@ -1720,7 +1860,7 @@ function buildUWProgramCTA(c, p) {
 
   var backBtn2 = document.createElement('button');
   backBtn2.style.cssText = 'width:100%;padding:.75rem;border-radius:10px;margin-top:.4rem;border:2px solid var(--border);background:#fff;color:var(--forest);font-weight:600;font-size:.85rem;cursor:pointer;font-family:"DM Sans",sans-serif;';
-  backBtn2.textContent = '← View All UW Programs';
+  backBtn2.textContent = '← View All Programs';
   backBtn2.onclick = function(){ showPage('umbrella'); };
   cta.appendChild(backBtn2);
 }
@@ -1742,6 +1882,7 @@ function detailGoBack() {
     showPage('umbrella');
   } else {
     showPage('search');
+    window.scrollTo(0, _searchScrollPos);
   }
   // Restore claim and save buttons for regular camp detail
   var saveBtn = document.getElementById('detail-save-btn');
@@ -1752,6 +1893,7 @@ function detailGoBack() {
 
 
 function openDetail(id) {
+  _searchScrollPos = window.scrollY;
   detailSource = 'search';
   // Restore save and claim buttons in case we came from a UW sub-program
   var saveBtn = document.getElementById('detail-save-btn');
@@ -1760,29 +1902,26 @@ function openDetail(id) {
   if (claimBtn) claimBtn.style.display = '';
   var backBtn = document.getElementById('detail-back-btn');
   if (backBtn) backBtn.textContent = '← Back to results';
-  currentCamp = camps[id];
+  currentCamp = camps.find(function(c){ return c.id === id; });
   var c = currentCamp;
   document.getElementById('detail-icon').textContent = c.icon;
   document.getElementById('detail-type').textContent = c.type;
   document.getElementById('detail-name').textContent = c.name;
-  document.getElementById('detail-loc').textContent = '\uD83D\uDCCD ' + c.location;
+  document.getElementById('detail-loc').textContent = '📍 ' + c.location;
   document.getElementById('detail-ages').textContent = c.ages + ' years';
-  // Dates — support single string or array of sessions
+  var hoursEl = document.getElementById('detail-hours');
+  if (hoursEl) hoursEl.textContent = c.time || 'See website';
+  // Dates — display as chips
   var datesEl = document.getElementById('detail-dates');
   if (datesEl) {
-    if (Array.isArray(c.dates)) {
-      datesEl.innerHTML = c.dates.map(function(d){ return '<div>' + d + '</div>'; }).join('');
-    } else {
-      datesEl.textContent = c.dates || 'TBD';
-    }
+    var rawList = Array.isArray(c.dates) ? c.dates : (c.dates ? [c.dates] : ['TBD']);
+    var dateList = rawList.filter(isLikelySessionItem);
+    if (!dateList.length) dateList = rawList; // fallback: show all if filter removes everything
+    datesEl.innerHTML = dateList.map(function(d){
+      return '<div style="padding:.5rem .85rem;border-left:3px solid var(--moss);background:var(--sky);border-radius:0 8px 8px 0;font-size:.88rem;color:var(--forest);font-weight:500;margin-bottom:.35rem;">' + stripPrice(d) + '</div>';
+    }).join('');
   }
-  document.getElementById('detail-hero-img').className = 'detail-hero-img ' + c.imgClass;
-
-  var pillLabels = {external:'\uD83D\uDD35 Visit Camp Website', contact:'\uD83D\uDFE1 Send an Inquiry', phone:'\uD83D\uDFE3 Call to Register'};
-  var pill = document.getElementById('detail-reg-pill');
-  var pillKey = c.regType === 'native' ? 'external' : c.regType;
-  pill.textContent = pillLabels[pillKey] || pillLabels.external;
-  pill.className = 'reg-route-pill ' + pillKey;
+  document.getElementById('detail-hero-img').className = 'detail-banner ' + c.imgClass;
 
   buildDetailCTA(c);
 
@@ -1817,7 +1956,7 @@ function buildDetailCTA(c) {
   var websiteUrl = c.website ? 'https://' + c.website : '#';
 
   var explainerText = {
-    external: 'This camp registers on their own website. Click the button below to visit their registration page directly.',
+    external: 'This camp registers on their own website. Spots may fill up — click below to check current availability and register on camp website.',
     contact:  'This camp prefers to connect with families first. Send a quick inquiry and they will respond within 1 to 2 business days.',
     phone:    'This camp uses phone registration. Call them directly to check availability and reserve your spot.'
   }[type] || '';
@@ -1837,7 +1976,7 @@ function buildDetailCTA(c) {
     regBtn.rel = 'noopener';
     regBtn.className = 'cta-btn-external';
     regBtn.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:.5rem;text-decoration:none;width:100%;box-sizing:border-box;padding:.9rem;border-radius:10px;margin-bottom:.6rem;font-weight:700;font-size:.95rem;background:var(--blue);color:#fff;';
-    regBtn.textContent = 'Visit Camp Website';
+    regBtn.textContent = 'Check Availability & Register';
   } else if (type === 'contact') {
     regBtn = document.createElement('button');
     regBtn.className = 'cta-btn-contact';
@@ -2124,9 +2263,15 @@ function setPayOpt(el) {
   el.classList.add('active');
 }
 
-function toggleSave(id, btn) {
-  if(savedCamps.has(id)){savedCamps.delete(id);btn.classList.remove('saved');btn.textContent='♡';showToast('Removed from saved');}
-  else{savedCamps.add(id);btn.classList.add('saved');btn.textContent='♥';showToast('Saved ♥');}
+async function toggleSave(id, btn) {
+  var camp = camps.find(function(c){ return c.id === id; });
+  if (savedCamps.has(id)) {
+    savedCamps.delete(id); btn.classList.remove('saved'); btn.textContent='♡'; showToast('Removed from saved');
+    if (currentUser && camp) await sbClient.from('user_saved_camps').delete().eq('user_id', currentUser.id).eq('camp_supabase_id', camp.supabaseId);
+  } else {
+    savedCamps.add(id); btn.classList.add('saved'); btn.textContent='♥'; showToast('Saved ♥');
+    if (currentUser && camp) await sbClient.from('user_saved_camps').insert({user_id: currentUser.id, camp_supabase_id: camp.supabaseId});
+  }
 }
 
 function showPage(p) {
@@ -2269,16 +2414,19 @@ function showAddChildModal() {
   var saveBtn = document.createElement('button');
   saveBtn.style.cssText = 'width:100%;padding:.9rem;border:none;border-radius:10px;background:var(--moss);color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;margin-bottom:.6rem;';
   saveBtn.textContent = 'Add Child';
-  saveBtn.onclick = function() {
+  saveBtn.onclick = async function() {
     var name  = document.getElementById('new-child-name').value.trim();
     var age   = document.getElementById('new-child-age').value.trim();
     var emoji = document.getElementById('new-child-emoji').value.trim() || '🧒';
     if (!name) { document.getElementById('new-child-name').style.borderColor = 'var(--coral)'; return; }
     var childId = name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+    if (currentUser) {
+      var insResp = await sbClient.from('user_children').insert({user_id: currentUser.id, name: name, age: age||'?', emoji: emoji, sort_order: children.length}).select().single();
+      if (insResp.data) childId = insResp.data.id;
+    }
     children.push({id: childId, name: name, age: age || '?', emoji: emoji});
     addChildTab(childId, name, age, emoji);
     closeOverlay('add-child-modal');
-    // Switch to new child
     var newTab = document.querySelector('[data-child-id="' + childId + '"]');
     if (newTab) switchChild(newTab, childId);
     showToast(emoji + ' ' + name + ' added!');
@@ -2368,7 +2516,7 @@ function showEditChildModal(index) {
   var saveBtn = document.createElement('button');
   saveBtn.style.cssText = 'width:100%;padding:.9rem;border:none;border-radius:10px;background:var(--moss);color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;margin-bottom:.5rem;';
   saveBtn.textContent = 'Save Changes';
-  saveBtn.onclick = function() {
+  saveBtn.onclick = async function() {
     var name  = document.getElementById('edit-child-name').value.trim();
     var age   = document.getElementById('edit-child-age').value.trim();
     var emoji = document.getElementById('edit-child-emoji').value.trim() || child.emoji;
@@ -2376,7 +2524,7 @@ function showEditChildModal(index) {
     children[index].name  = name;
     children[index].age   = age || child.age;
     children[index].emoji = emoji;
-    // Update schedule tab label
+    if (currentUser) await sbClient.from('user_children').update({name: name, age: age||child.age, emoji: emoji}).eq('id', child.id);
     var tab = document.querySelector('[data-child-id="' + child.id + '"]');
     if (tab) tab.textContent = emoji + ' ' + name + (age ? ', ' + age : '');
     renderProfileChildren();
@@ -2399,7 +2547,8 @@ function showEditChildModal(index) {
       '<button id="confirm-remove-no" style="flex:1;padding:.6rem;border:1.5px solid var(--border);border-radius:8px;background:#fff;color:var(--text);font-weight:600;font-size:.85rem;cursor:pointer;">Cancel</button>' +
       '</div>';
     box.insertBefore(confirmRow, cancelBtn);
-    document.getElementById('confirm-remove-yes').onclick = function() {
+    document.getElementById('confirm-remove-yes').onclick = async function() {
+      if (currentUser) await sbClient.from('user_children').delete().eq('id', child.id);
       scheduleItems = scheduleItems.filter(function(i){ return i.child !== child.id; });
       var schedTab = document.querySelector('[data-child-id="' + child.id + '"]');
       if (schedTab) schedTab.remove();
@@ -2434,25 +2583,39 @@ function showEditChildModal(index) {
   setTimeout(function(){ document.getElementById('edit-child-name').focus(); }, 50);
 }
 
-function addToSchedule(campId, registered) {
+async function addToSchedule(campId, registered) {
   if (scheduleItems.some(function(i){ return i.campId === campId && i.child === activeChild; })) {
     var ac = children.find(function(c){ return c.id === activeChild; });
     showToast('Already in ' + (ac ? ac.name + "'s" : 'this') + ' schedule');
     return;
   }
-  scheduleItems.push({campId: campId, registered: registered, child: activeChild});
+  var newItem = {campId: campId, registered: registered || false, child: activeChild};
+  scheduleItems.push(newItem);
+  if (currentUser) {
+    var camp = camps.find(function(c){ return c.id === campId; });
+    if (camp) {
+      var insResp = await sbClient.from('user_schedules').insert({
+        user_id: currentUser.id, child_id: activeChild,
+        camp_supabase_id: camp.supabaseId, registered: registered || false
+      }).select().single();
+      if (insResp.data) newItem.dbId = insResp.data.id;
+    }
+  }
   renderSchedule();
 }
 
-function toggleRegistered(campId) {
+async function toggleRegistered(campId) {
   var item = scheduleItems.find(function(i){ return i.campId === campId && i.child === activeChild; });
   if (!item) return;
   item.registered = !item.registered;
+  if (currentUser && item.dbId) await sbClient.from('user_schedules').update({registered: item.registered}).eq('id', item.dbId);
   renderSchedule();
   showToast(item.registered ? '\u2705 Marked as Registered' : 'Marked as Not Yet Registered');
 }
 
-function removeFromSchedule(campId) {
+async function removeFromSchedule(campId) {
+  var item = scheduleItems.find(function(i){ return i.campId === campId && i.child === activeChild; });
+  if (currentUser && item && item.dbId) await sbClient.from('user_schedules').delete().eq('id', item.dbId);
   scheduleItems = scheduleItems.filter(function(i){ return !(i.campId === campId && i.child === activeChild); });
   renderSchedule();
   showToast('Removed from schedule');
@@ -2958,12 +3121,16 @@ function showAddFirstChildModal(onDone) {
   overlay.addEventListener('click', function(e){ if(e.target===overlay) closeOverlay('first-child-modal'); });
   document.body.appendChild(overlay);
 
-  saveBtn.onclick = function() {
+  saveBtn.onclick = async function() {
     var name  = nameInp.value.trim();
     var age   = ageInp.value.trim();
     var emoji = emojiInp.value.trim() || '\uD83E\uDDD2';
     if (!name) { nameInp.style.borderColor='var(--coral)'; return; }
     var childId = name.toLowerCase().replace(/\s+/g,'-') + '-' + Date.now();
+    if (currentUser) {
+      var insResp = await sbClient.from('user_children').insert({user_id: currentUser.id, name: name, age: age||'?', emoji: emoji, sort_order: children.length}).select().single();
+      if (insResp.data) childId = insResp.data.id;
+    }
     children.push({id:childId, name:name, age:age||'?', emoji:emoji});
     addChildTab(childId, name, age, emoji);
     activeChild = childId;
@@ -3142,31 +3309,74 @@ function removeGalleryTile(id) {
 
 
 /* ─── SIGN-UP / ACCOUNT SYSTEM ─── */
-var currentUser = null; // null = not signed up, object = signed up
-
-// In-browser user store (prototype)
-var registeredUsers = JSON.parse(localStorage.getItem('cq_users') || '[]');
-
-function saveUsers() {
-  try { localStorage.setItem('cq_users', JSON.stringify(registeredUsers)); } catch(e){}
-}
+var currentUser = null; // null = not signed in, object = signed in
 
 function requireAccount(callback) {
   if (currentUser) { callback(); return; }
   goToSignUp(callback);
 }
 
-function logOut() {
+// Load user's children, saved camps, and schedule from Supabase into memory
+async function loadUserData(userId) {
+  var childrenResp = await sbClient.from('user_children').select('*').eq('user_id', userId).order('sort_order');
+  children = [];
+  document.querySelectorAll('.children-tabs .child-tab').forEach(function(t){ if (t.id !== 'saved-tab') t.remove(); });
+  if (childrenResp.data && childrenResp.data.length > 0) {
+    childrenResp.data.forEach(function(row) {
+      children.push({id: row.id, name: row.name, age: row.age || '?', emoji: row.emoji || '🧒'});
+      addChildTab(row.id, row.name, row.age, row.emoji || '🧒');
+    });
+    activeChild = children[0].id;
+  }
+  var savedResp = await sbClient.from('user_saved_camps').select('camp_supabase_id').eq('user_id', userId);
+  savedCamps = new Set();
+  if (savedResp.data) {
+    savedResp.data.forEach(function(r) {
+      var camp = camps.find(function(c){ return c.supabaseId === r.camp_supabase_id; });
+      if (camp) savedCamps.add(camp.id);
+    });
+  }
+  var schedResp = await sbClient.from('user_schedules').select('*').eq('user_id', userId);
+  scheduleItems = [];
+  if (schedResp.data) {
+    schedResp.data.forEach(function(r) {
+      var camp = camps.find(function(c){ return c.supabaseId === r.camp_supabase_id; });
+      if (camp) scheduleItems.push({campId: camp.id, registered: r.registered, child: r.child_id, dbId: r.id});
+    });
+  }
+  renderProfileChildren();
+  renderSchedule();
+  applyFilters();
+}
+
+// Check if a Supabase session already exists (e.g. returning user)
+async function checkExistingSession() {
+  var resp = await sbClient.auth.getSession();
+  var session = resp.data && resp.data.session;
+  if (!session) return;
+  var profileResp = await sbClient.from('user_profiles').select('*').eq('id', session.user.id).single();
+  var profile = profileResp.data;
+  currentUser = {
+    id: session.user.id,
+    name: profile ? profile.full_name : session.user.email,
+    email: session.user.email,
+    zip: profile ? profile.zip : '',
+    createdAt: session.user.created_at
+  };
+  updateNavForUser();
+  await loadUserData(session.user.id);
+}
+
+async function logOut() {
+  await sbClient.auth.signOut();
   currentUser = null;
   scheduleItems = [];
   children = [];
   activeChild = null;
   savedCamps = new Set();
-  // Remove all dynamically added child tabs
   document.querySelectorAll('.children-tabs .child-tab').forEach(function(t){
     if (t.id !== 'saved-tab') t.remove();
   });
-  // Clear profile children list
   renderProfileChildren();
   renderSchedule();
   renderProfileAccount();
@@ -3282,21 +3492,24 @@ function goToSignUp(onSuccess) {
   overlay.addEventListener('click', function(e){ if(e.target===overlay) closeOverlay('signup-modal'); });
   document.body.appendChild(overlay);
 
-  submitBtn.onclick = function() {
+  submitBtn.onclick = async function() {
     var fname=fnameInp.value.trim(), lname=lnameInp.value.trim();
     var email=emailInp.value.trim(), pass=passInp.value, zip=zipInp.value.trim();
     if (!fname||!lname) { showErr(errEl,'Please enter your full name.'); return; }
     if (!email||!email.includes('@')) { showErr(errEl,'Please enter a valid email address.'); return; }
     if (pass.length<6) { showErr(errEl,'Password must be at least 6 characters.'); return; }
     if (!/^\d{5}$/.test(zip)) { showErr(errEl,'Please enter a valid 5-digit zip code.'); return; }
-    if (registeredUsers.find(function(u){ return u.email.toLowerCase()===email.toLowerCase(); })) {
-      showErr(errEl,'An account with this email already exists. Try logging in.'); return;
+    submitBtn.disabled = true; submitBtn.textContent = 'Creating account...';
+    var signUpResp = await sbClient.auth.signUp({ email: email, password: pass });
+    if (signUpResp.error) {
+      showErr(errEl, signUpResp.error.message);
+      submitBtn.disabled=false; submitBtn.textContent='Create Account'; return;
     }
-    var user={id:'u_'+Date.now(),name:fname+' '+lname,email:email,password:pass,zip:zip,createdAt:new Date().toISOString()};
-    registeredUsers.push(user); saveUsers();
-    currentUser=user; closeOverlay('signup-modal'); updateNavForUser();
-    showToast('Welcome to CampQuest, '+fname+'!');
-    // New users always add a child next
+    var newUser = signUpResp.data.user;
+    await sbClient.from('user_profiles').insert({ id: newUser.id, full_name: fname+' '+lname, zip: zip });
+    currentUser = { id: newUser.id, name: fname+' '+lname, email: email, zip: zip, createdAt: newUser.created_at };
+    closeOverlay('signup-modal'); updateNavForUser();
+    showToast('Welcome to CampQuest, '+fname+'! 🎉');
     showAddFirstChildModal(function() {
       if (onSuccess) onSuccess();
     });
@@ -3329,19 +3542,34 @@ function showLoginModal(source) {
       '<input id="li-pass" type="password" style="width:100%;padding:.7rem .9rem;border:2px solid var(--border);border-radius:10px;font-size:.9rem;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'var(--moss)\'" onblur="this.style.borderColor=\'var(--border)\'">' +
     '</div>' +
     '<button id="li-submit" style="width:100%;padding:.9rem;border:none;border-radius:10px;background:var(--moss);color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;margin-bottom:.6rem;">Log In →</button>' +
-    '<div style="text-align:center;font-size:.8rem;color:var(--muted);">No account yet? <span onclick="goToSignUp()" style="color:var(--moss);font-weight:600;cursor:pointer;">Sign up free</span></div>' +
+    '<div style="text-align:center;font-size:.8rem;color:var(--muted);margin-bottom:.4rem;">No account yet? <span onclick="goToSignUp()" style="color:var(--moss);font-weight:600;cursor:pointer;">Sign up free</span></div>' +
+    '<div style="text-align:center;font-size:.8rem;color:var(--muted);">Forgot your password? <span onclick="closeOverlay(\'login-modal\');showForgotPasswordModal();" style="color:var(--moss);font-weight:600;cursor:pointer;">Reset it</span></div>' +
     '<button style="width:100%;padding:.5rem;border:none;background:none;font-size:.78rem;color:var(--muted);cursor:pointer;margin-top:.5rem;" onclick="closeOverlay(\'login-modal\')">Cancel</button>';
 
-  box.querySelector('#li-submit').onclick = function() {
+  box.querySelector('#li-submit').onclick = async function() {
     var email = box.querySelector('#li-email').value.trim();
     var pass  = box.querySelector('#li-pass').value;
     var errEl = box.querySelector('#login-error');
-    var user  = registeredUsers.find(function(u){ return u.email.toLowerCase() === email.toLowerCase() && u.password === pass; });
-    if (!user) { showErr(errEl, 'Email or password is incorrect.'); return; }
-    currentUser = user;
+    var submitBtn = box.querySelector('#li-submit');
+    submitBtn.disabled = true; submitBtn.textContent = 'Logging in...';
+    var signInResp = await sbClient.auth.signInWithPassword({ email: email, password: pass });
+    if (signInResp.error) {
+      showErr(errEl, 'Email or password is incorrect.');
+      submitBtn.disabled=false; submitBtn.textContent='Log In →'; return;
+    }
+    var profileResp = await sbClient.from('user_profiles').select('*').eq('id', signInResp.data.user.id).single();
+    var profile = profileResp.data;
+    currentUser = {
+      id: signInResp.data.user.id,
+      name: profile ? profile.full_name : signInResp.data.user.email,
+      email: signInResp.data.user.email,
+      zip: profile ? profile.zip : '',
+      createdAt: signInResp.data.user.created_at
+    };
     closeOverlay('login-modal');
     updateNavForUser();
-    showToast('Welcome back, ' + user.name.split(' ')[0] + '! 👋');
+    await loadUserData(signInResp.data.user.id);
+    showToast('Welcome back, ' + currentUser.name.split(' ')[0] + '! 👋');
   };
 
   box.querySelectorAll('input').forEach(function(inp) {
@@ -3352,6 +3580,85 @@ function showLoginModal(source) {
   overlay.addEventListener('click', function(e){ if (e.target === overlay) closeOverlay('login-modal'); });
   document.body.appendChild(overlay);
   setTimeout(function(){ box.querySelector('#li-email').focus(); }, 50);
+}
+
+function showForgotPasswordModal() {
+  closeOverlay('forgot-modal');
+  var overlay = document.createElement('div');
+  overlay.id = 'forgot-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:700;display:flex;align-items:center;justify-content:center;padding:1.5rem;';
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;padding:2rem;max-width:380px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,.25);';
+  box.innerHTML =
+    '<div style="text-align:center;margin-bottom:1.5rem;">' +
+      '<div style="font-size:2rem;margin-bottom:.4rem;">🔑</div>' +
+      '<h2 style="font-family:\'Playfair Display\',serif;color:var(--forest);font-size:1.3rem;margin-bottom:.3rem;">Reset your password</h2>' +
+      '<p style="color:var(--muted);font-size:.85rem;">Enter your email and we\'ll send a reset link.</p>' +
+    '</div>' +
+    '<div id="forgot-error" style="display:none;background:#fff0f0;border:1.5px solid #f0c0b8;border-radius:8px;padding:.6rem .9rem;font-size:.82rem;color:var(--coral);margin-bottom:1rem;"></div>' +
+    '<div id="forgot-success" style="display:none;background:#f0fff4;border:1.5px solid #b0e0b8;border-radius:8px;padding:.6rem .9rem;font-size:.82rem;color:var(--moss);margin-bottom:1rem;"></div>' +
+    '<div style="margin-bottom:1.2rem;">' +
+      '<div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.3rem;">Email</div>' +
+      '<input id="forgot-email" type="email" placeholder="maria@example.com" style="width:100%;padding:.7rem .9rem;border:2px solid var(--border);border-radius:10px;font-size:.9rem;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'var(--moss)\'" onblur="this.style.borderColor=\'var(--border)\'">' +
+    '</div>' +
+    '<button id="forgot-submit" style="width:100%;padding:.9rem;border:none;border-radius:10px;background:var(--moss);color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;margin-bottom:.6rem;">Send Reset Link</button>' +
+    '<button style="width:100%;padding:.5rem;border:none;background:none;font-size:.78rem;color:var(--muted);cursor:pointer;" onclick="closeOverlay(\'forgot-modal\')">Cancel</button>';
+
+  box.querySelector('#forgot-submit').onclick = async function() {
+    var email = box.querySelector('#forgot-email').value.trim();
+    var errEl = box.querySelector('#forgot-error');
+    var sucEl = box.querySelector('#forgot-success');
+    var submitBtn = box.querySelector('#forgot-submit');
+    if (!email || !email.includes('@')) { showErr(errEl, 'Please enter a valid email address.'); return; }
+    submitBtn.disabled = true; submitBtn.textContent = 'Sending...';
+    var resetResp = await sbClient.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.href.split('?')[0].split('#')[0]
+    });
+    if (resetResp.error) { showErr(errEl, resetResp.error.message); submitBtn.disabled=false; submitBtn.textContent='Send Reset Link'; return; }
+    sucEl.textContent = 'Reset link sent! Check your email inbox.';
+    sucEl.style.display = 'block';
+    submitBtn.style.display = 'none';
+  };
+  box.querySelector('#forgot-email').onkeydown = function(e){ if(e.key==='Enter') box.querySelector('#forgot-submit').click(); };
+  overlay.appendChild(box);
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) closeOverlay('forgot-modal'); });
+  document.body.appendChild(overlay);
+  setTimeout(function(){ box.querySelector('#forgot-email').focus(); }, 50);
+}
+
+function showPasswordUpdateModal() {
+  closeOverlay('pw-update-modal');
+  var overlay = document.createElement('div');
+  overlay.id = 'pw-update-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:700;display:flex;align-items:center;justify-content:center;padding:1.5rem;';
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:20px;padding:2rem;max-width:380px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,.25);';
+  box.innerHTML =
+    '<div style="text-align:center;margin-bottom:1.5rem;">' +
+      '<div style="font-size:2rem;margin-bottom:.4rem;">🔒</div>' +
+      '<h2 style="font-family:\'Playfair Display\',serif;color:var(--forest);font-size:1.3rem;margin-bottom:.3rem;">Set a new password</h2>' +
+    '</div>' +
+    '<div id="pwu-error" style="display:none;background:#fff0f0;border:1.5px solid #f0c0b8;border-radius:8px;padding:.6rem .9rem;font-size:.82rem;color:var(--coral);margin-bottom:1rem;"></div>' +
+    '<div style="margin-bottom:.8rem;">' +
+      '<div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.3rem;">New Password</div>' +
+      '<input id="pwu-pass" type="password" placeholder="Min. 6 characters" style="width:100%;padding:.7rem .9rem;border:2px solid var(--border);border-radius:10px;font-size:.9rem;outline:none;box-sizing:border-box;" onfocus="this.style.borderColor=\'var(--moss)\'" onblur="this.style.borderColor=\'var(--border)\'">' +
+    '</div>' +
+    '<button id="pwu-submit" style="width:100%;padding:.9rem;border:none;border-radius:10px;background:var(--moss);color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;margin-bottom:.6rem;">Update Password</button>';
+
+  box.querySelector('#pwu-submit').onclick = async function() {
+    var pass = box.querySelector('#pwu-pass').value;
+    var errEl = box.querySelector('#pwu-error');
+    var submitBtn = box.querySelector('#pwu-submit');
+    if (pass.length < 6) { showErr(errEl, 'Password must be at least 6 characters.'); return; }
+    submitBtn.disabled = true; submitBtn.textContent = 'Updating...';
+    var updateResp = await sbClient.auth.updateUser({ password: pass });
+    if (updateResp.error) { showErr(errEl, updateResp.error.message); submitBtn.disabled=false; submitBtn.textContent='Update Password'; return; }
+    closeOverlay('pw-update-modal');
+    showToast('Password updated successfully! ✓');
+  };
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  setTimeout(function(){ box.querySelector('#pwu-pass').focus(); }, 50);
 }
 
 function showAccountModal() {
@@ -3390,18 +3697,13 @@ window.addEventListener('DOMContentLoaded', function() {
   // Render demo data immediately so the page works right away
   applyFilters();
 
-  // Show a banner if running in a sandboxed context where Airtable can't load
-  var proto = window.location.protocol;
-  if (proto === 'file:' || proto === 'about:' || proto === 'blob:') {
-    var banner = document.createElement('div');
-    banner.id = 'demo-banner';
-    banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#1a3a2a;color:#a8d5b5;font-size:.78rem;text-align:center;padding:.55rem 1rem;z-index:9999;letter-spacing:.01em;';
-    banner.innerHTML = '🔌 <strong>Preview mode</strong> — showing sample data. Open this file directly in your browser or deploy to GitHub Pages to load your live Airtable camps.  <button onclick="this.parentNode.remove()" style="margin-left:1rem;background:none;border:1px solid #a8d5b5;color:#a8d5b5;border-radius:4px;padding:.15rem .5rem;cursor:pointer;font-size:.75rem;">Dismiss</button>';
-    document.body.appendChild(banner);
-  }
+  // Handle password reset links (Supabase fires PASSWORD_RECOVERY event)
+  sbClient.auth.onAuthStateChange(function(event) {
+    if (event === 'PASSWORD_RECOVERY') showPasswordUpdateModal();
+  });
 
-  // Then try to load live data from Airtable in the background (replaces demo data on success)
-  loadCampsFromAirtable();
+  // Load live data from Supabase (replaces demo data on success; then restores session)
+  loadCampsFromSupabase();
 
   document.addEventListener('click', function(e) {
     var menu = document.getElementById('mob-menu');
