@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CampQuest — Find the Perfect Camp</title>
+<title>PopCamps — Find the Perfect Camp</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -497,7 +497,7 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
 
 <!-- NAV -->
 <nav>
-  <div class="logo" onclick="showPage('search')">Camp<span>Quest</span></div>
+  <div class="logo" onclick="showPage('search')">Pop<span>Camps</span></div>
   <div class="nav-links">
     <a onclick="showPage('search')" id="nav-search" class="active">Find Camps</a>
     <a onclick="showPage('schedule')" id="nav-schedule">My Schedule</a>
@@ -811,7 +811,7 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
 <div id="page-portal" class="page">
   <div style="max-width:900px;margin:0 auto;padding:2rem">
     <h1 style="font-family:'Playfair Display',serif;font-size:2rem;color:var(--forest);margin-bottom:.4rem">List Your Camp</h1>
-    <p style="color:var(--muted);font-size:.95rem;margin-bottom:2rem">Join 12,400+ camps on CampQuest. Reach thousands of parents actively searching.</p>
+    <p style="color:var(--muted);font-size:.95rem;margin-bottom:2rem">Join 12,400+ camps on PopCamps. Reach thousands of parents actively searching.</p>
     <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 2px 16px rgba(0,0,0,.06)">
       <h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--forest);margin-bottom:1.2rem">Basic Information</h3>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
@@ -1014,7 +1014,7 @@ function parseRegType(val) {
   var v = val.toLowerCase();
   if (v.includes('phone') || v.includes('call'))    return 'phone';
   if (v.includes('contact') || v.includes('inquiry') || v.includes('email')) return 'contact';
-  if (v.includes('native') || v.includes('campquest')) return 'native';
+  if (v.includes('native') || v.includes('popcamps')) return 'native';
   return 'external';
 }
 
@@ -1138,7 +1138,7 @@ function showLoadingState() {
       '<div style="grid-column:1/-1;text-align:center;padding:5rem 2rem;color:var(--muted);">' +
         '<div style="font-size:2.5rem;margin-bottom:1rem;animation:spin 1s linear infinite;display:inline-block;">⏳</div>' +
         '<div style="font-weight:600;font-size:1rem;color:var(--forest);">Loading camps...</div>' +
-        '<div style="font-size:.82rem;margin-top:.4rem;">Fetching live data from CampQuest database</div>' +
+        '<div style="font-size:.82rem;margin-top:.4rem;">Fetching live data from PopCamps database</div>' +
       '</div>';
   }
 }
@@ -1234,7 +1234,7 @@ let camps = [
 ];
 
 const regTypeConfig = {
-  native:   {label:"Book on CampQuest", short:"CQ",   color:var_moss,   bg:"#d4ead8", btnClass:"native",   icon:"✅", pillClass:"native"},
+  native:   {label:"Book on PopCamps", short:"PC",   color:var_moss,   bg:"#d4ead8", btnClass:"native",   icon:"✅", pillClass:"native"},
   external: {label:"Visit Camp Website", short:"EXT",  color:var_blue,   bg:"#dde8f4", btnClass:"external", icon:"🔵", pillClass:"external"},
   contact:  {label:"Send Inquiry",       short:"REQ",  color:var_amber,  bg:"#f4e8d4", btnClass:"contact",  icon:"🟡", pillClass:"contact"},
   phone:    {label:"Call to Register",   short:"TEL",  color:var_purple, bg:"#f0e0f0", btnClass:"phone",    icon:"🟣", pillClass:"phone"},
@@ -1579,7 +1579,7 @@ async function obFinish() {
     }
   }
   updateNavForUser();
-  showToast('Welcome to CampQuest, ' + (d.fname||'friend') + '! \uD83C\uDF89');
+  showToast('Welcome to PopCamps, ' + (d.fname||'friend') + '! \uD83C\uDF89');
   showPage('search');
   if (_obCallback) { var cb = _obCallback; _obCallback = null; cb(); }
 }
@@ -2062,12 +2062,12 @@ function buildExternalFlow(c) {
       <div class="route-type-icon-circle external">🔵</div>
       <div><div class="route-type-title">Register on ${c.name}'s Website</div><div class="route-type-subtitle">We'll hand you off with your info pre-filled</div></div>
     </div>
-    <div class="route-type-desc">This camp manages registration on their own website. We'll open their page and pre-fill as much of your info as possible so you don't have to re-enter everything. Your spot in your CampQuest schedule will be tracked either way.</div>
+    <div class="route-type-desc">This camp manages registration on their own website. We'll open their page and pre-fill as much of your info as possible so you don't have to re-enter everything. Your spot in your PopCamps schedule will be tracked either way.</div>
     <div class="route-type-steps">
       <div class="route-step"><div class="route-step-num external">1</div>Confirm your details below</div>
       <div class="route-step"><div class="route-step-num external">2</div>We open ${c.name}'s registration page</div>
       <div class="route-step"><div class="route-step-num external">3</div>Complete registration on their site</div>
-      <div class="route-step"><div class="route-step-num external">4</div>Come back to add it to your CampQuest schedule</div>
+      <div class="route-step"><div class="route-step-num external">4</div>Come back to add it to your PopCamps schedule</div>
     </div>
   </div>
 
@@ -2157,7 +2157,7 @@ function buildContactFlow(c) {
     <div class="what-happens-next">
       <h5>What happens after you send this</h5>
       <div class="whpn-step"><span class="whpn-icon">📧</span>We email your inquiry to ${c.name} on your behalf — you don't need to find their contact info</div>
-      <div class="whpn-step"><span class="whpn-icon">🔔</span>You'll get a CampQuest notification the moment they reply</div>
+      <div class="whpn-step"><span class="whpn-icon">🔔</span>You'll get a PopCamps notification the moment they reply</div>
       <div class="whpn-step"><span class="whpn-icon">📅</span>We add ${c.name} to your schedule marked "Inquiry Sent" so you can track it</div>
       <div class="whpn-step"><span class="whpn-icon">⏰</span>If no reply in 3 days, we'll follow up with the camp for you</div>
     </div>
@@ -2422,9 +2422,9 @@ function downloadICS(item, camp) {
   var endExcl = new Date(e + 'T12:00:00');
   endExcl.setDate(endExcl.getDate() + 1);
   function fmtD(d) { return d.toISOString().split('T')[0].replace(/-/g,''); }
-  var desc = 'Added via CampQuest' + (item.notes ? '\\n' + item.notes.replace(/\n/g,'\\n') : '');
+  var desc = 'Added via PopCamps' + (item.notes ? '\\n' + item.notes.replace(/\n/g,'\\n') : '');
   var ics = [
-    'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//CampQuest//EN',
+    'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//PopCamps//EN',
     'BEGIN:VEVENT',
     'DTSTART;VALUE=DATE:' + fmtD(new Date(s + 'T12:00:00')),
     'DTEND;VALUE=DATE:'   + fmtD(endExcl),
@@ -3824,7 +3824,7 @@ function goToSignUp(onSuccess) {
 
   var hdr = document.createElement('div');
   hdr.style.cssText = 'text-align:center;margin-bottom:1.5rem;';
-  hdr.innerHTML = '<div style="font-size:2rem;margin-bottom:.4rem;">&#127957;</div><h2 style="font-family:\'Playfair Display\',serif;color:var(--forest);font-size:1.4rem;margin-bottom:.3rem;">Create your CampQuest account</h2><p style="color:var(--muted);font-size:.85rem;">Save camps, track schedules, and manage your kids.</p>';
+  hdr.innerHTML = '<div style="font-size:2rem;margin-bottom:.4rem;">&#127957;</div><h2 style="font-family:\'Playfair Display\',serif;color:var(--forest);font-size:1.4rem;margin-bottom:.3rem;">Create your PopCamps account</h2><p style="color:var(--muted);font-size:.85rem;">Save camps, track schedules, and manage your kids.</p>';
 
   var nameRow = document.createElement('div');
   nameRow.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.8rem;';
@@ -3878,7 +3878,7 @@ function goToSignUp(onSuccess) {
     await sbClient.from('user_profiles').insert({ id: newUser.id, full_name: fname+' '+lname, zip: zip });
     currentUser = { id: newUser.id, name: fname+' '+lname, email: email, zip: zip, createdAt: newUser.created_at };
     closeOverlay('signup-modal'); updateNavForUser();
-    showToast('Welcome to CampQuest, '+fname+'! 🎉');
+    showToast('Welcome to PopCamps, '+fname+'! 🎉');
     showAddFirstChildModal(function() {
       if (onSuccess) onSuccess();
     });
