@@ -352,6 +352,8 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
 .week-header div{padding:.9rem;text-align:center;font-size:.8rem;font-weight:600;}
 .week-row{display:grid;grid-template-columns:72px repeat(7,1fr);border-bottom:1px solid #f0f4f1;}
 .week-row:last-child{border-bottom:none;}
+.week-row-extra{border-top:1px dashed #dde8dd;}
+.week-row-extra .week-label{font-size:.6rem;color:transparent;}
 .week-label{padding:.9rem;font-size:.75rem;font-weight:600;color:var(--muted);display:flex;align-items:center;justify-content:center;background:var(--sky);border-right:1px solid var(--border);}
 .week-cell{padding:.5rem;min-height:85px;border-right:1px solid #f5f8f5;}
 .sched-event{border-radius:7px;padding:.45rem .55rem;font-size:.74rem;font-weight:500;cursor:pointer;transition:opacity .15s;line-height:1.3;color:#fff;position:relative;}
@@ -2854,88 +2856,88 @@ function renderSchedule() {
   var rows = conflictBanner + '<div class="week-header"><div>Week of</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div></div>';
 
   weekMondays.forEach(function(mon) {
-    // cells[0..6] = Mon..Sun, each is array of event html
-    var cells = [[],[],[],[],[],[],[]];
+    var weekStart = mon;
+    var weekEnd   = addDays(mon, 6);
 
+    // Collect items touching this week, compute their clamped column indices
+    var weekItems = [];
     campRanges.forEach(function(cr) {
       if (!cr.range) return;
-      var item = cr.item;
-      var c    = cr.camp;
-      var isConflict = conflictCampIds.has(c.id + '_' + item.child);
-      var childIdx = children.findIndex(function(ch){ return ch.id === item.child; });
-      var childColor = CHILD_COLORS[childIdx >= 0 ? childIdx % CHILD_COLORS.length : 0];
-      var bg, opacity;
-      if (isConflict) {
-        bg = '#e8901a'; opacity = '1';
-      } else if (isAllKids) {
-        bg = childColor; opacity = item.registered ? '1' : '0.62';
-      } else {
-        bg = item.registered ? 'var(--moss)' : '#8fa89a'; opacity = '1';
-      }
-      var lbl  = isConflict ? '⚠️ Conflict' : (item.registered ? 'Registered' : 'Not yet registered');
-
-      // Clamp range to this week (Mon–Sun)
-      var weekStart = mon;           // Monday
-      var weekEnd   = addDays(mon, 6); // Sunday
-
-      var clampStart = cr.range.start > weekStart ? cr.range.start : weekStart;
-      var clampEnd   = cr.range.end   < weekEnd   ? cr.range.end   : weekEnd;
-
-      if (clampStart > weekEnd || clampEnd < weekStart) return; // not this week
-
-      // Cap to Mon–Sun
-      var startIdx = dayOfWeekIdx(clampStart);
-      var endIdx   = dayOfWeekIdx(clampEnd);
-      if (startIdx > 6) startIdx = 6;
-      if (endIdx   > 6) endIdx   = 6;
-      var span = endIdx - startIdx + 1;
-
-      // Build event block — only show in start cell, use colspan via absolute width
-      var isMultiDay = span > 1;
-      var dateLabel = (item.customStart && item.customEnd)
-        ? '<div class="sched-event-dates">' + fmtDateRange(item.customStart, item.customEnd) + '</div>'
-        : '';
-      var noteDot = item.notes ? '<span class="sched-event-note-dot" title="Has note"></span>' : '';
-      var eventHtml =
-        '<div class="sched-event" style="background:' + bg + ';opacity:' + opacity + ';cursor:pointer;' +
-        (isMultiDay ? 'position:absolute;left:0;right:0;z-index:2;' : '') +
-        '" onclick="openEventPopup(\'' + item.localId + '\')" data-span="' + span + '">' +
-          '<div class="sched-event-name">' + c.icon + ' ' + c.name + noteDot + '</div>' +
-          dateLabel +
-          '<div class="sched-event-time">' + c.time + '</div>' +
-          '<div class="sched-event-regtype" style="font-size:.68rem;opacity:.8;">' + lbl + '</div>' +
-        '</div>';
-
-      cells[startIdx].push({html: eventHtml, span: span});
+      if (cr.range.start > weekEnd || cr.range.end < weekStart) return;
+      var cs = cr.range.start > weekStart ? cr.range.start : weekStart;
+      var ce = cr.range.end   < weekEnd   ? cr.range.end   : weekEnd;
+      var si = dayOfWeekIdx(cs); if (si > 6) si = 6;
+      var ei = dayOfWeekIdx(ce); if (ei > 6) ei = 6;
+      weekItems.push({cr: cr, startIdx: si, endIdx: ei});
     });
 
-    // Render row with proper colspan
-    var rowHtml = '<div class="week-row"><div class="week-label">' + fmtWeekLabel(mon) + '</div>';
+    // Sort by start column, then longer span first
+    weekItems.sort(function(a, b) {
+      if (a.startIdx !== b.startIdx) return a.startIdx - b.startIdx;
+      return (b.endIdx - b.startIdx) - (a.endIdx - a.startIdx);
+    });
 
-    // We need to render 7 cells (Mon–Sun), skipping cells consumed by spanning events
-    var skip = 0;
-    for (var d = 0; d < 7; d++) {
-      if (skip > 0) { skip--; continue; }
-      var cellEvents = cells[d];
-      // Find max span starting here
-      var maxSpan = 1;
-      var innerHtml = '';
-      if (cellEvents.length > 0) {
-        cellEvents.forEach(function(ev) {
-          if (ev.span > maxSpan) maxSpan = ev.span;
-          innerHtml += ev.html;
-        });
+    // Assign each item to a lane (greedy interval scheduling)
+    var lanes = [];
+    var laneLastEnd = [];
+    weekItems.forEach(function(wi) {
+      var placed = false;
+      for (var li = 0; li < lanes.length; li++) {
+        if (laneLastEnd[li] < wi.startIdx) {
+          lanes[li].push(wi); laneLastEnd[li] = wi.endIdx; placed = true; break;
+        }
       }
-      // Cap span to remaining columns
-      var remaining = 7 - d;
-      if (maxSpan > remaining) maxSpan = remaining;
+      if (!placed) { lanes.push([wi]); laneLastEnd.push(wi.endIdx); }
+    });
+    if (lanes.length === 0) lanes = [[]];
 
-      var colStyle = maxSpan > 1 ? 'grid-column:span ' + maxSpan + ';position:relative;' : '';
-      rowHtml += '<div class="week-cell" style="' + colStyle + '">' + innerHtml + '</div>';
-      if (maxSpan > 1) skip = maxSpan - 1;
-    }
-    rowHtml += '</div>';
-    rows += rowHtml;
+    // Render one sub-row per lane
+    lanes.forEach(function(lane, laneIdx) {
+      var isFirst = laneIdx === 0;
+      var rowHtml = '<div class="week-row' + (isFirst ? '' : ' week-row-extra') + '">' +
+        '<div class="week-label">' + (isFirst ? fmtWeekLabel(mon) : '') + '</div>';
+
+      var d = 0;
+      while (d < 7) {
+        // Find an item in this lane starting at column d
+        var found = null;
+        for (var li = 0; li < lane.length; li++) {
+          if (lane[li].startIdx === d) { found = lane[li]; break; }
+        }
+        if (found) {
+          var item = found.cr.item, c = found.cr.camp;
+          var isConflict = conflictCampIds.has(c.id + '_' + item.child);
+          var childIdx = children.findIndex(function(ch){ return ch.id === item.child; });
+          var childColor = CHILD_COLORS[childIdx >= 0 ? childIdx % CHILD_COLORS.length : 0];
+          var bg, opacity;
+          if (isConflict)      { bg = '#e8901a'; opacity = '1'; }
+          else if (isAllKids)  { bg = childColor; opacity = item.registered ? '1' : '0.62'; }
+          else                 { bg = item.registered ? 'var(--moss)' : '#8fa89a'; opacity = '1'; }
+          var lbl = isConflict ? '⚠️ Conflict' : (item.registered ? 'Registered' : 'Not yet registered');
+          var span = found.endIdx - found.startIdx + 1;
+          var remaining = 7 - d; if (span > remaining) span = remaining;
+          var noteDot  = item.notes ? '<span class="sched-event-note-dot" title="Has note"></span>' : '';
+          var dateLabel = (item.customStart && item.customEnd)
+            ? '<div class="sched-event-dates">' + fmtDateRange(item.customStart, item.customEnd) + '</div>' : '';
+          var evHtml =
+            '<div class="sched-event" style="background:' + bg + ';opacity:' + opacity + ';cursor:pointer;' +
+            (span > 1 ? 'position:absolute;left:0;right:0;z-index:2;' : '') +
+            '" onclick="openEventPopup(\'' + item.localId + '\')">' +
+              '<div class="sched-event-name">' + c.icon + ' ' + c.name + noteDot + '</div>' +
+              dateLabel +
+              '<div class="sched-event-time">' + c.time + '</div>' +
+              '<div class="sched-event-regtype" style="font-size:.68rem;opacity:.8;">' + lbl + '</div>' +
+            '</div>';
+          rowHtml += '<div class="week-cell" style="' + (span > 1 ? 'grid-column:span ' + span + ';position:relative;' : '') + '">' + evHtml + '</div>';
+          d += span;
+        } else {
+          rowHtml += '<div class="week-cell"></div>';
+          d++;
+        }
+      }
+      rowHtml += '</div>';
+      rows += rowHtml;
+    });
   });
 
   calEl.innerHTML = rows;
