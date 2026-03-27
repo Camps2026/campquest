@@ -392,6 +392,7 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
 .toast.show{transform:translateY(0);opacity:1;}
 
 @media(max-width:900px){
+  /* Layout */
   .main-layout{grid-template-columns:1fr;padding:1rem;}
   .filters-panel{position:static;display:none;}
   .filters-panel.mobile-open{display:block;}
@@ -401,10 +402,31 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
   nav .nav-links{display:none;}
   .hamburger{display:flex;}
   .form-grid-2,.card-fields{grid-template-columns:1fr;}
+
+  /* Hero + search bar — prevent horizontal overflow */
+  .hero{padding:3.5rem 1rem 3rem;}
+  .search-bar{padding:1rem .75rem .85rem;box-sizing:border-box;width:100%;}
   .search-row-2{flex-direction:column;gap:.6rem;padding:.75rem 0 .75rem;}
   .search-row-2 .search-field{padding:0 .2rem;}
   .search-row-2 .search-divider{display:none;}
-  .search-row-2 .search-select,.search-row-2 .search-date{border:1.5px solid var(--border);border-radius:8px;padding:.5rem .75rem;background:#fff;font-size:.9rem;width:100%;}
+  .search-row-2 .search-select,.search-row-2 .search-date{border:1.5px solid var(--border);border-radius:8px;padding:.5rem .75rem;background:#fff;font-size:.9rem;width:100%;box-sizing:border-box;}
+
+  /* Detail page */
+  .detail-page{padding:1rem;}
+  .detail-header{flex-direction:column;gap:.4rem;}
+  .detail-header h1{font-size:1.4rem;}
+  #detail-claim-btn{align-self:flex-start;white-space:normal;text-align:left;}
+
+  /* Schedule page & calendar */
+  .schedule-page{padding:1rem;}
+  .schedule-grid{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .week-header,.week-row,.week-row-extra{min-width:500px;}
+
+  /* Portal / List your camp + claim section */
+  #page-portal > div{padding:1.5rem 1rem !important;}
+  .portal-claim-wrap{padding:0 1rem 1.5rem !important;}
+
+  /* Save buttons */
   .save-btn{width:40px;height:40px;font-size:1.1rem;}
   .pi-save-btn{width:40px;height:40px;font-size:1.1rem;}
 }
@@ -831,7 +853,7 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
   </div>
 
   <!-- CLAIM YOUR LISTING SECTION -->
-  <div style="max-width:900px;margin:0 auto;padding:0 2rem 2rem;">
+  <div class="portal-claim-wrap" style="max-width:900px;margin:0 auto;padding:0 2rem 2rem;">
   <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 2px 16px rgba(0,0,0,.06);margin-top:2rem;">
     <div style="display:flex;align-items:center;gap:1rem;margin-bottom:.5rem;">
       <div style="font-size:1.8rem;">🏷️</div>
