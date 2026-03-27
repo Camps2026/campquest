@@ -2412,7 +2412,16 @@ function showAddChildModal() {
   }
 
   var nameField  = field('First Name',   'new-child-name',  'text',   'e.g. Sofia');
-  var ageField   = field('Age',          'new-child-age',   'number', 'e.g. 8');
+  var ageField = (function(){
+    var wrap = document.createElement('div'); wrap.style.cssText = 'margin-bottom:.9rem;';
+    var lbl = document.createElement('label'); lbl.style.cssText = 'display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.35rem;'; lbl.textContent = 'Age';
+    var sel = document.createElement('select'); sel.id = 'new-child-age';
+    sel.style.cssText = 'width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:10px;font-size:.92rem;outline:none;background:#fff;font-family:"DM Sans",sans-serif;';
+    sel.onfocus = function(){ this.style.borderColor='var(--moss)'; }; sel.onblur = function(){ this.style.borderColor='var(--border)'; };
+    var opt = document.createElement('option'); opt.value=''; opt.textContent='Select age'; sel.appendChild(opt);
+    for (var a=1;a<=17;a++){ var o=document.createElement('option'); o.value=a; o.textContent=a; sel.appendChild(o); }
+    wrap.appendChild(lbl); wrap.appendChild(sel); return wrap;
+  })();
   var emojiField = field('Emoji / Icon', 'new-child-emoji', 'text',   'e.g. 🦋');
 
   var saveBtn = document.createElement('button');
