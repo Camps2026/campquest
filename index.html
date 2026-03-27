@@ -3052,7 +3052,18 @@ function openEventPopup(localId) {
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:flex-start;justify-content:center;padding:1.5rem;overflow-y:auto;';
 
   var box = document.createElement('div');
-  box.style.cssText = 'background:#fff;border-radius:20px;padding:1.8rem;max-width:400px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,.25);margin:auto;';
+  box.style.cssText = 'background:#fff;border-radius:20px;padding:1.8rem;max-width:400px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,.25);margin:auto;position:relative;';
+
+  // Close button
+  var closeBtn = document.createElement('button');
+  closeBtn.textContent = '✕';
+  closeBtn.style.cssText = 'position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.1rem;cursor:pointer;color:#aaa;line-height:1;padding:.2rem .4rem;border-radius:6px;';
+  closeBtn.onclick = function() { closeOverlay('event-popup'); };
+  box.appendChild(closeBtn);
+
+  // Escape key handler
+  function onEscPopup(e) { if (e.key === 'Escape') { closeOverlay('event-popup'); document.removeEventListener('keydown', onEscPopup); } }
+  document.addEventListener('keydown', onEscPopup);
 
   // Header
   var hdr = document.createElement('div');
@@ -3733,6 +3744,8 @@ async function logOut() {
   });
   var allKidsTabReset = document.getElementById('all-kids-tab');
   if (allKidsTabReset) { allKidsTabReset.style.display = 'none'; allKidsTabReset.classList.remove('active'); }
+  var emptyH3 = document.querySelector('#sched-empty h3');
+  if (emptyH3) emptyH3.textContent = 'No camps added yet';
   renderProfileChildren();
   renderSchedule();
   renderProfileAccount();
