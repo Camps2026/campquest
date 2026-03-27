@@ -348,9 +348,9 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
 .add-child-tab:hover{border-color:var(--moss);color:var(--moss);}
 .schedule-layout{display:grid;grid-template-columns:1fr 280px;gap:2rem;align-items:start;}
 .schedule-grid{background:#fff;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,.06);overflow:hidden;}
-.week-header{display:grid;grid-template-columns:72px repeat(5,1fr);background:var(--forest);color:#fff;}
+.week-header{display:grid;grid-template-columns:72px repeat(7,1fr);background:var(--forest);color:#fff;}
 .week-header div{padding:.9rem;text-align:center;font-size:.8rem;font-weight:600;}
-.week-row{display:grid;grid-template-columns:72px repeat(5,1fr);border-bottom:1px solid #f0f4f1;}
+.week-row{display:grid;grid-template-columns:72px repeat(7,1fr);border-bottom:1px solid #f0f4f1;}
 .week-row:last-child{border-bottom:none;}
 .week-label{padding:.9rem;font-size:.75rem;font-weight:600;color:var(--muted);display:flex;align-items:center;justify-content:center;background:var(--sky);border-right:1px solid var(--border);}
 .week-cell{padding:.5rem;min-height:85px;border-right:1px solid #f5f8f5;}
@@ -359,6 +359,7 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
 .sched-event-name{font-weight:700;margin-bottom:.15rem;}
 .sched-event-time{opacity:.8;font-size:.68rem;}
 .sched-event-regtype{font-size:.62rem;opacity:.8;margin-top:.15rem;}
+.sched-event-dates{font-size:.68rem;opacity:.95;margin-top:.1rem;font-weight:600;letter-spacing:.01em;}
 .empty-cell{display:flex;align-items:center;justify-content:center;color:#cdd8cf;font-size:1.2rem;cursor:pointer;transition:color .15s;height:100%;min-height:75px;}
 .empty-cell:hover{color:var(--sage);}
 .saved-camps-panel{background:#fff;border-radius:16px;padding:1.5rem;box-shadow:0 2px 16px rgba(0,0,0,.06);position:sticky;top:80px;}
@@ -2376,6 +2377,15 @@ function showToast(msg) {
 
 
 /* ─── SCHEDULE STATE ─── */
+function fmtDateRange(startStr, endStr) {
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var s = new Date(startStr + 'T12:00:00');
+  var e = new Date(endStr + 'T12:00:00');
+  var sm = months[s.getMonth()], sd = s.getDate();
+  var em = months[e.getMonth()], ed = e.getDate();
+  if (sm === em) return sm + ' ' + sd + '\u2013' + ed;
+  return sm + ' ' + sd + ' \u2013 ' + em + ' ' + ed;
+}
 var scheduleItems = []; // [{campId, registered, child}]
 var activeChild = null;
 var children = [];
@@ -2711,11 +2721,10 @@ function renderSchedule() {
   }
 
   function dayOfWeekIdx(d) {
-    // Mon=0 … Fri=4, Sat/Sun treated as Fri end
+    // Mon=0, Tue=1, Wed=2, Thu=3, Fri=4, Sat=5, Sun=6
     var dow = d.getDay(); // 0=Sun,1=Mon...6=Sat
-    if (dow === 0) return 4;
-    if (dow === 6) return 4;
-    return dow - 1;
+    if (dow === 0) return 6; // Sunday
+    return dow - 1; // Mon=0 … Sat=5
   }
 
   // ── Collect all week-mondays needed ───────────────────────────
@@ -2756,11 +2765,11 @@ function renderSchedule() {
   }
 
   // ── Build grid: one row per week ──────────────────────────────
-  var rows = '<div class="week-header"><div>Week of</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div></div>';
+  var rows = '<div class="week-header"><div>Week of</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div></div>';
 
   weekMondays.forEach(function(mon) {
-    // cells[0..4] = Mon..Fri, each is array of event html
-    var cells = [[],[],[],[],[]];
+    // cells[0..6] = Mon..Sun, each is array of event html
+    var cells = [[],[],[],[],[],[],[]];
 
     campRanges.forEach(function(cr) {
       if (!cr.range) return;
@@ -2769,29 +2778,33 @@ function renderSchedule() {
       var bg   = item.registered ? 'var(--moss)' : '#8fa89a';
       var lbl  = item.registered ? 'Registered' : 'Not yet registered';
 
-      // Clamp range to this week (Mon–Fri)
+      // Clamp range to this week (Mon–Sun)
       var weekStart = mon;           // Monday
-      var weekEnd   = addDays(mon, 4); // Friday
+      var weekEnd   = addDays(mon, 6); // Sunday
 
       var clampStart = cr.range.start > weekStart ? cr.range.start : weekStart;
       var clampEnd   = cr.range.end   < weekEnd   ? cr.range.end   : weekEnd;
 
       if (clampStart > weekEnd || clampEnd < weekStart) return; // not this week
 
-      // Cap to Mon–Fri
+      // Cap to Mon–Sun
       var startIdx = dayOfWeekIdx(clampStart);
       var endIdx   = dayOfWeekIdx(clampEnd);
-      if (startIdx > 4) startIdx = 4;
-      if (endIdx   > 4) endIdx   = 4;
+      if (startIdx > 6) startIdx = 6;
+      if (endIdx   > 6) endIdx   = 6;
       var span = endIdx - startIdx + 1;
 
       // Build event block — only show in start cell, use colspan via absolute width
       var isMultiDay = span > 1;
+      var dateLabel = (item.customStart && item.customEnd)
+        ? '<div class="sched-event-dates">' + fmtDateRange(item.customStart, item.customEnd) + '</div>'
+        : '';
       var eventHtml =
         '<div class="sched-event" style="background:' + bg + ';cursor:pointer;' +
         (isMultiDay ? 'position:absolute;left:0;right:0;z-index:2;' : '') +
         '" onclick="openEventPopup(' + c.id + ')" data-span="' + span + '">' +
           '<div class="sched-event-name">' + c.icon + ' ' + c.name + '</div>' +
+          dateLabel +
           '<div class="sched-event-time">' + c.time + '</div>' +
           '<div class="sched-event-regtype" style="font-size:.68rem;opacity:.8;">' + lbl + '</div>' +
         '</div>';
@@ -2802,9 +2815,9 @@ function renderSchedule() {
     // Render row with proper colspan
     var rowHtml = '<div class="week-row"><div class="week-label">' + fmtWeekLabel(mon) + '</div>';
 
-    // We need to render 5 cells (Mon–Fri), skipping cells consumed by spanning events
+    // We need to render 7 cells (Mon–Sun), skipping cells consumed by spanning events
     var skip = 0;
-    for (var d = 0; d < 5; d++) {
+    for (var d = 0; d < 7; d++) {
       if (skip > 0) { skip--; continue; }
       var cellEvents = cells[d];
       // Find max span starting here
@@ -2817,7 +2830,7 @@ function renderSchedule() {
         });
       }
       // Cap span to remaining columns
-      var remaining = 5 - d;
+      var remaining = 7 - d;
       if (maxSpan > remaining) maxSpan = remaining;
 
       var colStyle = maxSpan > 1 ? 'grid-column:span ' + maxSpan + ';position:relative;' : '';
@@ -2846,7 +2859,7 @@ function renderSchedule() {
     panelItems +=
       '<div style="padding:.7rem 0;border-bottom:1px solid #f0f4f1;">' +
         '<div class="saved-name">' + c.icon + ' ' + c.name + '</div>' +
-        '<div class="saved-dates">' + (item.session || (Array.isArray(c.dates) ? c.dates[0] : (c.dates || c.week))) + '</div>' +
+        '<div class="saved-dates">' + (item.customStart && item.customEnd ? fmtDateRange(item.customStart, item.customEnd) : (item.session || (Array.isArray(c.dates) ? c.dates[0] : (c.dates || c.week)))) + '</div>' +
         '<div style="display:flex;gap:.4rem;margin-top:.5rem;align-items:center;">' +
           btn +
           '<button onclick="removeFromSchedule(' + c.id + ')" class="panel-remove-btn" title="Remove">\u2715</button>' +
@@ -2884,7 +2897,7 @@ function openEventPopup(campId) {
   hdr.innerHTML =
     '<div style="width:48px;height:48px;border-radius:12px;background:#eef7f0;display:flex;align-items:center;justify-content:center;font-size:1.6rem;">' + c.icon + '</div>' +
     '<div><div style="font-weight:700;color:var(--forest);font-size:1rem;">' + c.name + '</div>' +
-    '<div style="font-size:.8rem;color:var(--muted);">' + c.dates + ' \u00b7 ' + c.time + '</div></div>';
+    '<div style="font-size:.8rem;color:var(--muted);">' + (item.customStart && item.customEnd ? fmtDateRange(item.customStart, item.customEnd) : c.dates) + ' \u00b7 ' + c.time + '</div></div>';
 
   // Status box
   var statusBox = document.createElement('div');
