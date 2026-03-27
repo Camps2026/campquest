@@ -2422,15 +2422,13 @@ function showAddChildModal() {
     for (var a=1;a<=17;a++){ var o=document.createElement('option'); o.value=a; o.textContent=a; sel.appendChild(o); }
     wrap.appendChild(lbl); wrap.appendChild(sel); return wrap;
   })();
-  var emojiField = field('Emoji / Icon', 'new-child-emoji', 'text',   'e.g. 🦋');
-
   var saveBtn = document.createElement('button');
   saveBtn.style.cssText = 'width:100%;padding:.9rem;border:none;border-radius:10px;background:var(--moss);color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;margin-bottom:.6rem;';
   saveBtn.textContent = 'Add Child';
   saveBtn.onclick = async function() {
     var name  = document.getElementById('new-child-name').value.trim();
     var age   = document.getElementById('new-child-age').value.trim();
-    var emoji = document.getElementById('new-child-emoji').value.trim() || '🧒';
+    var emoji = '🧒';
     if (!name) { document.getElementById('new-child-name').style.borderColor = 'var(--coral)'; return; }
     var childId = name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
     if (currentUser) {
@@ -2453,7 +2451,6 @@ function showAddChildModal() {
   box.appendChild(title);
   box.appendChild(nameField);
   box.appendChild(ageField);
-  box.appendChild(emojiField);
   box.appendChild(saveBtn);
   box.appendChild(cancelBtn);
   overlay.appendChild(box);
