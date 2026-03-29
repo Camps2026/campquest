@@ -25,6 +25,12 @@ PopCamps (popcamps.one) is a Washington state summer camp directory. Parents sea
 - List Your Camp: `https://formspree.io/f/mdapagpg`
 - Claim Your Camp: `https://formspree.io/f/xqegeqgl`
 
+## Testing
+- Use **MCP Chrome DevTools** to visually verify changes on mobile before and after edits
+- Always test at 390x844 mobile viewport (iPhone size)
+- Use `mcp__chrome-devtools__emulate` + `mcp__chrome-devtools__take_screenshot` to check layout
+- Use `mcp__chrome-devtools__evaluate_script` to force-show UI states (e.g. calendar with dummy data)
+
 ## Current site state
 - Title: `popcamps | Washington Summer Camp Directory`
 - H1: `Washington Summer Camp Directory`
@@ -32,7 +38,7 @@ PopCamps (popcamps.one) is a Washington state summer camp directory. Parents sea
 - og:image: `https://popcamps.one/og-image.png` (1200×630px, already pushed)
 - Footer: dark green, "Listings updated regularly for summer 2026. · © 2026 PopCamps"
 - My Calendar page: full summer toggle + empty week click-to-search
-- Mobile: Show Filters button visible, calendar scrolls horizontally
+- Mobile: Show Filters button visible, calendar fits on screen (Mon–Fri only, no horizontal scroll)
 - No Best Match sort dropdown (removed)
 - Image upload UI removed from List Your Camp form (not functional yet)
 - Claim listing copy updated to be honest — no self-service portal exists yet
