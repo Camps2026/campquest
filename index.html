@@ -921,14 +921,17 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
       <h1 style="margin:0;">My Calendar</h1>
       <button class="child-tab" id="saved-tab" onclick="switchToSaved(this)" style="font-size:.78rem;padding:.35rem .85rem;">♥ Saved Camps</button>
     </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem;">
+    <div style="margin-bottom:1.5rem;">
       <p style="color:var(--muted);margin:0;">Camps you add appear here. Click any camp block to update its registration status.</p>
-      <button id="full-cal-toggle" onclick="toggleFullCalendar()" style="background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:.35rem .9rem;font-size:.8rem;font-weight:600;color:var(--forest);cursor:pointer;white-space:nowrap;">🗓 Show Full Summer</button>
     </div>
 
     <div class="children-tabs">
       <button class="add-child-tab" onclick="requireAccount(showAddChildModal)">+ Add Child</button>
       <button class="child-tab" id="all-kids-tab" onclick="switchToAllKids(this)" style="display:none;">All Kids</button>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;margin-bottom:.6rem;">
+      <button id="full-cal-toggle" onclick="toggleFullCalendar()" style="background:var(--sky);border:1px solid var(--moss);border-radius:8px;padding:.35rem .85rem;font-size:.75rem;font-weight:600;color:var(--forest);cursor:pointer;white-space:nowrap;letter-spacing:.01em;">🗓 Show Full Summer</button>
     </div>
 
     <!-- Empty state -->
