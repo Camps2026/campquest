@@ -432,7 +432,7 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
 
   /* Schedule page & calendar */
   .schedule-page{padding:1rem;}
-  .schedule-grid{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .schedule-grid{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;box-sizing:border-box;}
   .week-header,.week-row,.week-row-extra{min-width:500px;}
 
   /* Portal / List your camp + claim section */
@@ -443,7 +443,7 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
   .save-btn{width:40px;height:40px;font-size:1.1rem;}
   .pi-save-btn{width:40px;height:40px;font-size:1.1rem;}
 }
-.mobile-filter-toggle{display:none;}
+@media(min-width:901px){.mobile-filter-toggle{display:none;}}
 /* ── UMBRELLA CAMP CARD ── */
 .camp-card.umbrella-card{border:2px solid transparent;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,var(--sun) 0%,#e8a020 100%) border-box;}
 .umbrella-img-area{height:155px;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--forest) 0%,#3a7a50 100%);}
@@ -831,32 +831,6 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
         <div><div style="font-size:.72rem;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;letter-spacing:.07em">Location</div><input id="list-location" type="text" placeholder="Austin, TX" style="width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none"/></div>
         <div style="grid-column:1/-1"><div style="font-size:.72rem;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;letter-spacing:.07em">Description</div><textarea id="list-description" placeholder="Describe your camp's philosophy and activities..." style="width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;min-height:90px;resize:vertical"></textarea></div>
 
-        <!-- Cover Image -->
-        <div style="grid-column:1/-1">
-          <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;letter-spacing:.07em">Cover Image</div>
-          <label id="cover-upload-label" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;border:2px dashed var(--border);border-radius:12px;padding:2rem;cursor:pointer;background:#fafcfa;transition:all .2s;min-height:140px;" onmouseover="this.style.borderColor='var(--moss)'" onmouseout="this.style.borderColor='var(--border)'">
-            <div id="cover-preview" style="display:none;width:100%;"></div>
-            <div id="cover-placeholder">
-              <div style="font-size:2rem;margin-bottom:.3rem;">🖼️</div>
-              <div style="font-weight:600;color:var(--forest);font-size:.9rem;">Click to upload cover image</div>
-              <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem;">Recommended: 1200×600px · JPG, PNG, WEBP · Max 5MB</div>
-            </div>
-            <input type="file" accept="image/*" style="display:none;" onchange="handleCoverUpload(this)">
-          </label>
-        </div>
-
-        <!-- Additional Photos -->
-        <div style="grid-column:1/-1">
-          <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;letter-spacing:.07em">Additional Photos <span style="font-weight:400;text-transform:none;font-size:.72rem;">(up to 8)</span></div>
-          <div id="gallery-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;">
-            <!-- Add photo tile -->
-            <label id="gallery-add-tile" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;border:2px dashed var(--border);border-radius:10px;cursor:pointer;background:#fafcfa;transition:all .2s;" onmouseover="this.style.borderColor='var(--moss)'" onmouseout="this.style.borderColor='var(--border)'">
-              <span style="font-size:1.5rem;">+</span>
-              <span style="font-size:.72rem;color:var(--muted);font-weight:600;">Add Photo</span>
-              <input type="file" accept="image/*" multiple style="display:none;" onchange="handleGalleryUpload(this)">
-            </label>
-          </div>
-        </div>
       </div>
       <button id="list-submit-btn" class="btn-primary" style="padding:1rem 2rem" onclick="submitListing()">Submit Listing →</button>
     </div>
@@ -869,12 +843,12 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
       <div style="font-size:1.8rem;">🏷️</div>
       <div>
         <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--forest);margin-bottom:.2rem;">Already listed? Claim your camp</h2>
-        <p style="color:var(--muted);font-size:.85rem;">We may have created a listing for your camp from public information. Claim it to take control — update photos, dates, and respond to families directly.</p>
+        <p style="color:var(--muted);font-size:.85rem;">We may have created a listing for your camp from public information. Submit a claim request and we'll reach out to verify and update your listing.</p>
       </div>
     </div>
 
     <div style="background:var(--sky);border-radius:12px;padding:1rem 1.2rem;margin:1.2rem 0;font-size:.85rem;color:var(--forest);line-height:1.6;">
-      <strong>What claiming does:</strong> Gives you full edit access to your listing, lets you upload your own photos, respond to parent inquiries, and mark your registration as open or closed.
+      <strong>What happens after you claim:</strong> We'll verify your connection to the camp and follow up by email within 1–2 business days to confirm details and make any updates to your listing.
     </div>
 
     <div id="claim-search-section">
@@ -945,7 +919,6 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
     <div class="children-tabs">
       <button class="add-child-tab" onclick="requireAccount(showAddChildModal)">+ Add Child</button>
       <button class="child-tab" id="all-kids-tab" onclick="switchToAllKids(this)" style="display:none;">All Kids</button>
-      <button class="child-tab" id="saved-tab" onclick="switchToSaved(this)" style="font-size:.78rem;padding:.35rem .85rem;">♥ Saved Camps</button>
     </div>
 
     <!-- Empty state -->
@@ -3672,12 +3645,12 @@ async function submitClaim() {
         '<div style="text-align:center;padding:2rem 1rem;">' +
           '<div style="font-size:3rem;margin-bottom:1rem;">🎉</div>' +
           '<h3 style="font-family:\'Playfair Display\',serif;color:var(--forest);font-size:1.2rem;margin-bottom:.5rem;">Claim request submitted!</h3>' +
-          '<p style="color:var(--muted);font-size:.88rem;line-height:1.6;max-width:360px;margin:0 auto 1.2rem;">We\'ll verify your connection to <strong>' + campName + '</strong> and send access to <strong>' + email + '</strong> within 1–2 business days.</p>' +
+          '<p style="color:var(--muted);font-size:.88rem;line-height:1.6;max-width:360px;margin:0 auto 1.2rem;">We\'ll verify your connection to <strong>' + campName + '</strong> and follow up at <strong>' + email + '</strong> within 1–2 business days.</p>' +
           '<div style="background:var(--sky);border-radius:10px;padding:.9rem;font-size:.82rem;color:var(--forest);text-align:left;">' +
             '<strong>What happens next:</strong><br>' +
             '1. We verify your role at ' + campName + '<br>' +
-            '2. You get an email with login credentials<br>' +
-            '3. You can edit your listing, add photos, and manage inquiries' +
+            '2. We reach out by email to confirm listing details<br>' +
+            '3. We update your listing based on what you send us' +
           '</div>' +
         '</div>';
     } else {

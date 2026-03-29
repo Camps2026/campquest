@@ -504,17 +504,214 @@ ALTER TABLE user_schedules ADD COLUMN IF NOT EXISTS notes TEXT;
 ---
 
 ## Pending / Future Work
-- **Formspree integration**: wire up "List Your Camp" and "Claim Your Camp" forms to actually send emails. User needs to create Formspree account → get two form endpoint URLs → paste them here.
-- **Website rename**: site is currently called "CampQuest" — user plans to rename. When ready: find/replace the name in `index.html`, rename the GitHub repo, update Supabase redirect URLs.
-- **Custom domain**: recommended to buy a domain (~$12/year on Namecheap) once the name is decided.
+- ~~**Formspree integration**~~ ✅ Done Mar 27, 2026
+- ~~**Website rename to PopCamps**~~ ✅ Done Mar 27, 2026
+- ~~**Custom domain**~~ ✅ popcamps.one purchased and configured Mar 27, 2026 — HTTPS enforcement pending
 - **Google Analytics**: deferred — add once site has real traffic.
 - **Resend SMTP**: for reliable password reset emails from a custom address — deferred.
+- **Enforce HTTPS on popcamps.one**: check GitHub Pages Settings once SSL cert is issued.
+- **session_dates cleanup**: ~66 camps still have non-date text in their session dates.
+
+---
+
+## Website Testing & Major Changes (Mar 27, 2026)
+
+### Full Site Test — Results
+Ran automated browser testing using Chrome DevTools MCP against the live site. All core flows tested.
+
+**Bugs Found & Fixed:**
+
+| Bug | Fix |
+|---|---|
+| Event popup (camp calendar block click) had no close button and no Escape key support | Added ✕ button (top-right, absolute positioned) and Escape key listener to the popup. Both call `closeOverlay('event-popup')` |
+| After logging out, the empty schedule message showed the previously active child's name (e.g. "No camps added yet for Lily") instead of generic text | Added reset of `#sched-empty h3` text to "No camps added yet" in the `logOut()` function, before `renderProfileChildren()` is called |
+
+---
+
+### Website Rename: CampQuest → PopCamps
+All changes made in `~/Documents/campquest/index.html`:
+
+| Location | Before | After |
+|---|---|---|
+| Browser tab title | `CampQuest — Find the Perfect Camp` | `PopCamps — Find the Perfect Camp` |
+| Nav logo | `Camp<span>Quest</span>` | `Pop<span>Camps</span>` |
+| Registration type short code | `short:"CQ"` | `short:"PC"` |
+
+**GitHub repo renamed:** `campquest` → `popcamps`
+- New repo URL: `https://github.com/Camps2026/popcamps`
+- Git remote updated locally: `git remote set-url origin git@github.com:Camps2026/popcamps.git`
+
+**Supabase project rename:** Still named "CampsQuest" — cosmetic only, low priority.
+
+---
+
+### Custom Domain: popcamps.one
+Domain purchased from Porkbun. DNS configured as follows:
+
+**Porkbun DNS Records Added:**
+| Type | Host | Answer |
+|---|---|---|
+| A | @ | 185.199.108.153 |
+| A | @ | 185.199.109.153 |
+| A | @ | 185.199.110.153 |
+| A | @ | 185.199.111.153 |
+| CNAME | www | camps2026.github.io |
+
+**GitHub Pages configured:**
+- Custom domain field set to `popcamps.one`
+- `CNAME` file committed to repo with `popcamps.one`
+- **Enforce HTTPS**: not yet available — waiting for GitHub to issue SSL certificate after DNS propagates (can take up to 24 hours). User needs to return to GitHub Pages Settings and check the "Enforce HTTPS" box once it becomes clickable.
+
+---
+
+### Formspree Integration
+Both contact forms now send real emails via Formspree.
+
+**List Your Camp form** (`submitListing()` function):
+- Endpoint: `https://formspree.io/f/mdapagpg`
+- Fields sent: Camp Name, Camp Type, Contact Email (_replyto), Location, Description
+- IDs added to form fields: `list-name`, `list-type`, `list-email`, `list-location`, `list-description`, `list-submit-btn`
+- On success: button hides, toast shows "Camp listing submitted! You'll hear from us within 24 hours."
+
+**Claim Your Camp form** (`submitClaim()` function):
+- Endpoint: `https://formspree.io/f/xqegeqgl`
+- Fields sent: Camp Name (from `claimTargetCamp`), Your Name, Role, Work Email (_replyto), Phone, Verification
+- On success: shows success HTML inside `#claim-form-section`
+- Replaced the old fake `submitClaim()` that only showed success UI without sending anything
+
+---
+
+### Supabase session_dates Cleanup
+Scanned all 995 camp records and found 73 camps with non-date text in `session_dates` (addresses, URLs, prices, program names, times).
+
+**7 camps updated via Supabase REST API** — URLs removed, leaving "TBD":
+
+| Camp | ID |
+|---|---|
+| Camp Sealth | 3 |
+| Echo Falls Golf Club – Junior Golf Camps | 188 |
+| Nike Soccer Camp – Renton / Ron Regis Park (Tacoma Stars) | 204 |
+| Snapology STEAM Camps – Issaquah | 509 |
+| Snapology STEAM Camps – Kirkland | 510 |
+| Snapology STEAM Camps – Redmond | 511 |
+| Snapology STEAM Camps – Sammamish | 512 |
+
+All 7 confirmed updated (HTTP 204) and verified by re-fetching from Supabase.
+
+**Remaining:** ~66 more camps have non-date text (program names, prices, addresses, times) — not yet cleaned. These were identified but no action taken yet.
+
+---
+
+## Session Dates Cleanup — Continued (Mar 28, 2026)
+
+Removed addresses, prices, time info, and other non-date text from additional camps:
+
+### Physical Addresses Removed
+| Camp | What was removed |
+|---|---|
+| Camp Killoqua (id:4) | `15207 E Lake Goodwin Rd, Stanwood WA` |
+| SGA Ballard (id:43) | `Ballard location: 1415 NW 52nd St, Seattle WA 98107` |
+| SGA Columbia City (id:44) | `Columbia City location: 5034 37th Ave South Suite 200` |
+| SGA Mill Creek (id:46) | `Mill Creek location: 15311 Main St, Mill Creek WA 98012` |
+| SGA Burien (id:47) | `Burien location: 15840 1st Ave S Suite 103` |
+| SGA Lake City 28th (id:48) | `Lake City Campus – 28th gym: 12739 28th Ave NE` |
+| Premier Golf – Interbay (id:181) | `Located at Interbay Golf Center, 2501 15th Ave W` + phone number |
+| Kirkland Parks – Martial Arts (id:365) | `Finn Hill Middle School` from location list |
+
+### Prices Removed
+| Camp | What was removed |
+|---|---|
+| Redmond Tennis Center (id:107) | All pack pricing ($300/$350, $550, etc.) from each program |
+| Premier Golf – Bellevue (id:183) | `$140` and `$550` prices |
+| Northwest Arts Center (id:91) | All `($xxx)` prices + removed `Fit & Fun Camp ($225)` (no date) |
+| Camp Firwood (id:74) | Prices `$665/$689/$499` — reformatted with `\|` separators |
+| Camp Lutherwood (id:71) | Prices `$310/$635/$720/$650/$350`, `(FULL)` tags, time info, `application required` |
+| St. Thomas School Summer Camps (id:163) | All `($xxx)` prices from all 90 session entries |
+
+### Other Cleanup
+| Camp | What was removed |
+|---|---|
+| Camp Korey (id:17) | Medical category labels (e.g. `— Cardiac, Respiratory & Transplant`) — commas inside were causing split artifacts |
+| Camp Killoqua (id:4) | `Financial aid available` |
+| Bricks 4 Kidz Seattle (id:131) | `, waitlist` from Valley School entry |
+| Bricks 4 Kidz South Sound/Eastside (id:132) | `, 4/8 all` from PenMet entry |
+| Seattle Parks Specialized (id:300) | `Ravenna Park` and `Seward Park` from week labels |
+| City of Olympia – Fish, Forage, Fire! (id:453) | `Fish, Forage, Fire!` prefix from each entry (commas inside were splitting it) |
+| Camp Fire Mountain (id:75) | `, 2026 (Sun 1pm–Sat 10am)` from all week entries |
+| Lakeside School Summer Programs (id:150) | Grades, hours, subject lists — kept program names + dates only |
+| Village Theatre KIDSTAGE – Issaquah (id:174) | All time info (9am–12pm, etc.) from every session entry |
+| Village Theatre KIDSTAGE – Everett (id:1332) | All time info from every session entry |
+
+### Removed Entirely
+- City of Olympia – Olywahoo Jr. Music Classes (Jefferson Middle School) (id:447)
+
+---
+
+## SEO Work (Mar 28, 2026)
+
+All changes in `index.html`, pushed to GitHub.
+
+### Meta Tags Added to `<head>`
+- **Title**: `popcamps | Washington Summer Camp Directory`
+- **Meta description**: "Browse hundreds of summer camps for kids across Seattle, the Eastside, and communities throughout Washington state. Find the right camp for your family on popcamps."
+- **Canonical tag**: `<link rel="canonical" href="https://popcamps.one/">`
+- **Open Graph tags**: og:title, og:description, og:url, og:type
+- **Twitter Card tags**: twitter:card, twitter:title, twitter:description
+- **Google Search Console verification tag**: `UpzpVcPfNDCPpKCylyfHxS3nozoHgnAhgIpDpE0A6jo`
+
+### Files Added to Repo
+- **sitemap.xml**: Points to `https://popcamps.one/`, weekly changefreq, priority 1.0
+- **robots.txt**: Allow all crawlers, points to sitemap
+- Sitemap link also added to `<head>`
+
+### Google Search Console
+- Property added: `https://popcamps.one/` (URL prefix method)
+- Verified via HTML tag method
+- Sitemap submitted: `https://popcamps.one/sitemap.xml` — Status: Success, 1 page discovered
+
+### Schema.org Structured Data
+Added two JSON-LD blocks before `</body>`:
+- **WebSite schema** with SearchAction (tells Google the site has a search box)
+- **LocalBusiness schema** with areaServed: Washington state
+
+### Hero Section
+- `<h1>` updated to: `Washington Summer Camp Directory`
+- Subheadline `<p>` added: "Browse hundreds of summer camps for kids across Seattle, the Eastside, and communities throughout Washington state."
+
+### HTTPS
+- Enforce HTTPS checkbox enabled in GitHub Pages Settings — popcamps.one is now fully HTTPS ✅
+
+---
+
+## UI / Feature Changes (Mar 28, 2026)
+
+### My Calendar (formerly My Schedule)
+- Renamed "My Schedule" → **"My Calendar"** everywhere: nav, mobile menu, page title, buttons, empty state
+- **"Show Full Summer" toggle button**: appears top-right of calendar. Shows all weeks Jun 8 – Sep 7, 2026. Button label flips to "Hide Empty Weeks" when active.
+- **Empty week → search**: in full summer view, empty weeks show `+ Find a camp`. Clicking navigates to search page with Monday of that week pre-filled as start date and Friday as end date, then auto-runs search.
+- **First child tab highlighted by default**: when logged in, the first child's tab is now active (dark green) on load so it's clear whose calendar is shown.
+
+### Search Results
+- Removed **"Best Match" sort dropdown** — it had only one option and looked broken. Removed entirely.
+
+### Footer
+- Added site footer (dark green, matches nav):
+  > "Listings updated regularly for summer 2026. · © 2026 PopCamps"
+
+---
+
+## Known Issues / Pending Work (as of Mar 28, 2026)
+
+- **og:image**: needs a 1200×630px branded image created in Canva — one line of code to add once ready.
+- **Remaining session_dates cleanup**: some camps still have non-date text.
+- **Supabase project rename**: still shows as "CampsQuest" — cosmetic only, no functional impact.
+- **Google Analytics**: deferred — add once site has real traffic.
 
 ---
 
 ## How to Start a New Session
 
 Tell Claude:
-> "I'm working on CampQuest, a Seattle-area summer camp finder. Single index.html file, Supabase database. See CAMPQUEST_WORK_LOG.md in ~/Documents/campquest/ for full context."
+> "I'm working on PopCamps (formerly CampQuest), a Washington state summer camp directory. Single index.html file, Supabase database, deployed at popcamps.one. See CAMPQUEST_WORK_LOG.md in ~/Documents/campquest/ for full context."
 
 Then share this file or paste the relevant section.
