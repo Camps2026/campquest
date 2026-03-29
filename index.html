@@ -3784,6 +3784,9 @@ async function loadUserData(userId) {
       addChildTab(row.id, row.name, row.age, row.emoji || '🧒');
     });
     activeChild = children[0].id;
+    // Highlight the first child's tab by default
+    var firstTab = document.querySelector('.children-tabs .child-tab:not(#all-kids-tab):not(#saved-tab)');
+    if (firstTab) firstTab.classList.add('active');
   }
   var savedResp = await sbClient.from('user_saved_camps').select('camp_supabase_id').eq('user_id', userId);
   savedCamps = new Set();
