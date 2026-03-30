@@ -436,9 +436,10 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
   .week-header,.week-row,.week-row-extra{min-width:unset;grid-template-columns:36px repeat(7,1fr);}
   .week-label{padding:.5rem .1rem;font-size:.55rem;}
   .week-header div{padding:.5rem .05rem;font-size:.6rem;}
-  .week-cell{min-height:60px;padding:.2rem;}
-  .sched-event{font-size:.58rem;padding:.2rem .25rem;}
-  .sched-event-name{font-size:.58rem;}
+  .week-cell{min-height:60px;max-height:70px;overflow:hidden;padding:.2rem;}
+  .sched-event{font-size:.58rem;padding:.2rem .25rem;overflow:hidden;}
+  .sched-event-name{font-size:.58rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sched-event-time,.sched-event-regtype,.sched-event-dates{display:none;}
   .saved-camps-panel{position:static;width:100%;box-sizing:border-box;}
   #sched-legend{flex-wrap:wrap;gap:.75rem;font-size:.75rem;}
   #sched-legend > div:last-child{width:100%;text-align:left;margin-left:0;}
