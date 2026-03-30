@@ -892,6 +892,30 @@ All 11 tests passed using Chrome DevTools MCP against the live site (`https://po
 
 ---
 
+## Session: Mar 29–30, 2026 — Legal Pages
+
+### Privacy Policy Page
+- Helped user answer Termly's Privacy Policy questionnaire (product description, data collected, third-party services, etc.)
+- Built a full `page-privacy` page in `index.html` with the complete Privacy Policy content from Termly
+- Added "Privacy Policy" link to the footer
+- Added a privacy hint below the "Child's Name" field in the Add Child modal: *"You don't need to use your child's real name — a nickname is fine."*
+- Added "Delete My Account" feature to the Profile page (clears all local data: children, saved camps, booked camps)
+
+### Terms and Conditions Page
+- Helped user answer Termly's Terms and Conditions questionnaire
+- Termly's free plan does not allow embedding or copying T&C text
+- User captured 16 screenshots of the Termly T&C preview — Claude transcribed all 16 into full page text
+- Built `page-terms` page in `index.html` with all 24 sections of the Terms and Conditions
+- Added "Terms and Conditions" link to the footer next to "Privacy Policy"
+- Pushed to GitHub: commit `275c6bc`
+
+### Footer (after these changes)
+```
+Listings updated regularly for summer 2026. · © 2026 PopCamps · Privacy Policy · Terms and Conditions
+```
+
+---
+
 ## How We Work Together
 
 ### Roles
