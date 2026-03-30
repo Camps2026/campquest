@@ -1643,6 +1643,7 @@ async function loadCampsFromSupabase() {
   } catch (err) {
     console.warn('⚠️ Supabase unavailable, using demo data.');
     console.warn('  Error:', err.message);
+    await checkExistingSession();
   }
 }
 
@@ -4680,24 +4681,29 @@ function showLoginModal(source) {
     var errEl = box.querySelector('#login-error');
     var submitBtn = box.querySelector('#li-submit');
     submitBtn.disabled = true; submitBtn.textContent = 'Logging in...';
-    var signInResp = await sbClient.auth.signInWithPassword({ email: email, password: pass });
-    if (signInResp.error) {
-      showErr(errEl, 'Email or password is incorrect.');
-      submitBtn.disabled=false; submitBtn.textContent='Log In →'; return;
+    try {
+      var signInResp = await sbClient.auth.signInWithPassword({ email: email, password: pass });
+      if (signInResp.error) {
+        showErr(errEl, 'Email or password is incorrect.');
+        submitBtn.disabled=false; submitBtn.textContent='Log In →'; return;
+      }
+      var profileResp = await sbClient.from('user_profiles').select('*').eq('id', signInResp.data.user.id).single();
+      var profile = profileResp.data;
+      currentUser = {
+        id: signInResp.data.user.id,
+        name: profile ? profile.full_name : signInResp.data.user.email,
+        email: signInResp.data.user.email,
+        zip: profile ? profile.zip : '',
+        createdAt: signInResp.data.user.created_at
+      };
+      closeOverlay('login-modal');
+      updateNavForUser();
+      await loadUserData(signInResp.data.user.id);
+      showToast('Welcome back, ' + currentUser.name.split(' ')[0] + '! 👋');
+    } catch(err) {
+      showErr(errEl, 'Connection error. Please check your internet and try again.');
+      submitBtn.disabled = false; submitBtn.textContent = 'Log In →';
     }
-    var profileResp = await sbClient.from('user_profiles').select('*').eq('id', signInResp.data.user.id).single();
-    var profile = profileResp.data;
-    currentUser = {
-      id: signInResp.data.user.id,
-      name: profile ? profile.full_name : signInResp.data.user.email,
-      email: signInResp.data.user.email,
-      zip: profile ? profile.zip : '',
-      createdAt: signInResp.data.user.created_at
-    };
-    closeOverlay('login-modal');
-    updateNavForUser();
-    await loadUserData(signInResp.data.user.id);
-    showToast('Welcome back, ' + currentUser.name.split(' ')[0] + '! 👋');
   };
 
   box.querySelectorAll('input').forEach(function(inp) {
@@ -4843,6 +4849,21 @@ window.addEventListener('DOMContentLoaded', function() {
           await populateOwnerForm(campResp.data);
           showPage('owner');
         }
+        return;
+      }
+      // Regular parent user — restore session if not already set
+      if (!currentUser) {
+        var profileResp = await sbClient.from('user_profiles').select('*').eq('id', userId).single();
+        var profile = profileResp.data;
+        currentUser = {
+          id: userId,
+          name: profile ? profile.full_name : session.user.email,
+          email: session.user.email,
+          zip: profile ? profile.zip : '',
+          createdAt: session.user.created_at
+        };
+        updateNavForUser();
+        await loadUserData(userId);
       }
     }
   });
