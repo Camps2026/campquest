@@ -2692,8 +2692,13 @@ function showAddChildModal() {
   cancelBtn.textContent = 'Cancel';
   cancelBtn.onclick = function() { closeOverlay('add-child-modal'); };
 
+  var privacyHint = document.createElement('p');
+  privacyHint.style.cssText = 'font-size:.75rem;color:var(--muted);margin:-4px 0 14px;';
+  privacyHint.textContent = 'A first name or nickname is fine — we don\'t need your child\'s full name.';
+
   box.appendChild(title);
   box.appendChild(nameField);
+  box.appendChild(privacyHint);
   box.appendChild(ageField);
   box.appendChild(saveBtn);
   box.appendChild(cancelBtn);
