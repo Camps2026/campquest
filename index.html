@@ -1042,7 +1042,7 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
 
       <div><br></div>
       <div id="pp-infominors" style="line-height:1.5;"><strong><span data-custom-class="heading_1"><h2>6. DO WE COLLECT INFORMATION FROM MINORS?</h2></span></strong></div>
-      <div style="line-height:1.5;"><span data-custom-class="body_text">We do not knowingly collect data from or market to children under 18. Our Services are intended for parents and guardians. When adding a child's profile, parents provide the child's first name (or nickname) and age — we do not require a child's full name. If you become aware of any data we may have collected from children under 18, please contact us at <a href="mailto:camps2026@outlook.com" data-custom-class="link">camps2026@outlook.com</a>.</span></div>
+      <div style="line-height:1.5;"><span data-custom-class="body_text">We do not knowingly collect data from or market to children under 18. Our Services are intended for parents and guardians. When adding a child's profile, parents provide the child's first name (or nickname) and age — we do not require a child's full name. For users who are not logged in, child profile information is stored only in your browser's local storage on your own device and is never transmitted to our servers. For logged-in users, this data is stored securely in our database and is permanently deleted when you delete your account. If you become aware of any data we may have collected from children under 18, please contact us at <a href="mailto:camps2026@outlook.com" data-custom-class="link">camps2026@outlook.com</a>.</span></div>
 
       <div><br></div>
       <div id="pp-privacyrights" style="line-height:1.5;"><strong><span data-custom-class="heading_1"><h2>7. WHAT ARE YOUR PRIVACY RIGHTS?</h2></span></strong></div>
@@ -4457,7 +4457,7 @@ async function logOut() {
 
 async function deleteAccount() {
   if (!currentUser) return;
-  if (!confirm('Are you sure? This will permanently delete your account and all saved data — your children\'s profiles, your camp schedule, and your login. This cannot be undone.')) return;
+  if (!confirm('Are you sure? This will permanently delete all your saved data — your children\'s profiles, your camp schedule, and your login. This cannot be undone.')) return;
   var uid = currentUser.id;
   await sbClient.from('user_schedules').delete().eq('user_id', uid);
   await sbClient.from('user_children').delete().eq('user_id', uid);
@@ -4478,7 +4478,7 @@ async function deleteAccount() {
   renderProfileAccount();
   updateNavForUser();
   showPage('home');
-  showToast('Your account has been deleted. Sorry to see you go!');
+  showToast('Your data has been cleared. Sorry to see you go!');
 }
 
 function updateNavForUser() {
@@ -4510,7 +4510,7 @@ function renderProfileAccount() {
       '<button onclick="logOut();" style="margin-top:1rem;padding:.5rem 1.2rem;border:1.5px solid var(--border);border-radius:8px;background:#fff;font-size:.82rem;cursor:pointer;color:var(--text);">Log Out</button>' +
       '<div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid #f0f4f1;">' +
         '<div style="font-size:.8rem;color:var(--muted);margin-bottom:.75rem;">Want to remove your account and all saved data from PopCamps?</div>' +
-        '<button onclick="deleteAccount();" style="padding:.45rem 1rem;border:1.5px solid #e0b4b4;border-radius:8px;background:#fff;font-size:.8rem;cursor:pointer;color:#9a2a2a;">Delete My Account</button>' +
+        '<button onclick="deleteAccount();" style="padding:.45rem 1rem;border:1.5px solid #e0b4b4;border-radius:8px;background:#fff;font-size:.8rem;cursor:pointer;color:#9a2a2a;">Clear My Data</button>' +
       '</div>';
   } else {
     box.innerHTML =
