@@ -1334,8 +1334,9 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
     <!-- Empty state -->
     <div id="sched-empty" style="text-align:center;padding:4rem 2rem;color:var(--muted);">
       <div style="font-size:3.5rem;margin-bottom:1rem;">📅</div>
-      <h3 style="font-family:'Playfair Display',serif;color:var(--forest);margin-bottom:.5rem;">No camps added yet</h3>
-      <p style="font-size:.9rem;margin-bottom:1.5rem;">Browse camps and click <strong>Add to My Calendar</strong> on any camp page.</p>
+      <h3 style="font-family:'Playfair Display',serif;color:var(--forest);margin-bottom:.5rem;">Your summer calendar is empty</h3>
+      <p style="font-size:.9rem;margin-bottom:.6rem;">Browse camps and tap <strong>Add to My Calendar</strong> on any camp to start building your schedule.</p>
+      <p style="font-size:.82rem;margin-bottom:1.5rem;color:#a0b0a8;">Once you add camps here, you can track which ones you've registered for directly with the camp.</p>
       <button class="btn-primary" onclick="showPage('search')">Browse Camps →</button>
     </div>
 
@@ -1345,9 +1346,9 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
         <div class="schedule-grid" id="sched-calendar"></div>
         <div id="sched-legend" style="background:#fff;border-radius:12px;padding:1rem;margin-top:1rem;box-shadow:0 2px 10px rgba(0,0,0,.05);display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;">
           <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.06em;">Status</div>
-          <div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;"><span style="width:14px;height:14px;border-radius:4px;background:var(--moss);display:inline-block;flex-shrink:0;"></span>Registered</div>
+          <div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;"><span style="width:14px;height:14px;border-radius:4px;background:var(--moss);display:inline-block;flex-shrink:0;"></span>Registered with camp</div>
           <div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;"><span style="width:14px;height:14px;border-radius:4px;background:#8fa89a;display:inline-block;flex-shrink:0;"></span>Not yet registered</div>
-          <div style="font-size:.76rem;color:var(--muted);margin-left:auto;font-style:italic;">Click any block to update</div>
+          <div style="font-size:.74rem;color:var(--muted);margin-left:auto;font-style:italic;max-width:220px;text-align:right;line-height:1.4;">"Registered" means you've signed up directly on the camp's website. Click any block to update.</div>
         </div>
       </div>
       <div class="saved-camps-panel" id="sched-panel"></div>
@@ -3095,6 +3096,7 @@ async function addToSchedule(campId, registered) {
     }
   }
   renderSchedule();
+  showToast("Added to calendar! Remember to register directly with the camp.");
 }
 
 async function toggleRegistered(campId, childId) {
@@ -3481,9 +3483,10 @@ function renderSchedule() {
 
   panelEl.innerHTML =
     '<h3 class="sched-panel-title">My Camps</h3>' +
-    '<p class="sched-panel-sub">' + regCount + ' of ' + total + ' registered</p>' +
+    '<p class="sched-panel-sub">' + regCount + ' of ' + total + ' registered with camp</p>' +
     panelItems +
-    '<button class="find-more-btn" onclick="showPage(\'search\')">+ Find More Camps</button>';
+    '<button class="find-more-btn" onclick="showPage(\'search\')">+ Find More Camps</button>' +
+    '<div style="margin-top:1rem;padding:.75rem;background:#f7f8f6;border-radius:10px;font-size:.76rem;color:var(--muted);line-height:1.5;">💡 Adding a camp here doesn\'t sign you up. You still need to register directly on each camp\'s website.</div>';
 }
 
 function openEventPopup(localId) {
