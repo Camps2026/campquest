@@ -576,10 +576,10 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
       <div class="search-row-1" style="position:relative;">
         <div class="search-field-label">Location</div>
         <div style="display:flex;align-items:center;gap:.3rem;">
-          <input class="search-input" type="text" placeholder="City" id="location-input" list="city-list" onkeydown="if(event.key==='Enter')showResults()" oninput="updateLocationClear();if(document.getElementById('results-section').style.display==='block')applyFilters()"/>
+          <input class="search-input" type="text" placeholder="City" id="location-input" autocomplete="off" onkeydown="handleCityKey(event)" oninput="onCityInput();updateLocationClear();if(document.getElementById('results-section').style.display==='block')applyFilters()" onblur="setTimeout(function(){hideCityDropdown();},180)"/>
           <button id="location-clear-btn" onclick="clearLocationInput()" style="display:none;background:none;border:none;cursor:pointer;color:#b0bcb5;font-size:1rem;padding:.1rem .2rem;line-height:1;flex-shrink:0;" title="Clear">✕</button>
         </div>
-        <datalist id="city-list"></datalist>
+        <div id="city-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--border);border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.1);z-index:200;max-height:220px;overflow-y:auto;margin-top:4px;"></div>
       </div>
       <div class="search-row-2">
         <div class="search-field">
@@ -1511,11 +1511,41 @@ function linkUmbrellaPrograms(campsArr) {
   });
 }
 
+var _allCities = [];
 function populateCityAutocomplete(cities) {
-  var dl = document.getElementById('city-list');
-  if (!dl) return;
-  var filtered = cities.filter(function(c){ return c !== 'Multiple locations, WA'; });
-  dl.innerHTML = filtered.map(function(c){ return '<option value="' + c + '">'; }).join('');
+  _allCities = cities.filter(function(c){ return c !== 'Multiple locations, WA'; });
+}
+
+function onCityInput() {
+  var val = (document.getElementById('location-input').value || '').trim().toLowerCase();
+  var dd = document.getElementById('city-dropdown');
+  if (!dd) return;
+  if (!val) { dd.style.display = 'none'; return; }
+  var matches = _allCities.filter(function(c){ return c.toLowerCase().indexOf(val) !== -1; }).slice(0, 8);
+  if (!matches.length) { dd.style.display = 'none'; return; }
+  dd.innerHTML = matches.map(function(c){
+    return '<div style="padding:.65rem 1rem;cursor:pointer;font-size:.9rem;border-bottom:1px solid #f0f4f1;" ' +
+      'onmousedown="selectCity(\'' + c.replace(/'/g, "\\'") + '\')" ' +
+      'ontouchstart="selectCity(\'' + c.replace(/'/g, "\\'") + '\')">' + c + '</div>';
+  }).join('');
+  dd.style.display = 'block';
+}
+
+function selectCity(city) {
+  var input = document.getElementById('location-input');
+  if (input) { input.value = city; updateLocationClear(); }
+  hideCityDropdown();
+  if (document.getElementById('results-section').style.display === 'block') applyFilters();
+}
+
+function hideCityDropdown() {
+  var dd = document.getElementById('city-dropdown');
+  if (dd) dd.style.display = 'none';
+}
+
+function handleCityKey(e) {
+  if (e.key === 'Enter') { hideCityDropdown(); showResults(); }
+  if (e.key === 'Escape') hideCityDropdown();
 }
 
 function populateCityFilter(cities) {
@@ -1860,6 +1890,7 @@ function updateLocationClear() {
 function clearLocationInput() {
   var input = document.getElementById('location-input');
   if (input) { input.value = ''; }
+  hideCityDropdown();
   updateLocationClear();
   if (document.getElementById('results-section').style.display === 'block') applyFilters();
 }
