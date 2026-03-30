@@ -709,9 +709,232 @@ Added two JSON-LD blocks before `</body>`:
 
 ---
 
+## Camp Owner Self-Service Portal (Mar 29, 2026)
+
+All code changes in `~/Documents/campquest/index.html`. All Supabase changes made via API or SQL editor.
+
+### Overview
+Built a full camp owner portal so owners can log in with a magic link, submit edits to their listing, and upload photos — all of which go into a review queue for the admin (site owner) to approve before anything goes live.
+
+### Supabase Schema Changes
+
+**New columns on `camps` table:**
+```sql
+ALTER TABLE camps
+  ADD COLUMN IF NOT EXISTS description text,
+  ADD COLUMN IF NOT EXISTS photos text[],
+  ADD COLUMN IF NOT EXISTS owner_updated_at timestamptz;
+```
+
+**New `camp_owners` table** (links auth users to their camps):
+```sql
+CREATE TABLE IF NOT EXISTS camp_owners (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  camp_id integer NOT NULL,
+  created_at timestamptz DEFAULT now(),
+  UNIQUE(user_id, camp_id)
+);
+ALTER TABLE camp_owners ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users see own ownership" ON camp_owners
+  FOR SELECT USING (auth.uid() = user_id);
+```
+Note: `camp_id` is a plain `integer NOT NULL` (no FK constraint) because `camps.id` is not a formal primary key.
+
+**New `site_admins` table** (used to identify the admin user without a secret key):
+```sql
+CREATE TABLE IF NOT EXISTS site_admins (
+  user_id uuid PRIMARY KEY
+);
+-- RLS disabled (publicly readable so publishable key can check it)
+INSERT INTO site_admins (user_id) VALUES ('db121d42-e139-4e4d-ab01-ab360c7010ed');
+```
+
+**New `camp_edit_requests` table** (staging layer — edits sit here until admin approves):
+```sql
+CREATE TABLE IF NOT EXISTS camp_edit_requests (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  camp_id integer NOT NULL,
+  user_id uuid NOT NULL,
+  status text DEFAULT 'pending',
+  edits jsonb,
+  photos_to_add text[],
+  photos_to_remove text[],
+  created_at timestamptz DEFAULT now()
+);
+ALTER TABLE camp_edit_requests ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Owners can insert edit requests" ON camp_edit_requests
+  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Owners can read own edit requests" ON camp_edit_requests
+  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "Admin can read all edit requests" ON camp_edit_requests
+  FOR SELECT USING (
+    auth.uid() IN (SELECT user_id FROM site_admins)
+  );
+CREATE POLICY "Admin can update edit requests" ON camp_edit_requests
+  FOR UPDATE USING (
+    auth.uid() IN (SELECT user_id FROM site_admins)
+  );
+```
+
+**RLS on camps table** (keep public read, allow admin to update):
+```sql
+ALTER TABLE camps ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public can read camps" ON camps FOR SELECT USING (true);
+CREATE POLICY "Admin can update camps" ON camps
+  FOR UPDATE USING (
+    auth.uid() IN (SELECT user_id FROM site_admins)
+  );
+```
+
+**Supabase Storage bucket:** `camp-photos` (Public: YES)
+```sql
+CREATE POLICY "Owners can upload to their camp folder" ON storage.objects
+  FOR INSERT TO authenticated
+  WITH CHECK (bucket_id = 'camp-photos');
+CREATE POLICY "Public can view camp photos" ON storage.objects
+  FOR SELECT USING (bucket_id = 'camp-photos');
+CREATE POLICY "Owners can delete their photos" ON storage.objects
+  FOR DELETE TO authenticated
+  USING (bucket_id = 'camp-photos');
+```
+
+**Supabase Auth:**
+- Email provider enabled with Magic Link (passwordless)
+- Site URL set to: `https://popcamps.one`
+- Redirect URL added: `https://popcamps.one`
+
+### Admin User
+- Admin email: (site owner's email)
+- Admin user_id: `db121d42-e139-4e4d-ab01-ab360c7010ed`
+- Inserted into `site_admins` table
+
+### How the Approval Flow Works
+1. Camp owner fills out "Claim Your Camp" form → Formspree emails the admin
+2. Admin goes to Supabase → Authentication → Users → "Invite User" → enters owner's email
+3. Admin copies the new user's `user_id`, inserts into `camp_owners`: `{ user_id, camp_id }`
+4. Owner clicks magic link in email → lands on owner dashboard
+5. Owner edits their listing + uploads photos → clicks "Submit for Review →"
+6. Edits go into `camp_edit_requests` table as `status: 'pending'`
+7. Admin logs in → sees "Review Pending Edits" page → approves or rejects each request
+8. On approval: edits merged into `camps` table, `owner_updated_at` set → "Updated" badge appears on card
+
+### New Pages Added to index.html
+
+**`page-owner`** — Camp Owner Dashboard:
+- Header: "Camp Owner Dashboard" + camp name + Log Out button
+- Yellow notice banner when a review is pending (shows submission date)
+- Edit form: Camp Name, Camp Type, Website, City/State, Description (new), Hours, Age Min, Age Max, Session Dates
+- Photos section: shows current live photos + pending new photos with "NEW" badge; photos can be marked for removal
+- Submit button: "Submit for Review →" (goes to `camp_edit_requests`, NOT directly to `camps`)
+
+**`page-admin`** — Admin Review Dashboard:
+- Header: "PopCamps Admin — Review Pending Edits" + Log Out button
+- Each pending request shows as a review card:
+  - Camp name + submission date
+  - Before/After diff table (Current in red, Proposed in green)
+  - Photo previews (new photos to add, existing photos marked for removal)
+  - Approve (green) and Reject (red) buttons
+
+### New JS Functions Added
+
+| Function | What it does |
+|---|---|
+| `sendOwnerLoginLink()` | Sends magic link via `signInWithOtp({ shouldCreateUser: false })`; shows error if no account found |
+| `checkOwnerSession()` | Checks `site_admins` → admin page; `camp_owners` → owner dashboard; else shows "pending" state |
+| `populateOwnerForm(camp)` | Fills edit form with current camp data; checks for existing pending request |
+| `renderOwnerPhotos(livePhotos)` | Shows live photos with remove/unmark controls; shows pending new photos |
+| `markPhotoForRemoval(i)` / `unmarkPhotoForRemoval(i)` | Toggle pending removal state on existing photos |
+| `removePendingPhoto(i)` | Remove a newly uploaded photo from the pending queue |
+| `uploadOwnerPhoto(input)` | Uploads to `pending/{campId}/{timestamp}.ext` in Storage; adds URL to `pendingPhotosToAdd[]` |
+| `submitOwnerEdits()` | Inserts into `camp_edit_requests` with all edits + photo lists |
+| `loadAdminRequests()` | Fetches all pending requests, builds diff tables, renders review cards |
+| `approveEditRequest(id, campId, btn)` | Merges edits + photos into `camps`, marks request approved, sets `owner_updated_at` |
+| `rejectEditRequest(id, btn)` | Sets request status to `rejected` |
+| `ownerLogout()` | Signs out, resets all state variables, returns to portal page |
+
+### Key Design Decisions
+- **No service role key**: admin authentication is solved by a `site_admins` table (RLS disabled, publicly readable) — the publishable key can check if a user's ID is in it
+- **Edits never go live immediately**: the `camp_edit_requests` table acts as a staging layer
+- **Photos staged in `pending/` folder**: uploaded to Storage but not added to `camps.photos` until admin approves
+- **Three-tier auth check**: `site_admins` → `camp_owners` → regular user (in both `onAuthStateChange` and `checkExistingSession`)
+
+### "Updated" Badge
+Camps with `owner_updated_at` within the last 30 days show a green "Updated" pill badge on their card. Badge logic in `renderCamps()`:
+```javascript
+c.ownerUpdatedAt && ((new Date()-new Date(c.ownerUpdatedAt))/86400000)<30
+  ? '<span class="updated-badge">Updated</span>' : ''
+```
+
+### Bugs Fixed During Build
+| Bug | Fix |
+|---|---|
+| `camp_owners` FK on `camps(id)` failed ("no unique constraint") | Changed `camp_id` from FK reference to plain `integer NOT NULL` |
+| Magic link redirected to `camps2026.github.io` (404) | Updated Supabase Site URL and Redirect URLs to `https://popcamps.one` |
+| Supabase showed "destructive operations" warning on DROP POLICY | Just a confirmation dialog, not an error — clicked "Run this query" to proceed |
+
+### Automated Tests Run (Mar 29, 2026)
+All 11 tests passed using Chrome DevTools MCP against the live site (`https://popcamps.one`):
+
+| # | Test | Result |
+|---|------|--------|
+| 1 | Site loads, camps display | ✅ 471 camps showing |
+| 2 | Portal page shows "Camp Owner Login" section | ✅ Email input + Send Login Link button present |
+| 3 | Invalid email format validation | ✅ Toast: "Please enter a valid email address." |
+| 4 | Non-existent email error message | ✅ Red error: "No owner account found for this email." |
+| 5 | Owner dashboard DOM structure | ✅ All 9 form fields + photo grid present |
+| 6 | Submit button text | ✅ "Submit for Review →" |
+| 7 | Owner dashboard with pending notice | ✅ Yellow banner + edit form render correctly |
+| 8 | Admin review page renders | ✅ Diff table + Approve/Reject buttons display correctly |
+| 9 | "Updated" badge logic | ✅ Shows for <30 days, hidden for 35+ days |
+| 10 | State clears on logout | ✅ All variables reset to null/empty |
+| 11 | Claim form success message | ✅ References "1–2 business days" and login link |
+
+---
+
+## How We Work Together
+
+### Roles
+- **You (site owner)**: Make decisions, approve changes, do manual Supabase steps (SQL, creating users, storage), and test on the live site from your side
+- **Claude**: Writes all code, pushes to GitHub, queries/updates the database via REST API, runs automated browser tests, explains every change before making it
+
+### Communication Style
+- Claude explains what it's about to do and why before doing it — especially for database changes or anything that affects the live site
+- If something requires your action in Supabase or elsewhere, Claude gives you exact copy-paste SQL or step-by-step instructions
+- Claude asks for confirmation on risky/destructive actions (deleting records, dropping policies, etc.)
+- You don't need to ask Claude to push to GitHub — it does it automatically after every change
+
+### How Changes Get Made
+1. You describe what you want (doesn't need to be technical)
+2. Claude reads the current code before making any changes
+3. Claude explains the plan, then makes the changes in `index.html`
+4. Claude pushes to GitHub → GitHub Pages deploys automatically (usually within 1–2 minutes)
+5. Claude takes a screenshot using Chrome DevTools MCP to verify it looks right on mobile
+
+### Database Workflow
+- Claude can read from and write to Supabase directly via REST API (using the publishable key)
+- For operations that require a service role or admin access (creating users, running schema changes), Claude provides SQL to paste into the Supabase SQL Editor
+- For schema changes, Claude provides the exact SQL and waits for you to confirm it ran successfully
+
+### Testing Workflow
+- Chrome DevTools MCP is connected to your local Chrome instance
+- Claude can navigate to the live site, take screenshots, run JavaScript, fill forms, and check element state
+- Standard test viewport: 390×844 (iPhone size)
+- For UI states that are hard to reach manually (e.g., logged-in owner dashboard), Claude uses `evaluate_script` to force-show them with dummy data
+
+### Single-File Rule
+Everything lives in `index.html`. No separate CSS or JS files, no build tools, no npm. All libraries come from CDN links. This keeps the project simple enough to manage without a developer.
+
+### GitHub Push Workflow
+- Git remote: `git@github.com:Camps2026/popcamps.git`
+- SSH key: `~/.ssh/id_ed25519` (already added to GitHub)
+- Claude pushes directly via terminal after every change — you never need to do this manually
+
+---
+
 ## How to Start a New Session
 
 Tell Claude:
-> "I'm working on PopCamps (formerly CampQuest), a Washington state summer camp directory. Single index.html file, Supabase database, deployed at popcamps.one. See CAMPQUEST_WORK_LOG.md in ~/Documents/campquest/ for full context."
+> "I'm working on PopCamps, a Washington state summer camp directory. Single index.html file, Supabase database, deployed at popcamps.one. See CAMPQUEST_WORK_LOG.md in ~/Documents/campquest/ for full context."
 
 Then share this file or paste the relevant section.

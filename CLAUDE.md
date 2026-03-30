@@ -40,11 +40,31 @@ PopCamps (popcamps.one) is a Washington state summer camp directory. Parents sea
 - My Calendar page: full summer toggle + empty week click-to-search
 - Mobile: Show Filters button visible, calendar fits on screen (Mon–Fri only, no horizontal scroll)
 - No Best Match sort dropdown (removed)
-- Image upload UI removed from List Your Camp form (not functional yet)
-- Claim listing copy updated to be honest — no self-service portal exists yet
+- Camp owner portal: LIVE — magic link login, edit form, photo uploads, admin review queue
+- Admin review page: LIVE — approve/reject edits before they go live
+- "Updated" badge: appears on camp cards within 30 days of owner-approved edit
+
+## Supabase tables (added for owner portal)
+- `camp_owners` — links `auth.users.id` to `camps.id` (plain integer, no FK)
+- `site_admins` — stores admin user_id; RLS disabled (publicly readable)
+- `camp_edit_requests` — staging table for owner edits pending admin review
+- `camps` table: new columns `description`, `photos` (text[]), `owner_updated_at` (timestamptz)
+- Storage bucket: `camp-photos` (public)
+
+## Admin user
+- user_id: `db121d42-e139-4e4d-ab01-ab360c7010ed` (inserted into `site_admins`)
+- Login: magic link via the "Camp Owner Login" section on the Portal page
+
+## How to approve a camp owner claim
+1. Claim arrives via Formspree → your email
+2. Supabase → Authentication → Users → "Invite User" → enter their email
+3. Copy their `user_id` from the users list
+4. Table Editor → `camp_owners` → Insert Row: `user_id` + `camp_id`
+5. Done — owner can log in and edit
 
 ## Planned future work
-- Camp owner self-service portal (Phase 1: owner login → Phase 2: edit listing → Phase 3: photo uploads)
+- Google Analytics (deferred until real traffic)
+- Remaining session_dates cleanup (~66 camps still have non-date text)
 
 ## Work log
 Full history of all changes: `~/Documents/campquest/CAMPQUEST_WORK_LOG.md`
