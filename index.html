@@ -432,14 +432,13 @@ nav{background:var(--forest);padding:0 2rem;display:flex;align-items:center;just
   /* Schedule page & calendar */
   .schedule-page{padding:1rem;}
   .schedule-layout > div{min-width:0;}
-  .schedule-grid{overflow:hidden;width:100%;box-sizing:border-box;}
-  .week-header,.week-row,.week-row-extra{min-width:unset;grid-template-columns:42px repeat(5,1fr) 0px 0px;}
-  .week-header div:nth-child(7),.week-header div:nth-child(8){display:none;}
-  .week-label{padding:.5rem .15rem;font-size:.58rem;}
-  .week-header div{padding:.5rem .1rem;font-size:.65rem;}
-  .week-cell{min-height:65px;padding:.2rem;}
-  .sched-event{font-size:.63rem;padding:.25rem .3rem;}
-  .sched-event-name{font-size:.61rem;}
+  .schedule-grid{overflow-x:auto;width:100%;box-sizing:border-box;}
+  .week-header,.week-row,.week-row-extra{min-width:unset;grid-template-columns:36px repeat(7,1fr);}
+  .week-label{padding:.5rem .1rem;font-size:.55rem;}
+  .week-header div{padding:.5rem .05rem;font-size:.6rem;}
+  .week-cell{min-height:60px;padding:.2rem;}
+  .sched-event{font-size:.58rem;padding:.2rem .25rem;}
+  .sched-event-name{font-size:.58rem;}
   .saved-camps-panel{position:static;width:100%;box-sizing:border-box;}
   #sched-legend{flex-wrap:wrap;gap:.75rem;font-size:.75rem;}
   #sched-legend > div:last-child{width:100%;text-align:left;margin-left:0;}
