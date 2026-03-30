@@ -916,6 +916,41 @@ Listings updated regularly for summer 2026. · © 2026 PopCamps · Privacy Polic
 
 ---
 
+## Session: Mar 30, 2026 — Legal & Privacy Cleanup
+
+### Photo Upload Removed
+- Decided to remove the camp owner photo upload feature due to child consent concerns — no way to verify parents consented to photos of their kids being published
+- Removed: photo upload UI from owner dashboard, all photo JS functions (`uploadOwnerPhoto`, `renderOwnerPhotos`, `markPhotoForRemoval`, `unmarkPhotoForRemoval`, `removePendingPhoto`), photo diff from admin review cards, photo merging from `approveEditRequest`
+- Database `photos` column and `camp-photos` storage bucket left in place (harmless, no action needed)
+- Commit: `c924c48`
+
+### "List Your Camp" Cleanup
+- Removed fake social proof line: *"Join 12,400+ camps on PopCamps. Reach thousands of parents actively searching."*
+- Commit: `ce1e405`
+
+### Listing Accuracy Disclaimer
+- Added a gray disclaimer box at the bottom of every camp detail page: *"Listing information is based on publicly available data and may not reflect current availability, pricing, or scheduling. Always confirm details directly with the camp before registering."*
+- Added a second line to the footer in very light text: *"Camp listing details are for informational purposes only. Verify all information directly with the camp."*
+- Commit: `4878b61`
+
+### Privacy Law Improvements (WA My Health MY Data, COPPA, CCPA)
+- Added sentence to Privacy Policy Section 6 (Minors) clarifying that non-logged-in users' child data stays only in browser localStorage and is never sent to PopCamps servers; logged-in users' data is deleted when they clear their account
+- Renamed "Delete My Account" button → "Clear My Data" (more accurate since most users don't have a traditional account)
+- Updated confirm dialog and success toast to match new wording
+- Commit: `d0171ff`
+
+### Neurodiversity Filter Removed
+- Removed Neurodiversity from the camp type filter chips, camp owner edit dropdown, and CSS/JS type definitions
+- Commit: `faf8c94`
+
+### Footer (current state)
+```
+Listings updated regularly for summer 2026. · © 2026 PopCamps · Privacy Policy · Terms and Conditions
+Camp listing details are for informational purposes only. Verify all information directly with the camp.
+```
+
+---
+
 ## How We Work Together
 
 ### Roles
