@@ -4829,8 +4829,8 @@ window.addEventListener('DOMContentLoaded', function() {
   if (s) { s.style.display = 'block'; }
   renderProfileChildren();
   updateNavForUser();
-  // Render demo data immediately so the page works right away
-  applyFilters();
+  // Show loading state while real data loads from Supabase
+  showLoadingState();
 
   // Handle password reset links and owner/admin magic link logins
   sbClient.auth.onAuthStateChange(async function(event, session) {
