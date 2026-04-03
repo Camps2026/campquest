@@ -4445,6 +4445,7 @@ async function checkExistingSession() {
   if (currentUser || isAdminUser || ownerCampId) return;
   var resp = await sbClient.auth.getSession();
   var session = resp.data && resp.data.session;
+  console.log('[checkExistingSession] getSession result:', session ? 'EXISTS (user=' + (session.user && session.user.email) + ')' : 'NULL');
   if (!session) return;
   var userId = session.user.id;
   // Check admin first
@@ -4859,6 +4860,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
   // Handle password reset links and owner/admin magic link logins
   sbClient.auth.onAuthStateChange(async function(event, session) {
+    console.log('[AUTH] event:', event, '| session:', session ? 'EXISTS (user=' + (session.user && session.user.email) + ')' : 'NULL');
     if (event === 'PASSWORD_RECOVERY') showPasswordUpdateModal();
     if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
       try {
