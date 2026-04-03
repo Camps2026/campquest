@@ -4453,7 +4453,10 @@ async function checkExistingSession() {
     ]);
     var adminResp = results[0], ownerResp = results[1];
     if (!adminResp.error && adminResp.data) {
-      isAdminUser = true; showPage('admin'); loadAdminRequests(); return;
+      isAdminUser = true;
+      currentUser = { id: userId, name: session.user.email, email: session.user.email, zip: '', createdAt: session.user.created_at };
+      updateNavForUser();
+      showPage('admin'); loadAdminRequests(); return;
     }
     if (!ownerResp.error && ownerResp.data) {
       ownerCampId = ownerResp.data.camp_id;
@@ -4486,6 +4489,9 @@ async function checkExistingSession() {
 async function logOut() {
   await sbClient.auth.signOut();
   currentUser = null;
+  isAdminUser = false;
+  ownerCampId = null;
+  ownerCampData = null;
   scheduleItems = [];
   children = [];
   activeChild = null;
@@ -4875,7 +4881,12 @@ window.addEventListener('DOMContentLoaded', function() {
         var adminResp = results[0], ownerResp = results[1];
 
         if (!adminResp.error && adminResp.data) {
-          isAdminUser = true; showPage('admin'); loadAdminRequests(); return;
+          isAdminUser = true;
+          if (!currentUser) {
+            currentUser = { id: userId, name: session.user.email, email: session.user.email, zip: '', createdAt: session.user.created_at };
+            updateNavForUser();
+          }
+          showPage('admin'); loadAdminRequests(); return;
         }
         if (!ownerResp.error && ownerResp.data) {
           ownerCampId = ownerResp.data.camp_id;
