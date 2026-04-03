@@ -4482,11 +4482,12 @@ async function checkExistingSession() {
 }
 
 async function logOut() {
-  await sbClient.auth.signOut();
+  // Clear state and update UI immediately — don't wait for signOut network call
   currentUser = null;
   isAdminUser = false;
   ownerCampId = null;
   ownerCampData = null;
+  sbClient.auth.signOut(); // fire and forget
   scheduleItems = [];
   children = [];
   activeChild = null;
@@ -4537,7 +4538,8 @@ function updateNavForUser() {
   var btn = document.getElementById('nav-signup-btn');
   if (!btn) return;
   if (currentUser) {
-    btn.textContent = '👤 ' + currentUser.name.split(' ')[0];
+    var displayName = currentUser.name.includes('@') ? currentUser.name.split('@')[0] : currentUser.name.split(' ')[0];
+    btn.textContent = '👤 ' + displayName;
     btn.onclick = showAccountModal;
     btn.style.background = 'var(--sun)';
   } else {
