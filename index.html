@@ -4446,6 +4446,13 @@ async function checkExistingSession() {
   var session = resp.data && resp.data.session;
   if (!session) return;
   var userId = session.user.id;
+
+  // Immediately show logged-in state before DB queries complete
+  if (!currentUser) {
+    currentUser = { id: userId, name: session.user.email, email: session.user.email, zip: '', createdAt: session.user.created_at };
+    updateNavForUser();
+  }
+
   try {
     var results = await Promise.all([
       sbClient.from('site_admins').select('user_id').eq('user_id', userId).single(),
@@ -4453,10 +4460,7 @@ async function checkExistingSession() {
     ]);
     var adminResp = results[0], ownerResp = results[1];
     if (!adminResp.error && adminResp.data) {
-      isAdminUser = true;
-      currentUser = { id: userId, name: session.user.email, email: session.user.email, zip: '', createdAt: session.user.created_at };
-      updateNavForUser();
-      showPage('admin'); loadAdminRequests(); return;
+      isAdminUser = true; showPage('admin'); loadAdminRequests(); return;
     }
     if (!ownerResp.error && ownerResp.data) {
       ownerCampId = ownerResp.data.camp_id;
@@ -4465,24 +4469,15 @@ async function checkExistingSession() {
         ownerCampData = campResp.data; await populateOwnerForm(campResp.data); showPage('owner'); return;
       }
     }
-    if (currentUser) return;
     var profileResp = await sbClient.from('user_profiles').select('*').eq('id', userId).single();
-    var profile = profileResp.data;
-    currentUser = {
-      id: userId,
-      name: profile ? profile.full_name : session.user.email,
-      email: session.user.email,
-      zip: profile ? profile.zip : '',
-      createdAt: session.user.created_at
-    };
-    updateNavForUser();
-    await loadUserData(userId);
-  } catch(e) {
-    // DB queries failed — restore from session so user isn't logged out
-    if (!currentUser && !isAdminUser && !ownerCampId) {
-      currentUser = { id: userId, name: session.user.email, email: session.user.email, zip: '', createdAt: session.user.created_at };
+    if (profileResp.data) {
+      currentUser.name = profileResp.data.full_name;
+      currentUser.zip = profileResp.data.zip;
       updateNavForUser();
     }
+    await loadUserData(userId);
+  } catch(e) {
+    // DB queries failed — currentUser already set above so user stays logged in
   }
 }
 
@@ -4872,6 +4867,14 @@ window.addEventListener('DOMContentLoaded', function() {
     if (event === 'PASSWORD_RECOVERY') showPasswordUpdateModal();
     if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
       var userId = session.user.id;
+
+      // Immediately show logged-in state from session — no DB query needed for this.
+      // This ensures the nav always updates right away, even on slow connections.
+      if (!currentUser) {
+        currentUser = { id: userId, name: session.user.email, email: session.user.email, zip: '', createdAt: session.user.created_at };
+        updateNavForUser();
+      }
+
       try {
         // Run admin + owner checks in parallel (faster than sequential)
         var results = await Promise.all([
@@ -4881,12 +4884,7 @@ window.addEventListener('DOMContentLoaded', function() {
         var adminResp = results[0], ownerResp = results[1];
 
         if (!adminResp.error && adminResp.data) {
-          isAdminUser = true;
-          if (!currentUser) {
-            currentUser = { id: userId, name: session.user.email, email: session.user.email, zip: '', createdAt: session.user.created_at };
-            updateNavForUser();
-          }
-          showPage('admin'); loadAdminRequests(); return;
+          isAdminUser = true; showPage('admin'); loadAdminRequests(); return;
         }
         if (!ownerResp.error && ownerResp.data) {
           ownerCampId = ownerResp.data.camp_id;
@@ -4898,26 +4896,16 @@ window.addEventListener('DOMContentLoaded', function() {
           }
           return;
         }
-        // Regular parent user
-        if (!currentUser) {
-          var profileResp = await sbClient.from('user_profiles').select('*').eq('id', userId).single();
-          var profile = profileResp.data;
-          currentUser = {
-            id: userId,
-            name: profile ? profile.full_name : session.user.email,
-            email: session.user.email,
-            zip: profile ? profile.zip : '',
-            createdAt: session.user.created_at
-          };
+        // Regular parent user — update currentUser with real profile data
+        var profileResp = await sbClient.from('user_profiles').select('*').eq('id', userId).single();
+        if (profileResp.data) {
+          currentUser.name = profileResp.data.full_name;
+          currentUser.zip = profileResp.data.zip;
           updateNavForUser();
-          await loadUserData(userId);
         }
+        await loadUserData(userId);
       } catch(authErr) {
-        // DB queries failed (slow/dropped connection) — restore from session so user isn't logged out
-        if (!currentUser && !isAdminUser && !ownerCampId) {
-          currentUser = { id: userId, name: session.user.email, email: session.user.email, zip: '', createdAt: session.user.created_at };
-          updateNavForUser();
-        }
+        // DB queries failed — currentUser already set above so user stays logged in
       }
     }
   });
