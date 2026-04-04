@@ -4444,7 +4444,7 @@ async function loadUserData(userId) {
   }
   renderProfileChildren();
   renderSchedule();
-  applyFilters();
+  clearFilters(); // reset all sidebar filter state so nothing is pre-selected
 }
 
 // Check if a Supabase session already exists (e.g. returning user)
