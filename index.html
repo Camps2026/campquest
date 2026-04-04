@@ -3506,7 +3506,7 @@ function renderSchedule() {
         var c = getCampById(item.campId);
         if (!c) return;
         panelItems += '<div style="padding:.5rem 0 .5rem .9rem;border-bottom:1px solid #f0f4f1;font-size:.82rem;">' +
-          '<div class="saved-name" style="font-size:.82rem;">' + c.icon + ' ' + c.name + '</div>' +
+          '<div class="saved-name" style="font-size:.82rem;">' + c.name + '</div>' +
           '<div class="saved-dates">' + (item.customStart && item.customEnd ? fmtDateRange(item.customStart, item.customEnd) : (item.session || (Array.isArray(c.dates) ? c.dates[0] : (c.dates || c.week)))) + '</div>' +
         '</div>';
       });
@@ -3522,7 +3522,7 @@ function renderSchedule() {
         : '<button onclick="toggleRegisteredById(\'' + item.localId + '\')" class="panel-reg-btn panel-reg-off">Mark Registered</button>';
       panelItems +=
         '<div style="padding:.7rem 0;border-bottom:1px solid #f0f4f1;">' +
-          '<div class="saved-name">' + c.icon + ' ' + c.name + '</div>' +
+          '<div class="saved-name">' + c.name + '</div>' +
           '<div class="saved-dates">' + (item.customStart && item.customEnd ? fmtDateRange(item.customStart, item.customEnd) : (item.session || (Array.isArray(c.dates) ? c.dates[0] : (c.dates || c.week)))) + '</div>' +
           '<div style="display:flex;gap:.4rem;margin-top:.5rem;align-items:center;">' +
             btn +
