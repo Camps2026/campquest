@@ -1637,12 +1637,13 @@ async function loadCampsFromSupabase() {
     // Re-render with live data
     applyFilters();
 
+    // Mark camps as ready — onAuthStateChange checks this flag before calling loadUserData
+    _campsReady = true;
     if (currentUser) {
-      // User was already restored by onAuthStateChange before camps loaded —
-      // reload their schedule/saved camps now that real camp data is available
-      await loadUserData(currentUser.id);
+      // Auth already fired before camps finished — load user data now with real camp data
+      if (!_userDataLoaded) await loadUserData(currentUser.id);
     } else {
-      // No user set yet — check for a session to restore
+      // Auth hasn't fired yet — restore session and load user data
       await checkExistingSession();
     }
 
@@ -4393,6 +4394,8 @@ function removeGalleryTile(id) {
 
 /* ─── SIGN-UP / ACCOUNT SYSTEM ─── */
 var currentUser = null; // null = not signed in, object = signed in
+var _campsReady = false;    // true after real camps finish loading from Supabase
+var _userDataLoaded = false; // true after loadUserData has run — prevents double-load
 
 function requireAccount(callback) {
   if (currentUser) { callback(); return; }
@@ -4401,6 +4404,7 @@ function requireAccount(callback) {
 
 // Load user's children, saved camps, and schedule from Supabase into memory
 async function loadUserData(userId) {
+  _userDataLoaded = true; // guard: prevents a second concurrent call from double-loading
   var childrenResp = await sbClient.from('user_children').select('*').eq('user_id', userId).order('sort_order');
   children = [];
   document.querySelectorAll('.children-tabs .child-tab').forEach(function(t){ if (t.id !== 'saved-tab' && t.id !== 'all-kids-tab') t.remove(); });
@@ -4493,6 +4497,7 @@ async function logOut() {
   isAdminUser = false;
   ownerCampId = null;
   ownerCampData = null;
+  _userDataLoaded = false; // allow loadUserData to run again after next login
   // Wait for signOut but cap at 5s — ensures auth lock is released before any new login attempt
   try { await Promise.race([sbClient.auth.signOut(), new Promise(function(r){ setTimeout(r, 5000); })]); } catch(e) {}
   scheduleItems = [];
@@ -4912,7 +4917,11 @@ window.addEventListener('DOMContentLoaded', function() {
           currentUser.zip = profileResp.data.zip;
           updateNavForUser();
         }
-        await loadUserData(userId);
+        // Only load user data here if camps are already ready — otherwise
+        // loadCampsFromSupabase will call loadUserData once it finishes loading
+        if (_campsReady && !_userDataLoaded) {
+          await loadUserData(userId);
+        }
       } catch(authErr) {
         // DB queries failed — currentUser already set above so user stays logged in
       }
