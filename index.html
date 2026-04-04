@@ -4493,7 +4493,8 @@ async function logOut() {
   isAdminUser = false;
   ownerCampId = null;
   ownerCampData = null;
-  sbClient.auth.signOut(); // fire and forget
+  // Wait for signOut but cap at 5s — ensures auth lock is released before any new login attempt
+  try { await Promise.race([sbClient.auth.signOut(), new Promise(function(r){ setTimeout(r, 5000); })]); } catch(e) {}
   scheduleItems = [];
   children = [];
   activeChild = null;
