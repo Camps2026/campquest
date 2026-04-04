@@ -4876,57 +4876,58 @@ window.addEventListener('DOMContentLoaded', function() {
   // Show loading state while real data loads from Supabase
   showLoadingState();
 
-  // Handle password reset links and owner/admin magic link logins
-  sbClient.auth.onAuthStateChange(async function(event, session) {
-    if (event === 'PASSWORD_RECOVERY') showPasswordUpdateModal();
+  // Handle password reset links and owner/admin magic link logins.
+  // IMPORTANT: This callback is awaited by Supabase while holding the auth lock.
+  // Never await long operations here — do only synchronous work, then kick off
+  // async work with _handleAuthSession() which runs outside the lock.
+  sbClient.auth.onAuthStateChange(function(event, session) {
+    if (event === 'PASSWORD_RECOVERY') { showPasswordUpdateModal(); return; }
     if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
       var userId = session.user.id;
-
-      // Immediately show logged-in state from session — no DB query needed for this.
-      // This ensures the nav always updates right away, even on slow connections.
+      // Set currentUser immediately from session token — no network call needed.
+      // This makes the nav update instantly and releases the auth lock right away.
       if (!currentUser) {
         currentUser = { id: userId, name: session.user.email, email: session.user.email, zip: '', createdAt: session.user.created_at };
         updateNavForUser();
       }
-
-      try {
-        // Run admin + owner checks in parallel (faster than sequential)
-        var results = await Promise.all([
-          sbClient.from('site_admins').select('user_id').eq('user_id', userId).single(),
-          sbClient.from('camp_owners').select('camp_id').eq('user_id', userId).single()
-        ]);
-        var adminResp = results[0], ownerResp = results[1];
-
-        if (!adminResp.error && adminResp.data) {
-          isAdminUser = true; showPage('admin'); loadAdminRequests();
-          // fall through to also load profile name and personal data (calendar, kids)
-        } else if (!ownerResp.error && ownerResp.data) {
-          ownerCampId = ownerResp.data.camp_id;
-          var campResp = await sbClient.from('camps').select('*').eq('id', ownerCampId).single();
-          if (!campResp.error && campResp.data) {
-            ownerCampData = campResp.data;
-            await populateOwnerForm(campResp.data);
-            showPage('owner');
-          }
-          // fall through to also load profile name and personal data
-        }
-        // Load profile name and personal data for all user types
-        var profileResp = await sbClient.from('user_profiles').select('*').eq('id', userId).single();
-        if (profileResp.data) {
-          currentUser.name = profileResp.data.full_name;
-          currentUser.zip = profileResp.data.zip;
-          updateNavForUser();
-        }
-        // Only load user data here if camps are already ready — otherwise
-        // loadCampsFromSupabase will call loadUserData once it finishes loading
-        if (_campsReady && !_userDataLoaded) {
-          await loadUserData(userId);
-        }
-      } catch(authErr) {
-        // DB queries failed — currentUser already set above so user stays logged in
-      }
+      // Do all DB queries in the background — never await in this callback
+      _handleAuthSession(userId);
     }
   });
+
+  // Runs async auth setup outside the Supabase auth lock so login is never blocked
+  async function _handleAuthSession(userId) {
+    try {
+      var results = await Promise.all([
+        sbClient.from('site_admins').select('user_id').eq('user_id', userId).single(),
+        sbClient.from('camp_owners').select('camp_id').eq('user_id', userId).single()
+      ]);
+      var adminResp = results[0], ownerResp = results[1];
+
+      if (!adminResp.error && adminResp.data) {
+        isAdminUser = true; showPage('admin'); loadAdminRequests();
+      } else if (!ownerResp.error && ownerResp.data) {
+        ownerCampId = ownerResp.data.camp_id;
+        var campResp = await sbClient.from('camps').select('*').eq('id', ownerCampId).single();
+        if (!campResp.error && campResp.data) {
+          ownerCampData = campResp.data;
+          await populateOwnerForm(campResp.data);
+          showPage('owner');
+        }
+      }
+      var profileResp = await sbClient.from('user_profiles').select('*').eq('id', userId).single();
+      if (profileResp.data) {
+        currentUser.name = profileResp.data.full_name;
+        currentUser.zip = profileResp.data.zip;
+        updateNavForUser();
+      }
+      if (_campsReady && !_userDataLoaded) {
+        await loadUserData(userId);
+      }
+    } catch(authErr) {
+      // DB queries failed — currentUser already set so user stays logged in
+    }
+  }
 
   // Safety net: if the page refreshed but onAuthStateChange silently failed (mobile network hiccup),
   // re-check for a session after camps have had time to load.
